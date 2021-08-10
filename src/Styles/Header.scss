@@ -1,0 +1,23 @@
+header {
+  position: absolute;
+  height: 10vh;
+  color: white;
+  background: linear-gradient(
+    62deg,
+    rgb(21, 213, 235) 0%,
+    rgb(255, 0, 191) 100%
+  );
+  width: 100%;
+  border-bottom: 0.25rem #dbdbdb solid;
+  .AlignLogo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    height: 10vh;
+    img {
+      height: 2.5rem;
+      margin-left: 1.5%;
+    }
+  }
+}

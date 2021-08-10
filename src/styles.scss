@@ -1,0 +1,14 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Hahmlet:wght@100&display=swap");
+body {
+  background-color: #fafafa;
+  font-family: "Hahmlet", serif;
+  background: linear-gradient(
+    132deg,
+    rgb(0, 48, 143) 0%,
+    rgb(0, 255, 255) 100%
+  );
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+}

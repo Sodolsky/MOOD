@@ -1,0 +1,80 @@
+main {
+  background-color: #fefefe;
+  top: 50%;
+  left: 50%;
+  width: 40vw;
+  transform: translate(-50%, -50%);
+  padding: 0.3rem;
+  position: absolute;
+  box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 0.25rem;
+  letter-spacing: 0.1rem;
+  .HeaderContainer {
+    height: 100%;
+    width: 100%;
+  }
+  .LogInText {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    input {
+      text-align: center;
+      width: 100%;
+      border-radius: 0.3rem;
+    }
+    input[type="email"] {
+      margin-top: 0.75rem;
+    }
+    input[type="password"] {
+      margin-top: 0.75rem;
+    }
+    input[type="submit"] {
+      margin-top: 0.75rem;
+      border: none;
+      font-weight: bold;
+      background: linear-gradient(
+        62deg,
+        rgb(21, 213, 235) 0%,
+        rgb(255, 0, 191) 100%
+      );
+      color: white;
+    }
+  }
+  p {
+    margin-top: 0.75rem;
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0;
+      color: #069;
+      font-size: 115%;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}
+.ErrorContainer {
+  position: absolute;
+  width: 100%;
+  top: 9vh;
+}
+.fadeIn {
+  opacity: 1;
+  transition: opacity 0.75s;
+}
+.fadeOut {
+  opacity: 0;
+  transition: opacity 0.75s;
+}

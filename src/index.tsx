@@ -1,17 +1,32 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+import React from "react";
+import { createContext } from "react";
+import { useState } from "react";
+import ReactDOM from "react-dom";
+import { Header } from "./Header";
+import { LogIn } from "./LogIn";
+import { MainContent } from "./MainContent";
+import "./styles.scss";
+export const userLogInContext = createContext<LogInInterface>({
+  isUserLoggedIn: false,
+  setIfUserIsLoggedIn: null,
+});
+export interface LogInInterface {
+  isUserLoggedIn: boolean | undefined;
+  setIfUserIsLoggedIn: any;
+}
+export const App: React.FC = () => {
+  const [isUserLoggedIn, setIfUserIsLoggedIn] = useState<boolean | undefined>(
+    false
+  );
+  return (
+    <>
+      <userLogInContext.Provider
+        value={{ isUserLoggedIn, setIfUserIsLoggedIn }}
+      >
+        <Header />
+        {isUserLoggedIn ? <MainContent /> : <LogIn />}
+      </userLogInContext.Provider>
+    </>
+  );
+};
+ReactDOM.render(<App />, document.getElementById("root"));
