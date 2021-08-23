@@ -22,5 +22,4 @@ export const UserAlert: React.FC<UserAlertProps> = (props) => {
       </Alert>
     </div>
   );
-  return <></>;
 };

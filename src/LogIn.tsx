@@ -1,27 +1,21 @@
 import * as React from "react";
-import { Container, Row, Col, Alert } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import "./Styles/LogIn.scss";
 import { useContext } from "react";
 import { userLogInContext } from ".";
 import { SignUp } from "./SignUp";
 import { UserAlert } from "./Alert";
-export interface UserData {
-  Login: string | undefined;
-  Password: string | undefined;
-  Email?: string | undefined;
+import { UserData, DataBaseContext } from ".";
+export interface LogInProps {
+  currentlyLoggedInUser: UserData;
+  setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
-let DataBase: UserData[] = JSON.parse(localStorage.getItem("database") || "{}");
-if (Object.keys(DataBase).length === 0) {
-  DataBase = [{ Login: "admin", Password: "admin", Email: "admin@admin.com" }];
-}
-export const saveDataBaseInLocalStorage = (): void => {
-  localStorage.setItem("database", JSON.stringify(DataBase));
-};
-export const LogIn: React.FC = () => {
-  console.table(DataBase);
+export const LogIn: React.FC<LogInProps> = (props) => {
+  const { setCurrentlyLoggedInUser } = props;
+  const DataBase = useContext(DataBaseContext);
   const userLogObject = useContext(userLogInContext);
-  const { isUserLoggedIn, setIfUserIsLoggedIn } = userLogObject;
+  const { setIfUserIsLoggedIn } = userLogObject;
   const [show, setShow] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [alertVariant, setAlertVariant] = useState<string>("");
@@ -30,6 +24,7 @@ export const LogIn: React.FC = () => {
     Login: "",
     Password: "",
   });
+  // console.table(DataBase);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = event.target.value;
     const name = event.target.name;
@@ -61,6 +56,7 @@ export const LogIn: React.FC = () => {
       const { Login, Password }: UserData = item;
       if (userData.Login === Login && userData.Password === Password) {
         isUserAccountInDataBase = true;
+        setCurrentlyLoggedInUser(item);
         setIfUserIsLoggedIn(true);
       }
     }
@@ -135,16 +131,18 @@ export const LogIn: React.FC = () => {
   }
   return (
     <>
-      <UserAlert
-        props={{ show, setShow }}
-        message={message}
-        variant={alertVariant}
-      />
-      <SignUp
-        Values={{ DataBase }}
-        setIfUserIsSigningUp={setIfUserIsSigningUp}
-        showError={showUserAnError}
-      />
+      <DataBaseContext.Provider value={DataBase}>
+        <UserAlert
+          props={{ show, setShow }}
+          message={message}
+          variant={alertVariant}
+        />
+        <SignUp
+          Values={{ DataBase }}
+          setIfUserIsSigningUp={setIfUserIsSigningUp}
+          showError={showUserAnError}
+        />
+      </DataBaseContext.Provider>
     </>
   );
 };

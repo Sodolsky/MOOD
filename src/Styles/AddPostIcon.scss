@@ -1,0 +1,15 @@
+.AddPostBox {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  img {
+    width: clamp(35px, 60px, 8%);
+    cursor: pointer;
+    transition: transform 2500ms;
+    &:hover {
+      transform: rotate(360deg);
+    }
+  }
+}

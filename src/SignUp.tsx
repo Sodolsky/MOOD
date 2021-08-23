@@ -1,6 +1,6 @@
 import * as React from "react";
-import { UserData, saveDataBaseInLocalStorage } from "./LogIn";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { UserData, saveDataBaseInLocalStorage } from ".";
+import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 interface SignUpProps {
   Values: {
@@ -9,6 +9,11 @@ interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
   showError: (variant: string, message: string, isshown: boolean) => void;
 }
+export const validateEmail = (email: string | undefined) => {
+  const reg =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return reg.test(String(email).toLowerCase());
+};
 export const SignUp: React.FC<SignUpProps> = (props) => {
   const { DataBase } = props.Values;
   const [registerData, setRegisterData] = useState<UserData>({
@@ -16,11 +21,6 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
     Password: "",
     Email: "",
   });
-  function validateEmail(email: string | undefined) {
-    const reg =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return reg.test(String(email).toLowerCase());
-  }
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = event.target.value;
     const name = event.target.name;
