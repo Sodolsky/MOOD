@@ -4,8 +4,25 @@ import { useRef } from "react";
 export const FileUploader: React.FC<any> = ({ onFileSelect }) => {
   const fileInput = useRef<HTMLLabelElement>(null);
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files![0];
-    onFileSelect(files);
+    const file = e.target.files![0];
+    if (
+      file.type === "video/mp4" ||
+      file.type === "video/ogg" ||
+      file.type === "video/webm"
+    ) {
+      if (file.size > 40000000) {
+        //Normal value 800000000
+        return alert("Your File is bigger than 40MB Try to upload smaller one");
+      } else {
+        onFileSelect(file);
+      }
+    } else {
+      if (file.size > 8000000) {
+        return alert("Your File is bigger than 8MB Try to upload smaller one");
+      } else {
+        onFileSelect(file);
+      }
+    }
   };
   return (
     <>
@@ -19,7 +36,7 @@ export const FileUploader: React.FC<any> = ({ onFileSelect }) => {
         type="file"
         id="file-input"
         name="Img"
-        accept="image/png, image/gif, image/jpeg"
+        accept="image/png, image/gif, image/jpeg ,video/*"
         onChange={handleFileInput}
       />
     </>

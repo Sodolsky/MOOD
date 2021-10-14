@@ -12,24 +12,47 @@ import {
 import TextareAutosize from "react-textarea-autosize";
 import { FileUploader } from "./FileUploader";
 import { useEffect } from "react";
-import heart from "./img/heart.svg";
-import DefaultUserPhoto from "./img/unkownuser.svg";
+import heartLiked from "./img/heartLiked.svg";
 import { UrlUploader } from "./UrlOploader";
 import { getLinkId, validateYouTubeUrl } from "./ValidateYoutubeUrl";
 import { AddPostIcon } from "./AddPostIcon";
-import { currentlyLoggedInUserContext } from ".";
+import { currentlyLoggedInUserContext, UserData } from ".";
 import { useContext } from "react";
-import { PostDataBase, savePostsInLocalStorage } from "./MainContent";
-import { PostPropsInteface } from "./Post";
-interface CreatePostInterface {
-  dataBaseOfPosts: PostPropsInteface[];
-  setDataBaseOfPosts: React.Dispatch<React.SetStateAction<PostPropsInteface[]>>;
+import { db, storageRef } from "./firebase.js";
+import { doc, getDoc, setDoc, Timestamp, updateDoc } from "@firebase/firestore";
+import { ref, uploadBytes } from "@firebase/storage";
+import { downloadImageIfPostHasOne } from "./Post";
+import { LoadingRing } from "./LoadingRing";
+import commentSVG from "./img/Comment.svg";
+import { useMediaQuery } from "@react-hook/media-query";
+import { checkIfTextHaveHashtags } from "./likeFunctions";
+import { uniq } from "lodash";
+//Key needs to be changed
+const uploadUserImageToStorageBucket = async (
+  key: string,
+  img: Blob | File
+) => {
+  const pathRef = ref(storageRef, "PostImages");
+  const fileRef = ref(pathRef, `${key}`);
+  await uploadBytes(fileRef, img);
+};
+interface CreatePostProps {
+  forceUpdate: React.Dispatch<React.SetStateAction<number>>;
+  setCount: React.Dispatch<React.SetStateAction<number>>;
 }
-export const CreatePost: React.FC<CreatePostInterface> = (props) => {
-  const { dataBaseOfPosts, setDataBaseOfPosts } = props;
+export interface CommentInterface {
+  userThatAddedComment: UserData;
+  content: string;
+  date: any;
+  usersThatLikedThisComment: UserData[];
+  id?: string;
+  parentPostRef?: string;
+}
+export const CreatePost: React.FC<CreatePostProps> = (props) => {
+  const { forceUpdate, setCount } = props;
   const [addPostIconClicked, setAddPostIconClicked] = useState<boolean>(false);
   const [newPostText, setNewPostText] = useState<string>("");
-  const [userImage, setUserImage] = useState<string | File>("");
+  const [userImage, setUserImage] = useState<File>();
   const [isLinkChoosen, setIfLinkIsChoosen] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [YTLink, setYTLink] = useState<string | undefined>("");
@@ -39,6 +62,47 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
   const [imgPrevievSrc, setImgPrevievSrc] = useState<undefined | string>(
     undefined
   );
+  const [imglock, setImgLock] = useState<boolean>(false);
+  const [postLoading, setPostLoading] = useState<boolean>(false);
+  const [rawImageBlob, setRawImageBlob] = useState<File | Blob>();
+  const match = useMediaQuery("only screen and (min-width:450px");
+  const addNewPostIntoDataBase = async (
+    postType: string,
+    userThatPostedThis: UserData,
+    text: string,
+    likeCount: number,
+    poepleThatLiked: UserData[],
+    date: string,
+    timestamp: Timestamp,
+    hashtags: string[],
+    img?: string,
+    fileType?: string,
+    YTLink?: string
+  ) => {
+    // const userRef = doc(db, "Users", `${currentlyLoggedInUser.Login}`);
+    try {
+      await setDoc(doc(db, "Posts", `${date}`), {
+        postType: postType,
+        userThatPostedThis: userThatPostedThis,
+        text: text,
+        img: img,
+        fileType: fileType,
+        hashtags: hashtags,
+        YTLink: YTLink,
+        likeCount: likeCount,
+        poepleThatLiked: poepleThatLiked,
+        date: date,
+        timestamp: timestamp,
+      });
+      currentlyLoggedInUser.UserPostsReference?.push(date);
+      await updateDoc(doc(db, "Users", `${currentlyLoggedInUser.Login}`), {
+        UserPosts: currentlyLoggedInUser.UserPostsReference,
+      });
+      forceUpdate((val) => val + 1);
+    } catch (error) {
+      console.log("Error with adding document", error);
+    }
+  };
   const handleChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ): void => {
@@ -46,41 +110,72 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
     setNewPostText(value);
   };
   useEffect(() => {
-    if (userImage === "") {
-      return setImgPrevievSrc(
-        "https://images.pexels.com/photos/3472690/pexels-photo-3472690.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-      );
+    if (userImage === undefined) {
+      return setImgPrevievSrc("");
     }
+    setRawImageBlob(userImage);
     return setImgPrevievSrc(URL.createObjectURL(userImage));
   }, [userImage]);
   useEffect(() => {
     isLinkChoosen ? setPostType("video") : setPostType("photo");
   }, [isLinkChoosen]);
+
   //When User decides to dismiss his current Post we need to reset everything
   const dismissPost = (): void => {
     setNewPostText("");
     setImgPrevievSrc("");
-    setUserImage("");
+    setUserImage(undefined);
     setShowModal(false);
     setYTLink("");
     setIfLinkIsChoosen(false);
     setAddPostIconClicked(false);
+    setRawImageBlob(undefined);
+    setPostLoading(false);
+    setImgLock(false);
   };
   //We need to set Post Type and Add Post To DataBase
-  const handlePost = (): void => {
-    PostDataBase.push({
-      postType: postType,
-      userThatPostedThis: currentlyLoggedInUser,
-      YTLink: YTLink || "",
-      text: newPostText,
-      img: imgPrevievSrc,
-      likeCount: 0,
-      poepleThatLiked: [],
-      date: new Date().toLocaleTimeString().replace(",", ""),
+  const handlePost = async () => {
+    setImgLock(true);
+    setPostLoading(true);
+    const postDate: string = new Date().toLocaleString();
+    const countRef = doc(db, "Posts", "count");
+    let imageUrl: string = "";
+    let fileType: string = "";
+    if (rawImageBlob !== undefined) {
+      await uploadUserImageToStorageBucket(postDate, rawImageBlob);
+      await downloadImageIfPostHasOne(postDate).then((item) => {
+        imageUrl = item;
+      });
+    }
+    const hashtagArray: string[] = checkIfTextHaveHashtags(newPostText);
+    const loweredCaseHashtagArray: string[] = hashtagArray.map((item) => {
+      return item.toLowerCase();
     });
-    setDataBaseOfPosts({ ...dataBaseOfPosts });
-    console.log(PostDataBase, dataBaseOfPosts);
-    savePostsInLocalStorage();
+    const uniqueHashtagArray = uniq(loweredCaseHashtagArray);
+    checkFileType(rawImageBlob)
+      ? (fileType = "image")
+      : (fileType = "uservideo");
+    addNewPostIntoDataBase(
+      postType,
+      currentlyLoggedInUser,
+      newPostText,
+      0,
+      [currentlyLoggedInUser],
+      postDate,
+      Timestamp.fromDate(new Date()),
+      uniqueHashtagArray,
+      imageUrl,
+      fileType,
+      YTLink
+    );
+    const countDoc = await getDoc(countRef);
+    if (countDoc.exists()) {
+      const countVal = countDoc.data().count + 1;
+      await updateDoc(countRef, {
+        count: countVal,
+      });
+      setCount(countVal);
+    }
     dismissPost();
   };
   return (
@@ -91,8 +186,9 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
             <Col xs={6} className="NewPostBody">
               <TextareAutosize
                 maxRows={2}
-                autoFocus
-                maxLength={100}
+                autoFocus={true}
+                style={{ display: "inline" }}
+                maxLength={200}
                 onChange={handleChange}
                 value={newPostText}
                 name="Text"
@@ -127,9 +223,10 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
               </Col>
             )}
           </Row>
-          <Row>
-            <Col className="WrapperForPreviewButton">
-              {(YTLink !== "" || userImage !== "") && (
+          {(YTLink !== "" || userImage !== undefined) && (
+            <div className="CssButtonContainer">
+              <hr />
+              <div className="wrapperForPrevievButton">
                 <button
                   onClick={() => {
                     //TODO Tutaj dodac sprawdzanie czy jest link wybrany i wtedy podjac odpowiednia akcje
@@ -145,9 +242,9 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
                 >
                   See your Own Post
                 </button>
-              )}
-            </Col>
-          </Row>
+              </div>
+            </div>
+          )}
         </Container>
       ) : (
         <AddPostIcon setAddPostIconClicked={setAddPostIconClicked} />
@@ -157,20 +254,25 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
           <div className="Post">
             <div className="PostUserInfo">
               <img
-                src={
-                  currentlyLoggedInUser.Avatar
-                    ? currentlyLoggedInUser.Avatar
-                    : DefaultUserPhoto
-                }
+                src={currentlyLoggedInUser.Avatar}
+                className="userAvatar"
                 alt="Your Icon"
               />
-              <span>Sodol</span>
+              <span>{currentlyLoggedInUser.Login}</span>
             </div>
             <div className="PostBody">
               <div className="PostText">{newPostText}</div>
               <div className="PostPhoto">
-                {!isLinkChoosen ? (
-                  <img src={imgPrevievSrc} alt="Your Uploaded Mood" />
+                {postLoading ? (
+                  <LoadingRing colorVariant={"black"} />
+                ) : !isLinkChoosen ? (
+                  <div className="userImageContainer">
+                    {checkFileType(rawImageBlob) ? (
+                      <img src={imgPrevievSrc} alt="Your Uploaded Mood" />
+                    ) : (
+                      <video controls src={imgPrevievSrc} />
+                    )}
+                  </div>
                 ) : (
                   <iframe
                     src={getLinkId(YTLink || "")}
@@ -181,14 +283,29 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
                   ></iframe>
                 )}
               </div>
-            </div>
-            <div className="PostFooter">
-              <img src={heart} alt="Place where you love someone post" />
+              <span className="LikesAndComments">
+                <img src={heartLiked} alt="Place where you love someone post" />
+                {match && "Hearts"} {1}
+                <img
+                  src={commentSVG}
+                  alt="Place where you can comment someone poost"
+                />
+                {match && "Comments"} {0}
+              </span>
             </div>
           </div>
         </ModalBody>
         <Modal.Footer>
-          <Button variant="primary" onClick={handlePost}>
+          <Button
+            variant="primary"
+            onClick={
+              !imglock
+                ? handlePost
+                : () => {
+                    return console.log("Blokada");
+                  }
+            }
+          >
             Post
           </Button>
           <Button variant="secondary" onClick={dismissPost}>
@@ -209,4 +326,19 @@ export const CreatePost: React.FC<CreatePostInterface> = (props) => {
       </div>
     </>
   );
+};
+const checkFileType = (rawImageBlob: File | Blob | undefined) => {
+  let returnVal: boolean = true;
+  switch (rawImageBlob?.type) {
+    case "image/png":
+    case "image/jpg":
+    case "image/gif":
+      break;
+    case "video/mp4":
+    case "video/ogg":
+    case "video/webm":
+      returnVal = false;
+      break;
+  }
+  return returnVal;
 };

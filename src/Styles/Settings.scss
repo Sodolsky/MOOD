@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;400&display=swap");
+@mixin FlexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin BoxShadow {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.logOutButtonContainer {
+  @include FlexCenter();
+  margin: 1rem;
+  .logOutButton {
+    @include BoxShadow();
+    @include FlexCenter();
+    cursor: pointer;
+    background-color: #fefefe;
+    color: #2f2f2f;
+    border: 2px #2f2f2f solid;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-bottom: 0.25rem;
+    width: 80%;
+  }
+}
+.contain {
+  height: fit-content;
+  button {
+    width: fit-content;
+    border: 0.1rem black solid;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      62deg,
+      rgb(21, 213, 235) 0%,
+      rgb(255, 0, 191) 100%
+    );
+    color: white;
+  }
+  display: flex;
+  justify-content: center;
+  .styleContainer {
+    @include BoxShadow();
+    padding: 1rem;
+    width: 40%;
+    border: 2px solid #2f2f2f;
+    background-color: #fefefe;
+    border-radius: 0.5rem;
+    .changeAvatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      img {
+        max-width: 100%;
+        aspect-ratio: 16/9;
+        margin: 0.5rem;
+      }
+      h4 {
+        font-weight: bold;
+      }
+    }
+  }
+  h4 {
+    font-weight: bold;
+    text-align: center;
+    margin: 0.1rem;
+  }
+  .centerFlex {
+    margin: 1rem;
+    @include FlexCenter();
+    textarea {
+      border-radius: 0.5rem;
+      resize: none;
+      font-family: "Source Code Pro", monospace;
+    }
+    span {
+      width: fit-content;
+      font-family: "Source Code Pro", monospace;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+    }
+  }
+  .ChangeDescriptionButton {
+    @include FlexCenter();
+  }
+}
+@media (max-width: 1080px) {
+  .contain {
+    .styleContainer {
+      width: 80%;
+    }
+  }
+}

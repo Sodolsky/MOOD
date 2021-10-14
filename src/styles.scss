@@ -1,16 +1,24 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import url("https://fonts.googleapis.com/css2?family=Hahmlet:wght@100&display=swap");
+@import "~antd/dist/antd.css";
 body {
   background-color: #fafafa;
   font-family: "Hahmlet", serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(
-    132deg,
-    rgb(0, 48, 143) 0%,
-    rgb(0, 255, 255) 100%
-  );
-  background-size: 200% 200%;
+  // background: #8e2de2; /* fallback for old browsers */
+  // background: -webkit-linear-gradient(
+  //   to right,
+  //   #8e2de2,
+  //   #4a00e0
+  // ); /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(
+  //   to right,
+  //   #8e2de2,
+  //   #4a00e0
+  // ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   height: 100vh;
+  background-color: #2f2f2f;
+  width: 100%;
   background-repeat: repeat;
 }

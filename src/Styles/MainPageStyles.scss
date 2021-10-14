@@ -1,10 +1,14 @@
 $white: #fefefe;
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;400&display=swap");
+//TODO On small screen Post Text is getting out of frame
 @mixin FlexCenter {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 @mixin PostButton {
+  margin: 0.5rem;
   border: 0.1rem black solid;
   font-weight: bold;
   border-radius: 0.5rem;
@@ -14,6 +18,13 @@ $white: #fefefe;
     rgb(255, 0, 191) 100%
   );
   color: white;
+  &:disabled {
+    background: linear-gradient(62deg, hsl(0, 0%, 40%) 0%, hsl(0, 0%, 60%));
+  }
+}
+@mixin SemiCirleBG {
+  background-color: #f0f2f5;
+  border-radius: 1rem;
 }
 @mixin Link {
   cursor: pointer;
@@ -23,20 +34,42 @@ $white: #fefefe;
 }
 @mixin PostSchema {
   .Post {
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-template-rows: 0.5fr 2fr 0.5fr;
-    width: 100%;
-    height: 100%;
-    .PostUserInfo {
+    @media (max-width: 700px) {
+      font-size: 1rem;
+    }
+    font-family: "Source Code Pro", monospace;
+    font-weight: 600;
+    // display: grid;
+    // grid-auto-columns: minmax(0, 1fr);
+    // grid-template-rows: 0.5fr 2fr 0.5fr;
+    strong {
       @include FlexCenter();
       padding-bottom: 0.5rem;
-      padding-top: 0.5rem;
+    }
+    .PostUserInfo {
+      @include FlexCenter();
+      flex-wrap: wrap;
+      padding: 0.75rem;
       border-bottom: 1px black solid;
+      flex-direction: row;
+      font-size: 1.5rem;
+      max-width: 100%;
+      .flexColumnWrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       img {
-        width: 2rem;
-        height: auto;
-        margin-right: 1rem;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+      .userAvatar {
+        max-width: 3.5rem;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+          rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+          rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        // border: 2px solid black;
       }
       grid-area: 1 / 1 / 2 / 2;
     }
@@ -46,19 +79,32 @@ $white: #fefefe;
       flex-direction: column;
       align-items: center;
       .PostText {
-        padding-top: 0.5rem;
+        text-align: center;
+        padding: 1rem;
+        overflow-wrap: break-word;
+        max-width: 100%;
+      }
+      span {
+        font-size: 125%;
         font-weight: bold;
       }
       .PostPhoto {
         @include FlexCenter();
         padding: 0.5rem;
-        padding-bottom: 1rem;
         flex-grow: 3;
         width: 80%;
-        img {
-          width: 100%;
-          height: auto;
-          aspect-ratio: 16/9;
+        .userImageContainer {
+          max-width: 100%;
+          img {
+            max-width: 100%;
+            height: auto;
+            min-height: 300px;
+          }
+          video {
+            aspect-ratio: 16/9;
+            max-width: 100%;
+            height: auto;
+          }
         }
         iframe {
           width: 100%;
@@ -66,25 +112,99 @@ $white: #fefefe;
           aspect-ratio: 16/9;
         }
       }
+      .LikesAndComments {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin: 0.5rem;
+        margin-bottom: 1rem;
+        .AnimationForLikeClass {
+          animation-name: AnimationForLike;
+          animation-duration: 1.5s;
+          animation-iteration-count: 1;
+        }
+        img {
+          position: relative;
+          cursor: pointer;
+          width: clamp(6%, 35px, 14%);
+          height: auto;
+        }
+      }
     }
     .PostFooter {
       grid-area: 3 / 1 / 4 / 2;
-      @include FlexCenter();
-      padding-top: 0.5rem;
+      display: flex;
+      height: 100%;
+      align-items: center;
+      flex-direction: column;
+      // padding-top: 0.5rem;
       border-top: 1px black solid;
-      img {
-        cursor: pointer;
-        width: 8%;
-        height: auto;
+      position: relative;
+      // min-height: 180px;
+      .CommentList {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        gap: 0.5rem;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+      .TopComment {
+        // border: 1px gold solid;
+        p {
+          width: 90%;
+          @include SemiCirleBG();
+          padding: 0.75rem;
+          text-align: center;
+        }
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        .ant-comment {
+          margin: 0.5rem 1rem 0.5rem 1rem;
+        }
+      }
+      .addComment {
+        width: fit-content;
+        @include SemiCirleBG();
+        width: 85%;
+        input {
+          width: 80%;
+          margin: 0 0.75rem;
+          border-radius: 0.5rem;
+        }
+        button {
+          @include PostButton();
+          margin-right: 0.75rem;
+          width: 3rem;
+        }
+        margin: 0.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
+    .PostFooterModal {
+      @extend .PostFooter;
+      min-height: 0;
+    }
+  }
+}
+
+@keyframes AnimationForLike {
+  from {
+    transform: scale(0.5) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
   }
 }
 .MainContentGrid {
   position: absolute;
   top: 10vh;
   display: grid;
-  grid-auto-columns: 1fr;
+  grid-auto-columns: minmax(0, 1fr);
   grid-template-rows: 0.15fr 0.4fr 2.2fr;
   gap: 0px 0px;
   width: 100%;
@@ -94,7 +214,7 @@ $white: #fefefe;
   grid-area: 1 / 1 / 2 / 2;
   position: relative;
   width: 100%;
-  background-color: #fefefe;
+  background-color: hsl(0, 0%, 100%);
   button {
     border: none;
     background-color: inherit;
@@ -104,71 +224,75 @@ $white: #fefefe;
     img {
       width: 100%;
       height: auto;
+      transition: border 0.1s;
     }
   }
 }
+.flexWrapForComment {
+  @include FlexCenter();
+  align-items: center;
+  svg {
+    margin-right: 0.25rem;
+  }
+}
+.ant-comment-actions {
+  margin-top: 0 !important;
+}
+.ant-comment-inner {
+  max-width: 100% !important;
+}
 .InvalidLinkAlert {
   position: fixed;
-  bottom: 0vh;
+  top: 0vh;
   width: 100vw;
 }
-.modal-body {
+.modal-content {
   @include PostSchema();
 }
 .createPost {
+  font-family: "Source Code Pro", monospace;
+  position: relative;
   width: 80vw;
-  height: 10vh;
   margin-top: 1rem;
+  margin-bottom: 2rem;
   background-color: $white;
   box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.5);
   grid-area: 2 / 1 / 3 / 2;
   border-radius: 0.5rem;
   .NewPostBody {
-    height: 10vh;
     padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    textarea {
+      resize: none;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 0.5rem;
+    }
   }
-  textarea {
-    font-weight: 600;
-    width: 100%;
-    height: 10vh;
-    border: none;
-    font-size: 1rem;
-    resize: none;
-  }
+
   .UrlUploader {
     @include Link();
   }
   .PictureAndSubmit {
     @include FlexCenter();
     img {
-      height: 5vh;
       margin: 0.5rem;
       cursor: pointer;
+      height: 3ch;
     }
     .Picture {
+      @include FlexCenter();
       font-size: 1.5rem;
       font-weight: bold;
       input[type="text"] {
         width: 100%;
         border-radius: 0.5rem;
         font-size: 1rem;
-        height: 6vh;
       }
       #file-input {
         display: none;
-      }
-    }
-    .PrevievPicture {
-      height: 8vh;
-      width: 8vw;
-      img {
-        border: 3px solid black;
-        margin-left: 2rem;
-        height: 100%;
-        width: 100%;
       }
     }
   }
@@ -183,7 +307,7 @@ $white: #fefefe;
   display: flex;
   flex-direction: column;
   align-items: center;
-  li {
+  .ListWrapper {
     margin-bottom: 0.75rem;
     width: 40%;
     @include PostSchema();
@@ -194,10 +318,16 @@ $white: #fefefe;
     }
   }
 }
-.WrapperForPreviewButton {
-  @include FlexCenter();
-  .PrevievInModal {
-    @include PostButton();
+.CssButtonContainer {
+  hr {
+    width: 100%;
+    margin: 0.25rem;
+  }
+  .wrapperForPrevievButton {
+    @include FlexCenter();
+    .PrevievInModal {
+      @include PostButton();
+    }
   }
 }
 @media (max-width: 1080px) {
@@ -205,7 +335,7 @@ $white: #fefefe;
     text-align: center;
   }
   .divList {
-    li {
+    .ListWrapper {
       width: 80%;
     }
   }
@@ -216,6 +346,18 @@ $white: #fefefe;
       margin-left: 0.5rem;
       height: 100%;
       width: 200%;
+    }
+  }
+}
+@media (max-width: 700px) {
+  .divList {
+    .ListWrapper {
+      .Post {
+        font-size: 0.75rem;
+        .PostUserInfo {
+          font-size: 1rem;
+        }
+      }
     }
   }
 }

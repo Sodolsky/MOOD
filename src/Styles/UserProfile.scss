@@ -1,0 +1,32 @@
+@mixin FlexCenter {
+  display: flex;
+  justify-content: center;
+}
+.Spin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  h1 {
+    font-size: 4rem;
+    color: white;
+    font-weight: bold;
+  }
+  img {
+    width: 15vw;
+    animation: Rotate infinite 1s ease-out;
+  }
+  @keyframes Rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+.LoaderBox {
+  @include FlexCenter();
+  align-items: center;
+}

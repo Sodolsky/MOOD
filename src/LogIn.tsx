@@ -6,14 +6,16 @@ import { useContext } from "react";
 import { userLogInContext } from ".";
 import { SignUp } from "./SignUp";
 import { UserAlert } from "./Alert";
-import { UserData, DataBaseContext } from ".";
+import { UserData } from ".";
+import { db } from "./firebase";
+import { doc, getDoc } from "@firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
 export interface LogInProps {
   currentlyLoggedInUser: UserData;
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
 export const LogIn: React.FC<LogInProps> = (props) => {
   const { setCurrentlyLoggedInUser } = props;
-  const DataBase = useContext(DataBaseContext);
   const userLogObject = useContext(userLogInContext);
   const { setIfUserIsLoggedIn } = userLogObject;
   const [show, setShow] = useState<boolean>(false);
@@ -24,7 +26,47 @@ export const LogIn: React.FC<LogInProps> = (props) => {
     Login: "",
     Password: "",
   });
-  // console.table(DataBase);
+  const userExistInDataBase = async (
+    key: string | undefined,
+    userPassword: string | undefined
+  ) => {
+    const ref = doc(db, "Users", `${key}`);
+    // Everytime we update a userData we set it as a currentUser For sake of React Updating UI and not doing milion read operations.
+    onSnapshot(ref, (item) => {
+      if (item.exists()) {
+        const obj = item.data();
+        setCurrentlyLoggedInUser({
+          Login: obj.Login,
+          Password: obj.Password,
+          Email: obj.Email,
+          UserPostsReference: obj.UserPosts,
+          Avatar: obj.Avatar,
+          Description: obj.Description,
+        });
+      }
+    });
+    // I think this code is redundant but im not sure gonna leave it for now.
+    const docSnap = await getDoc(ref);
+    if (docSnap.exists()) {
+      const obj = docSnap.data();
+      if (userPassword !== obj.Password) {
+        return showUserAnError("danger", "Invalid Password", true);
+      }
+      // Every Property on User Object starts with Capital Letter
+      setCurrentlyLoggedInUser({
+        Login: obj.Login,
+        Password: obj.Password,
+        Email: obj.Email,
+        UserPostsReference: obj.UserPosts,
+        Avatar: obj.Avatar,
+        Description: obj.Description,
+      });
+      setIfUserIsLoggedIn(true);
+      return;
+    } else {
+      return showUserAnError("danger", "Invalid Login", true);
+    }
+  };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = event.target.value;
     const name = event.target.name;
@@ -51,17 +93,7 @@ export const LogIn: React.FC<LogInProps> = (props) => {
         true
       );
     }
-    let isUserAccountInDataBase: boolean = false;
-    for (const item of DataBase) {
-      const { Login, Password }: UserData = item;
-      if (userData.Login === Login && userData.Password === Password) {
-        isUserAccountInDataBase = true;
-        setCurrentlyLoggedInUser(item);
-        setIfUserIsLoggedIn(true);
-      }
-    }
-    !isUserAccountInDataBase &&
-      showUserAnError("danger", "Invalid Login or Password", true);
+    userExistInDataBase(userData.Login, userData.Password);
   };
   if (!isUserSigningUp) {
     return (
@@ -131,18 +163,15 @@ export const LogIn: React.FC<LogInProps> = (props) => {
   }
   return (
     <>
-      <DataBaseContext.Provider value={DataBase}>
-        <UserAlert
-          props={{ show, setShow }}
-          message={message}
-          variant={alertVariant}
-        />
-        <SignUp
-          Values={{ DataBase }}
-          setIfUserIsSigningUp={setIfUserIsSigningUp}
-          showError={showUserAnError}
-        />
-      </DataBaseContext.Provider>
+      <UserAlert
+        props={{ show, setShow }}
+        message={message}
+        variant={alertVariant}
+      />
+      <SignUp
+        setIfUserIsSigningUp={setIfUserIsSigningUp}
+        showError={showUserAnError}
+      />
     </>
   );
 };

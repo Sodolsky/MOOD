@@ -1,21 +1,70 @@
 import * as React from "react";
-import { UserData, saveDataBaseInLocalStorage } from ".";
+import { UserData } from ".";
 import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
+import { db } from "./firebase";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+} from "@firebase/firestore";
+import { collection } from "firebase/firestore";
+import { PostPropsInteface } from "./Post";
 interface SignUpProps {
-  Values: {
-    DataBase: UserData[];
-  };
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
   showError: (variant: string, message: string, isshown: boolean) => void;
 }
+const addNewAccountIntoDataBase = async (
+  Login: string | undefined,
+  Password: string | undefined,
+  Email: string | undefined,
+  UserPosts: PostPropsInteface[],
+  Avatar: File | string,
+  Description: string | undefined
+) => {
+  try {
+    await setDoc(doc(db, "Users", `${Login}`), {
+      Login: Login,
+      Password: Password,
+      Email: Email,
+      UserPosts: UserPosts,
+      Avatar: Avatar,
+      Description: Description,
+    });
+  } catch (error) {}
+};
 export const validateEmail = (email: string | undefined) => {
   const reg =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return reg.test(String(email).toLowerCase());
 };
 export const SignUp: React.FC<SignUpProps> = (props) => {
-  const { DataBase } = props.Values;
+  const validateUserInDataBase = async (
+    key: string | undefined,
+    userEmail: string | undefined
+  ) => {
+    const referenceInDataBase = doc(db, "Users", `${key}`);
+    const documentSnapshot = await getDoc(referenceInDataBase);
+    const emailRef = collection(db, "Users");
+    const queryforEmail = query(emailRef, where("Email", "!=", ""));
+    const querySnapshot = await getDocs(queryforEmail);
+    const emailsArray: string[] = [];
+    querySnapshot.forEach((item) => emailsArray.push(item.data().Email));
+    for (const i of emailsArray) {
+      if (i === userEmail) {
+        return props.showError("danger", "Your Email Was Already Taken", true);
+      }
+    }
+    if (documentSnapshot.exists()) {
+      props.showError("danger", "Your Login Was Already Taken", true);
+      return false;
+    } else {
+      return true;
+    }
+  };
   const [registerData, setRegisterData] = useState<UserData>({
     Login: "",
     Password: "",
@@ -52,18 +101,28 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
         true
       );
     }
-    for (const item of DataBase) {
-      if (registerData.Login === item.Login) {
-        return props.showError("danger", "Your Login was already taken", true);
+    validateUserInDataBase(registerData.Login, registerData.Email).then(
+      (message) => {
+        if (!message) {
+          return;
+        } else {
+          props.showError(
+            "success",
+            "Sucess! Your account has been created!",
+            true
+          );
+          addNewAccountIntoDataBase(
+            registerData.Login,
+            registerData.Password,
+            registerData.Email,
+            [],
+            `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
+            `Hello my name is ${registerData.Login} i'm using MOOD App 😎`
+          );
+          props.setIfUserIsSigningUp(false);
+        }
       }
-      if (registerData.Email === item.Email) {
-        return props.showError("danger", "Your Email was already taken", true);
-      }
-    }
-    props.showError("success", "Sucess! Your account has been created!", true);
-    DataBase.push(registerData);
-    saveDataBaseInLocalStorage();
-    props.setIfUserIsSigningUp(false);
+    );
   };
   return (
     <main>
