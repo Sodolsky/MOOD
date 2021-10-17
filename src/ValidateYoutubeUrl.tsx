@@ -22,7 +22,8 @@ export const getLinkId = (url: string): string => {
 };
 const Matchlink = (url: string): RegExpMatchArray | null => {
   const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*)(?:(\?t|&start)=(\d+))?.*/;
+    // eslint-disable-next-line
+    /^.*?(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)(?:(\?t|&start)=(\d+))?.*/;
   const match = url.match(regExp);
   return match;
 };

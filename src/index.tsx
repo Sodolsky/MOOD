@@ -24,7 +24,7 @@ export const userLogInContext = createContext<LogInInterface>({
 export const currentlyLoggedInUserContext = createContext<UserData>({
   Login: "",
   Password: "",
-  UserPostsReference: [],
+  UserPosts: [],
 });
 type setCurrentlyLoggedInUserType = React.Dispatch<
   React.SetStateAction<UserData>
@@ -36,7 +36,7 @@ export interface UserData {
   Password: string | undefined;
   Email?: string | undefined;
   Avatar?: string | undefined;
-  UserPostsReference?: string[] | undefined;
+  UserPosts?: string[] | undefined;
   Description?: string | undefined;
 }
 export interface LogInInterface {

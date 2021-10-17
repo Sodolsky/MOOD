@@ -48,12 +48,14 @@ $white: #fefefe;
     }
     .PostUserInfo {
       @include FlexCenter();
+      align-items: center;
       flex-wrap: wrap;
       padding: 0.75rem;
       border-bottom: 1px black solid;
       flex-direction: row;
-      font-size: 1.5rem;
+      font-size: 1.5vw;
       max-width: 100%;
+      overflow-wrap: break-word;
       .flexColumnWrapper {
         display: flex;
         justify-content: center;
@@ -139,7 +141,6 @@ $white: #fefefe;
       align-items: center;
       flex-direction: column;
       // padding-top: 0.5rem;
-      border-top: 1px black solid;
       position: relative;
       // min-height: 180px;
       .CommentList {

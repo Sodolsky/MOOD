@@ -101,6 +101,15 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
         true
       );
     }
+    if (registerData.Login !== undefined) {
+      if (registerData.Login.length > 16) {
+        return props.showError(
+          "danger",
+          "Your Login cannnot be longer than 16 characters",
+          true
+        );
+      }
+    }
     validateUserInDataBase(registerData.Login, registerData.Email).then(
       (message) => {
         if (!message) {

@@ -1,3 +1,4 @@
+@import "./MainPageStyles.scss";
 @mixin FlexCenter {
   display: flex;
   justify-content: center;
@@ -29,4 +30,131 @@
 .LoaderBox {
   @include FlexCenter();
   align-items: center;
+}
+
+//! Real CSS Starts Here
+.BackGroundLayer {
+  // background-image: url("../img/half-moon.svg");
+  background-color: purple;
+  background-repeat: repeat;
+  height: auto;
+  .UserInfoContainer {
+    display: grid;
+    margin: calc(2vh + 10px) auto 0 auto;
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    // backdrop-filter: blur(2px);
+    // -webkit-backdrop-filter: blur(2px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    grid-template-columns: 0.8fr 1.2fr;
+    grid-auto-rows: auto;
+    gap: 0px 0px;
+    grid-template-areas:
+      "UserImage UserNameAndDescription"
+      "Stats Post";
+    height: auto;
+    max-width: 80vw;
+    @media (min-width: 1024px) {
+      width: 60vw;
+    }
+    @media (max-width: 768px) {
+      grid-template-columns: auto;
+      grid-template-areas:
+        "UserImage"
+        "UserNameAndDescription"
+        "Post"
+        "Stats";
+    }
+    padding: 1rem;
+    .UserImage {
+      @include FlexCenter();
+      align-items: center;
+      grid-area: UserImage;
+      max-width: 100%;
+      padding-bottom: 1rem;
+      img {
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+          rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+          rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        max-width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        max-height: 250px;
+        @media (max-width: 768px) {
+          max-height: 125px;
+        }
+      }
+    }
+    .UserNameAndDescription {
+      word-wrap: break-word;
+      max-width: 100%;
+      padding-bottom: 1rem;
+      @include FlexCenter();
+      flex-wrap: wrap;
+      flex-direction: column;
+      span {
+        min-width: 20%;
+        text-align: center;
+        font-size: 4vw;
+        letter-spacing: 1.5px;
+        font-weight: bold;
+        white-space: pre-wrap;
+        @media (max-width: 768px) {
+          font-size: 6vw;
+        }
+      }
+      div {
+        text-align: center;
+        font-size: 2vw;
+        min-width: 20%;
+        @media (max-width: 768px) {
+          font-size: 4vw;
+        }
+      }
+      grid-area: UserNameAndDescription;
+    }
+    .Stats {
+      grid-area: Stats;
+    }
+    .LatestPost {
+      .biggerText {
+        text-align: center;
+        font-size: 4vw;
+        font-weight: bold;
+        @media (max-width: 768px) {
+          font-size: 6vw;
+        }
+      }
+      grid-area: Post;
+      @include FlexCenter();
+      flex-direction: column;
+      align-items: center;
+      @include PostSchema();
+      .Post {
+        max-width: 100%;
+        background-color: #fefefe;
+        border: 2px black solid;
+        border-radius: 0.5rem;
+        @media (max-width: 768px) {
+          font-size: 0.75rem;
+        }
+        .PostUserInfo {
+          .userDescription {
+            font-size: 1rem;
+          }
+          span {
+            font-size: 1.5vw;
+            @media (max-width: 768px) {
+              font-size: 1rem;
+            }
+          }
+        }
+      }
+      padding: 0.5rem;
+    }
+  }
+}
+.ant-comment-content-detail {
+  font-size: 0.75rem;
 }

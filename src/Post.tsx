@@ -21,6 +21,9 @@ import moment from "moment";
 import { LikePost } from "./LikePost";
 import { LazyLoadedImage } from "./LLImage";
 import { Link } from "react-router-dom";
+const bottomStyle: React.CSSProperties = {
+  borderTop: "black 1px solid",
+};
 export interface PostPropsInteface {
   postType: string;
   userThatPostedThis: UserData;
@@ -126,6 +129,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
       }
     });
     return () => Unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const currentlyLoggedInUser = useContext(currentlyLoggedInUserContext);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +143,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
           <Tippy
             interactive={true}
             interactiveBorder={20}
-            maxWidth={300}
+            maxWidth={"250"}
             delay={200}
             placement={"top-end"}
             content={
@@ -236,7 +240,10 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             {match && "Comments"} {commentCount}
           </span>
         </div>
-        <div className="PostFooter">
+        <div
+          className="PostFooter"
+          style={commentCount > 0 || addingCommentSelected ? bottomStyle : {}}
+        >
           {!addingCommentSelected ? null : (
             <div className="addComment">
               <input

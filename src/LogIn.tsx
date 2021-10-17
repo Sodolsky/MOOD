@@ -39,7 +39,7 @@ export const LogIn: React.FC<LogInProps> = (props) => {
           Login: obj.Login,
           Password: obj.Password,
           Email: obj.Email,
-          UserPostsReference: obj.UserPosts,
+          UserPosts: obj.UserPosts,
           Avatar: obj.Avatar,
           Description: obj.Description,
         });
@@ -57,7 +57,7 @@ export const LogIn: React.FC<LogInProps> = (props) => {
         Login: obj.Login,
         Password: obj.Password,
         Email: obj.Email,
-        UserPostsReference: obj.UserPosts,
+        UserPosts: obj.UserPosts,
         Avatar: obj.Avatar,
         Description: obj.Description,
       });

@@ -1,10 +1,4 @@
-import React, {
-  createElement,
-  useContext,
-  useRef,
-  // useEffect,
-  useState,
-} from "react";
+import React, { createElement, useContext, useRef, useState } from "react";
 import { Comment, Avatar } from "antd";
 import { CommentInterface } from "./CreatePost";
 import moment from "moment";
@@ -86,29 +80,6 @@ export const CommentComponent: React.FC<CommentInterface> = (props) => {
   ];
   return (
     <>
-      <Tippy
-        interactive={true}
-        interactiveBorder={20}
-        // maxWidth={400}
-        delay={200}
-        placement={"left-end"}
-        content={
-          <div className="tippyContent">
-            <img src={userThatAddedComment.Avatar} alt="Your Icon" />
-            <Link to={`/explore/users/${userThatAddedComment.Login}`}>
-              <span>{userThatAddedComment.Login}</span>
-            </Link>
-            <span className="userDescription">
-              {userThatAddedComment.Description}
-            </span>
-          </div>
-        }
-        allowHTML={true}
-        className="tippyBox"
-        animation={"scale"}
-        appendTo={"parent"}
-        reference={AvatarRef.current}
-      />
       <Comment
         style={{
           backgroundColor: "#f0f2f5",
@@ -119,19 +90,50 @@ export const CommentComponent: React.FC<CommentInterface> = (props) => {
           padding: "0.5rem",
         }}
         actions={actions}
-        author={userThatAddedComment.Login}
+        author={
+          <Link to={`/explore/users/${userThatAddedComment.Login}`}>
+            {userThatAddedComment.Login}
+          </Link>
+        }
         key={`${(userThatAddedComment.Login, parentPostRef)}`}
         avatar={
-          <Avatar
-            ref={AvatarRef}
-            className="CommentAvatar"
-            src={userThatAddedComment.Avatar}
-            alt="User That Commented Avatar"
-          />
+          <Link to={`/explore/users/${userThatAddedComment.Login}`}>
+            <Avatar
+              ref={AvatarRef}
+              className="CommentAvatar"
+              src={userThatAddedComment.Avatar}
+              alt="User That Commented Avatar"
+            />
+          </Link>
         }
         datetime={moment(formatedDate).fromNow()}
         content={content}
       />
+      {/* <Tippy
+        interactive={true}
+        interactiveBorder={20}
+        maxWidth={"fit-content"}
+        delay={200}
+        placement={"left-end"}
+        content={
+          <div className="tippyContent">
+            <div className="PostUserInfo">
+              <img src={userThatAddedComment.Avatar} alt="Your Icon" />
+              <Link to={`/explore/users/${userThatAddedComment.Login}`}>
+                <span>{userThatAddedComment.Login}</span>
+              </Link>
+            </div>
+            <span className="userDescription">
+              {userThatAddedComment.Description}
+            </span>
+          </div>
+        }
+        allowHTML={true}
+        className="tippyBox"
+        animation={"scale"}
+        appendTo={"parent"}
+        reference={AvatarRef}
+      /> */}
     </>
   );
 };

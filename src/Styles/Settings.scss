@@ -92,6 +92,12 @@
     @include FlexCenter();
   }
 }
+.fakeContent {
+  span {
+    min-height: 200px;
+    color: white;
+  }
+}
 @media (max-width: 1080px) {
   .contain {
     .styleContainer {

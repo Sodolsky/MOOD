@@ -102,8 +102,8 @@ export const Settings: React.FC = () => {
     await updateDoc(userRef, {
       Description: message,
     });
-    if (currentlyLoggedInUser.UserPostsReference !== undefined) {
-      currentlyLoggedInUser.UserPostsReference.forEach((item) => {
+    if (currentlyLoggedInUser.UserPosts !== undefined) {
+      currentlyLoggedInUser.UserPosts.forEach((item) => {
         const postRef = doc(db, "Posts", `${item}`);
         updateDoc(postRef, {
           "userThatPostedThis.Description": message,
@@ -129,8 +129,8 @@ export const Settings: React.FC = () => {
       await updateDoc(userRef, {
         Avatar: file,
       });
-      if (currentlyLoggedInUser.UserPostsReference !== undefined) {
-        currentlyLoggedInUser.UserPostsReference.forEach((item) => {
+      if (currentlyLoggedInUser.UserPosts !== undefined) {
+        currentlyLoggedInUser.UserPosts.forEach((item) => {
           const postRef = doc(db, "Posts", `${item}`);
           updateDoc(postRef, {
             "userThatPostedThis.Avatar": file,

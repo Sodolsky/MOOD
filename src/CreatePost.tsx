@@ -94,9 +94,9 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
         date: date,
         timestamp: timestamp,
       });
-      currentlyLoggedInUser.UserPostsReference?.push(date);
+      currentlyLoggedInUser.UserPosts?.push(date);
       await updateDoc(doc(db, "Users", `${currentlyLoggedInUser.Login}`), {
-        UserPosts: currentlyLoggedInUser.UserPostsReference,
+        UserPosts: currentlyLoggedInUser.UserPosts,
       });
       forceUpdate((val) => val + 1);
     } catch (error) {

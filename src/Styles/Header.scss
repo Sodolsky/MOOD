@@ -14,11 +14,11 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2.5rem;
+    font-size: 3rem;
     height: 10vh;
     img {
       height: 2.5rem;
-      margin-left: 1.5%;
+      margin-left: 10px;
       transition: transform 0.5s;
       &:hover {
         transform: rotate(60deg);
