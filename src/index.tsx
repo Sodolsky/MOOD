@@ -36,6 +36,8 @@ export interface UserData {
   Password: string | undefined;
   Email?: string | undefined;
   Avatar?: string | undefined;
+  BackgroundColor?: string | undefined;
+  BackgroundImage?: string | undefined;
   UserPosts?: string[] | undefined;
   Description?: string | undefined;
 }
@@ -116,7 +118,7 @@ export const App: React.FC = () => {
                     <Route path="/tag" exact>
                       <Redirect to="/" />
                     </Route>
-                    <Route path="/tag/:item">
+                    <Route path="/tag/:item" exact>
                       <Redirect to="/" />
                     </Route>
                     <Route path="/explore/users/:user">

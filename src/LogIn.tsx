@@ -34,7 +34,7 @@ export const LogIn: React.FC<LogInProps> = (props) => {
     // Everytime we update a userData we set it as a currentUser For sake of React Updating UI and not doing milion read operations.
     onSnapshot(ref, (item) => {
       if (item.exists()) {
-        const obj = item.data();
+        const obj = item.data() as UserData;
         setCurrentlyLoggedInUser({
           Login: obj.Login,
           Password: obj.Password,
@@ -42,13 +42,15 @@ export const LogIn: React.FC<LogInProps> = (props) => {
           UserPosts: obj.UserPosts,
           Avatar: obj.Avatar,
           Description: obj.Description,
+          BackgroundColor: obj.BackgroundColor,
+          BackgroundImage: obj.BackgroundImage,
         });
       }
     });
     // I think this code is redundant but im not sure gonna leave it for now.
     const docSnap = await getDoc(ref);
     if (docSnap.exists()) {
-      const obj = docSnap.data();
+      const obj = docSnap.data() as UserData;
       if (userPassword !== obj.Password) {
         return showUserAnError("danger", "Invalid Password", true);
       }
@@ -60,6 +62,8 @@ export const LogIn: React.FC<LogInProps> = (props) => {
         UserPosts: obj.UserPosts,
         Avatar: obj.Avatar,
         Description: obj.Description,
+        BackgroundColor: obj.BackgroundColor,
+        BackgroundImage: obj.BackgroundImage,
       });
       setIfUserIsLoggedIn(true);
       return;

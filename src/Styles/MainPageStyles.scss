@@ -249,6 +249,13 @@ $white: #fefefe;
 }
 .modal-content {
   @include PostSchema();
+  .Post {
+    .PostUserInfo {
+      @media (max-width: 700px) {
+        font-size: 1rem;
+      }
+    }
+  }
 }
 .createPost {
   font-family: "Source Code Pro", monospace;

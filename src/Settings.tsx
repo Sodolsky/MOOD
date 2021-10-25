@@ -15,7 +15,7 @@ import { db, storageRef } from "./firebase";
 import { ref } from "@firebase/storage";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import {
-  // collection,
+  collection,
   // collection,
   // deleteField,
   // collection,
@@ -24,7 +24,7 @@ import {
   // collection,
   // deleteDoc,
   doc,
-  // getDocs,
+  getDocs,
   // getDocs,
   // getDocs,
   // Timestamp,
@@ -34,7 +34,7 @@ import {
 } from "firebase/firestore";
 import { LoadingRing } from "./LoadingRing";
 import TextareAutosize from "react-textarea-autosize";
-// import { PostPropsInteface } from "./Post";
+import { PostPropsInteface } from "./Post";
 // import moment from "moment";
 // const addUsersToTheirPosts = async () => {
 //   const allPostsRef = collection(db, "Posts");
@@ -69,18 +69,13 @@ import TextareAutosize from "react-textarea-autosize";
 //   }
 // };
 // const quickQuery = async () => {
-//   const allPostsRef = collection(db, "Posts");
+//   const allPostsRef = collection(db, "Users");
 //   const myDocs = await getDocs(allPostsRef);
 //   myDocs.forEach((item) => {
-//     const obj = item.data() as PostPropsInteface;
-//     if (obj.text !== undefined) {
-//       const matched = obj.text.match(/#[a-z]+/gi);
-//       if (matched) {
-//         updateDoc(item.ref, {
-//           hashtags: matched,
-//         });
-//       }
-//     }
+//     updateDoc(item.ref, {
+//       BackgroundColor: "#2f2f2f",
+//       BackgroundImage: "",
+//     });
 //   });
 // };
 export const Settings: React.FC = () => {

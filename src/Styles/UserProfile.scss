@@ -33,12 +33,28 @@
 }
 
 //! Real CSS Starts Here
+.dim {
+  filter: brightness(80%);
+  :hover {
+    filter: none;
+  }
+}
+.normalize {
+  filter: brightness(100%) !important;
+}
+.CoverEntireBackground {
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
 .BackGroundLayer {
   // background-image: url("../img/half-moon.svg");
   background-color: purple;
   background-repeat: repeat;
+  background-position: center;
+  // background-size: cover;
   height: auto;
   .UserInfoContainer {
+    position: relative;
     display: grid;
     margin: calc(2vh + 10px) auto 0 auto;
     background: rgba(255, 255, 255, 0.4);
@@ -96,7 +112,7 @@
       span {
         min-width: 20%;
         text-align: center;
-        font-size: 4vw;
+        font-size: 3vw;
         letter-spacing: 1.5px;
         font-weight: bold;
         white-space: pre-wrap;
@@ -106,7 +122,7 @@
       }
       div {
         text-align: center;
-        font-size: 2vw;
+        font-size: 1.5vw;
         min-width: 20%;
         @media (max-width: 768px) {
           font-size: 4vw;
@@ -120,7 +136,7 @@
     .LatestPost {
       .biggerText {
         text-align: center;
-        font-size: 4vw;
+        font-size: 3vw;
         font-weight: bold;
         @media (max-width: 768px) {
           font-size: 6vw;
@@ -153,6 +169,52 @@
       }
       padding: 0.5rem;
     }
+  }
+}
+.changeProfile {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  transition: transform 0.5s;
+  img {
+    width: 40px;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+  }
+  &:hover {
+    transform: rotate(-60deg);
+  }
+}
+.ChangeColorContainer {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  z-index: 999;
+  input {
+    width: 40px;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    margin: 10px 0;
+  }
+}
+.AcceptOrDiscardChanges {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 15px;
+  top: 15px;
+  img {
+    cursor: pointer;
+    margin: 0 10px;
+    @media (max-width: 700px) {
+      flex-direction: column;
+      margin: 10px 0;
+    }
+  }
+  @media (max-width: 700px) {
+    flex-direction: column;
+    margin: 10px 0;
   }
 }
 .ant-comment-content-detail {

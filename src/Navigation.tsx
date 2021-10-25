@@ -3,9 +3,12 @@ import { Container, Navbar } from "react-bootstrap";
 import Home from "./img/home.svg";
 import Explore from "./img/explore.svg";
 import Settings from "./img/settings.svg";
+import UserProfileIcon from "./img/userprofile.png";
 import { Link, useLocation } from "react-router-dom";
+import { currentlyLoggedInUserContext } from ".";
 export const Navigation: React.FC = () => {
   const location = useLocation();
+  const currentlyLoggedInUser = React.useContext(currentlyLoggedInUserContext);
   const splited = location.pathname.split("/");
   return (
     <>
@@ -33,7 +36,26 @@ export const Navigation: React.FC = () => {
                   style={{
                     paddingBottom: "0.25rem",
                     borderBottom:
-                      splited[1] === "explore" ? "3px solid purple" : 0,
+                      splited[1] === "explore" &&
+                      splited[3] !== currentlyLoggedInUser.Login
+                        ? "3px solid purple"
+                        : 0,
+                  }}
+                />
+              </Link>
+            </button>
+            <button>
+              <Link to={`/explore/users/${currentlyLoggedInUser.Login}`}>
+                <img
+                  src={UserProfileIcon}
+                  alt="Your Profile"
+                  style={{
+                    paddingBottom: "0.25rem",
+                    borderBottom:
+                      splited[1] === "explore" &&
+                      splited[3] === currentlyLoggedInUser.Login
+                        ? "3px solid purple"
+                        : 0,
                   }}
                 />
               </Link>

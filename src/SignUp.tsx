@@ -23,7 +23,9 @@ const addNewAccountIntoDataBase = async (
   Email: string | undefined,
   UserPosts: PostPropsInteface[],
   Avatar: File | string,
-  Description: string | undefined
+  Description: string | undefined,
+  BackgroundColor: string,
+  BackgroundImage: string
 ) => {
   try {
     await setDoc(doc(db, "Users", `${Login}`), {
@@ -33,8 +35,12 @@ const addNewAccountIntoDataBase = async (
       UserPosts: UserPosts,
       Avatar: Avatar,
       Description: Description,
+      BackgroundColor: BackgroundColor,
+      BackgroundImage: BackgroundImage,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 export const validateEmail = (email: string | undefined) => {
   const reg =
@@ -126,7 +132,9 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
             registerData.Email,
             [],
             `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
-            `Hello my name is ${registerData.Login} i'm using MOOD App 😎`
+            `Hello my name is ${registerData.Login} i'm using MOOD App 😎`,
+            "2f2f2f",
+            ""
           );
           props.setIfUserIsSigningUp(false);
         }
