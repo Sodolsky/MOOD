@@ -8,11 +8,17 @@ import commentSVG from "./img/Comment.svg";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { getRandomInt } from "./likeFunctions";
 import { getDownloadURL, ref } from "firebase/storage";
 import { db, storageRef } from "./firebase";
-import { addDoc, collection, onSnapshot } from "@firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "@firebase/firestore";
 import Tippy from "@tippyjs/react";
 import { useMediaQuery } from "@react-hook/media-query";
 import { CommentInterface } from "./CreatePost";
@@ -52,13 +58,24 @@ export const addCommentToDataBase = async (
   userThatAddedComment: UserData
 ) => {
   const postRef = collection(db, "Posts", `${key}`, "comments");
+  const userRef = doc(db, "Users", `${userThatAddedComment.Login}`);
   const newCommentObj: CommentInterface = {
     userThatAddedComment: userThatAddedComment,
     content: text,
     date: date,
     usersThatLikedThisComment: [],
   };
-  await addDoc(postRef, newCommentObj);
+  const userData = await getDoc(userRef);
+  const userDataObject = userData.data() as UserData;
+  const commentsRefArray = userDataObject.commentsRef;
+  await addDoc(postRef, newCommentObj).then(async (doc) => {
+    if (commentsRefArray) {
+      commentsRefArray.push(doc.path);
+      await updateDoc(userData.ref, {
+        commentsRef: commentsRefArray,
+      });
+    }
+  });
 };
 export const Post: React.FC<PostPropsInteface> = (props) => {
   const match = useMediaQuery("only screen and (min-width:450px");
@@ -82,6 +99,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
   const [commentCount, setCommentCount] = useState<number>(0);
   const [addingCommentSelected, setIfAddingCommentIsSelected] =
     useState<boolean>(false);
+  const firstRender = React.useRef<boolean>(true);
   // Here we are fetching the comments data and setting up top comment
   useEffect(() => {
     const refForComments = collection(db, "Posts", `${date}`, "comments");
@@ -97,33 +115,36 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
         });
         setAllComments(arrayForSave);
         setCommentCount(arrayForSave.length);
-        if (arrayForSave.length === 0) {
-          return;
-        }
-        if (arrayForSave.length === 1) {
-          setTopComment(arrayForSave[0]);
-        } else {
-          // We need to find the highest amount of likes in comments array
-          arrayForSave.sort((a: CommentInterface, b: CommentInterface) => {
-            return (
-              b.usersThatLikedThisComment.length -
-              a.usersThatLikedThisComment.length
-            );
-          });
-          //Then we need to estimate if there are more comments that have the same amount of likes
-          const numberOfHighestLikeComments = arrayForSave.filter((item) => {
-            return (
-              item.usersThatLikedThisComment.length ===
-              arrayForSave[0].usersThatLikedThisComment.length
-            );
-          }).length;
-          //If there is only one comment with high amount of likes we set it as a topComment
-          if (numberOfHighestLikeComments === 1) {
+        if (firstRender.current) {
+          firstRender.current = false;
+          if (arrayForSave.length === 0) {
+            return;
+          }
+          if (arrayForSave.length === 1) {
             setTopComment(arrayForSave[0]);
           } else {
-            //If not we randomise the top comment from highest amount of like comments
-            const rand = getRandomInt(0, numberOfHighestLikeComments);
-            setTopComment(arrayForSave[rand]);
+            // We need to find the highest amount of likes in comments array
+            arrayForSave.sort((a: CommentInterface, b: CommentInterface) => {
+              return (
+                b.usersThatLikedThisComment.length -
+                a.usersThatLikedThisComment.length
+              );
+            });
+            //Then we need to estimate if there are more comments that have the same amount of likes
+            const numberOfHighestLikeComments = arrayForSave.filter((item) => {
+              return (
+                item.usersThatLikedThisComment.length ===
+                arrayForSave[0].usersThatLikedThisComment.length
+              );
+            }).length;
+            //If there is only one comment with high amount of likes we set it as a topComment
+            if (numberOfHighestLikeComments === 1) {
+              setTopComment(arrayForSave[0]);
+            } else {
+              //If not we randomise the top comment from highest amount of like comments
+              const rand = getRandomInt(0, numberOfHighestLikeComments);
+              setTopComment(arrayForSave[rand]);
+            }
           }
         }
       }
@@ -148,7 +169,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             placement={"top-end"}
             content={
               <div className="tippyContent">
-                <div className="PostUserInfo">
+                <div className="PostUserInfo ">
                   <img src={userThatPostedThis.Avatar} alt="Your Icon" />
                   <Link to={`/explore/users/${userThatPostedThis.Login}`}>
                     <span>{userThatPostedThis.Login}</span>
@@ -281,7 +302,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
                       usersThatLikedThisComment={
                         topComment.usersThatLikedThisComment
                       }
-                      parentPostRef={parentDate}
+                      parentPostRef={date}
                       id={topComment.id}
                     />
                   </>
@@ -292,12 +313,12 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               <div className="CommentList">
                 {allComments
                   .sort((a: CommentInterface, b: CommentInterface) => {
-                    return +moment(a.date) - +moment(b.date);
+                    return a.date - b.date;
                   })
                   .map((item) => {
                     return (
                       <CommentComponent
-                        key={`${uuidv4()}`}
+                        key={`${item.date} ${item.userThatAddedComment.Email} ${item.userThatAddedComment.Description}`}
                         content={item.content}
                         date={item.date}
                         userThatAddedComment={item.userThatAddedComment}

@@ -1,0 +1,24 @@
+.RankingContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0.4rem;
+  font-size: 1.25rem;
+  img {
+    left: 0;
+    top: 0;
+    width: 32px;
+    aspect-ratio: 1/1;
+  }
+  .LoginContainer {
+    flex-grow: 4;
+    margin-left: 0.75rem;
+    a {
+      color: black;
+    }
+  }
+  .postCount {
+    font-weight: bold;
+    margin-left: 0.75rem;
+  }
+}

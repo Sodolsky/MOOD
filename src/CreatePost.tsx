@@ -16,10 +16,22 @@ import heartLiked from "./img/heartLiked.svg";
 import { UrlUploader } from "./UrlOploader";
 import { getLinkId, validateYouTubeUrl } from "./ValidateYoutubeUrl";
 import { AddPostIcon } from "./AddPostIcon";
-import { currentlyLoggedInUserContext, UserData } from ".";
+import {
+  allUsersArrayContext,
+  currentlyLoggedInUserContext,
+  UserData,
+  userLogInContext,
+} from ".";
 import { useContext } from "react";
 import { db, storageRef } from "./firebase.js";
-import { doc, getDoc, setDoc, Timestamp, updateDoc } from "@firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  Timestamp,
+  updateDoc,
+} from "@firebase/firestore";
 import { ref, uploadBytes } from "@firebase/storage";
 import { downloadImageIfPostHasOne } from "./Post";
 import { LoadingRing } from "./LoadingRing";
@@ -27,6 +39,10 @@ import commentSVG from "./img/Comment.svg";
 import { useMediaQuery } from "@react-hook/media-query";
 import { checkIfTextHaveHashtags } from "./likeFunctions";
 import { uniq } from "lodash";
+import BackArrow from "./img/backarrow.png";
+import moment from "moment";
+import { Mentions } from "antd";
+import { MentionsProps } from "rc-mentions/lib/Mentions";
 //Key needs to be changed
 const uploadUserImageToStorageBucket = async (
   key: string,
@@ -36,10 +52,6 @@ const uploadUserImageToStorageBucket = async (
   const fileRef = ref(pathRef, `${key}`);
   await uploadBytes(fileRef, img);
 };
-interface CreatePostProps {
-  forceUpdate: React.Dispatch<React.SetStateAction<number>>;
-  setCount: React.Dispatch<React.SetStateAction<number>>;
-}
 export interface CommentInterface {
   userThatAddedComment: UserData;
   content: string;
@@ -48,8 +60,9 @@ export interface CommentInterface {
   id?: string;
   parentPostRef?: string;
 }
-export const CreatePost: React.FC<CreatePostProps> = (props) => {
-  const { forceUpdate, setCount } = props;
+export const CreatePost: React.FC = () => {
+  const { Option } = Mentions;
+  const userLogins = useContext(allUsersArrayContext).sort().slice(10, 20);
   const [addPostIconClicked, setAddPostIconClicked] = useState<boolean>(false);
   const [newPostText, setNewPostText] = useState<string>("");
   const [userImage, setUserImage] = useState<File>();
@@ -98,7 +111,6 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
       await updateDoc(doc(db, "Users", `${currentlyLoggedInUser.Login}`), {
         UserPosts: currentlyLoggedInUser.UserPosts,
       });
-      forceUpdate((val) => val + 1);
     } catch (error) {
       console.log("Error with adding document", error);
     }
@@ -137,7 +149,8 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
   const handlePost = async () => {
     setImgLock(true);
     setPostLoading(true);
-    const postDate: string = new Date().toLocaleString();
+    const format = "DD.MM.YYYY, HH:mm:ss";
+    const postDate: string = moment(new Date()).format(format);
     const countRef = doc(db, "Posts", "count");
     let imageUrl: string = "";
     let fileType: string = "";
@@ -159,7 +172,7 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
       postType,
       currentlyLoggedInUser,
       newPostText,
-      0,
+      1,
       [currentlyLoggedInUser],
       postDate,
       Timestamp.fromDate(new Date()),
@@ -168,14 +181,6 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
       fileType,
       YTLink
     );
-    const countDoc = await getDoc(countRef);
-    if (countDoc.exists()) {
-      const countVal = countDoc.data().count + 1;
-      await updateDoc(countRef, {
-        count: countVal,
-      });
-      setCount(countVal);
-    }
     dismissPost();
   };
   return (
@@ -208,16 +213,26 @@ export const CreatePost: React.FC<CreatePostProps> = (props) => {
                       />
                     </>
                   ) : (
-                    <input
-                      type="text"
-                      placeholder="Paste YT Link"
-                      onChange={(event) =>
-                        setYTLink(
-                          () => (event.target.name = event.target.value)
-                        )
-                      }
-                      value={YTLink}
-                    />
+                    <>
+                      <img
+                        onClick={() => {
+                          setIfLinkIsChoosen(false);
+                        }}
+                        className="BackArrow"
+                        src={BackArrow}
+                        alt="Go back and select Post Type Again"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Paste YT Link"
+                        onChange={(event) =>
+                          setYTLink(
+                            () => (event.target.name = event.target.value)
+                          )
+                        }
+                        value={YTLink}
+                      />
+                    </>
                   )}
                 </div>
               </Col>

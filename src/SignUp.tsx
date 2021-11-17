@@ -1,8 +1,8 @@
 import * as React from "react";
-import { UserData } from ".";
+import { setCurrentlyLoggedInUserContext, UserData } from ".";
 import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import {
   doc,
   setDoc,
@@ -13,8 +13,12 @@ import {
 } from "@firebase/firestore";
 import { collection } from "firebase/firestore";
 import { PostPropsInteface } from "./Post";
+import { userPrefferedPostType } from "./UserProfile";
+import { createUserWithEmailAndPassword, UserCredential } from "@firebase/auth";
+import { FirebaseError } from "@firebase/util";
 interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
+  setIfUserIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   showError: (variant: string, message: string, isshown: boolean) => void;
 }
 const addNewAccountIntoDataBase = async (
@@ -25,7 +29,12 @@ const addNewAccountIntoDataBase = async (
   Avatar: File | string,
   Description: string | undefined,
   BackgroundColor: string,
-  BackgroundImage: string
+  BackgroundImage: string,
+  userPrefferedPost: userPrefferedPostType,
+  UID: string,
+  postCount: number,
+  commentsRef: string[],
+  commentCount: number
 ) => {
   try {
     await setDoc(doc(db, "Users", `${Login}`), {
@@ -37,6 +46,11 @@ const addNewAccountIntoDataBase = async (
       Description: Description,
       BackgroundColor: BackgroundColor,
       BackgroundImage: BackgroundImage,
+      userPrefferedPost: userPrefferedPost,
+      UID: UID,
+      postCount: postCount,
+      commentsRef: commentsRef,
+      commentCount: commentCount,
     });
   } catch (error) {
     console.log(error);
@@ -48,6 +62,10 @@ export const validateEmail = (email: string | undefined) => {
   return reg.test(String(email).toLowerCase());
 };
 export const SignUp: React.FC<SignUpProps> = (props) => {
+  const { setIfUserIsLoggedIn } = props;
+  const setCurrentlyLoggedInUser = React.useContext(
+    setCurrentlyLoggedInUserContext
+  );
   const validateUserInDataBase = async (
     key: string | undefined,
     userEmail: string | undefined
@@ -100,10 +118,10 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
         true
       );
     }
-    if (registerData.Password!.length < 4) {
+    if (registerData.Password!.length < 6) {
       return props.showError(
         "danger",
-        "Your Password Should contain at least 4 characters",
+        "Your Password Should contain at least 6 characters",
         true
       );
     }
@@ -126,17 +144,51 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
             "Sucess! Your account has been created!",
             true
           );
-          addNewAccountIntoDataBase(
-            registerData.Login,
-            registerData.Password,
-            registerData.Email,
-            [],
-            `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
-            `Hello my name is ${registerData.Login} i'm using MOOD App 😎`,
-            "2f2f2f",
-            ""
-          );
-          props.setIfUserIsSigningUp(false);
+          createUserWithEmailAndPassword(
+            auth,
+            registerData.Email as string,
+            registerData.Password as string
+          )
+            .then((userCredentials: UserCredential) => {
+              const user = userCredentials.user;
+              //!Change the function too
+              addNewAccountIntoDataBase(
+                registerData.Login,
+                registerData.Password,
+                registerData.Email,
+                [],
+                `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
+                `Hello my name is ${registerData.Login} i'm using MOOD App 😎`,
+                "2f2f2f",
+                "",
+                "Latest Post",
+                user.uid,
+                0,
+                [],
+                0
+              );
+              setIfUserIsLoggedIn(true);
+              setCurrentlyLoggedInUser!({
+                Login: registerData.Login,
+                Password: registerData.Password,
+                Email: registerData.Email,
+                UserPosts: [],
+                Avatar: `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
+                Description: `Hello my name is ${registerData.Login} i'm using MOOD App 😎`,
+                BackgroundColor: "2f2f2f",
+                BackgroundImage: "",
+                userPrefferedPost: "Latest Post",
+                UID: user.uid,
+                postCount: 0,
+              });
+            })
+            .catch((error: FirebaseError) => {
+              props.showError(
+                "danger",
+                `(${error.code}),${error.message}`,
+                true
+              );
+            });
         }
       }
     );

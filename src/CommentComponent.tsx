@@ -8,7 +8,6 @@ import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 import { removeUserFromLikedArray } from "./likeFunctions";
 import { doc, updateDoc } from "@firebase/firestore";
 import { db } from "./firebase";
-import Tippy from "@tippyjs/react";
 import { Link } from "react-router-dom";
 const savePoepleThatLikedComment = async (
   keyforPost: string,

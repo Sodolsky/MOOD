@@ -100,7 +100,7 @@ $white: #fefefe;
           img {
             max-width: 100%;
             height: auto;
-            min-height: 300px;
+            // min-height: 300px;
           }
           video {
             aspect-ratio: 16/9;
@@ -150,6 +150,7 @@ $white: #fefefe;
         display: flex;
         align-items: center;
         flex-direction: column;
+        word-break: break-word;
       }
       .TopComment {
         // border: 1px gold solid;
@@ -162,6 +163,7 @@ $white: #fefefe;
         width: 100%;
         display: flex;
         justify-content: center;
+        word-break: break-all;
         .ant-comment {
           margin: 0.5rem 1rem 0.5rem 1rem;
         }
@@ -192,7 +194,42 @@ $white: #fefefe;
     }
   }
 }
-
+.NewPostsAreReadyMobile {
+  background-color: white;
+  position: fixed;
+  padding: 0.25rem;
+  margin: 0;
+  border-radius: 0.25rem 0.25rem 0 0;
+  left: 0%;
+  top: 50%;
+  transform: rotate(90deg);
+  transform-origin: left bottom;
+  font-weight: bold;
+}
+.AppendToScreenAnimation {
+  animation: AppendToScreen 1.5s ease-out 1;
+  animation-fill-mode: forwards;
+}
+.RemoveFromScreenAnimation {
+  animation: RemoveFromScreen 1.5s ease-out 1;
+  animation-fill-mode: forwards;
+}
+@keyframes AppendToScreen {
+  from {
+    top: 100%;
+    opacity: 0;
+  }
+  to {
+    top: 50%;
+    opacity: 1;
+  }
+}
+@keyframes RemoveFromScreen {
+  to {
+    top: 50%;
+    opacity: 1;
+  }
+}
 @keyframes AnimationForLike {
   from {
     transform: scale(0.5) rotate(0deg);
@@ -294,6 +331,12 @@ $white: #fefefe;
       @include FlexCenter();
       font-size: 1.5rem;
       font-weight: bold;
+      .BackArrow {
+        margin-right: 1rem;
+        @media (max-width: 700px) {
+          display: none;
+        }
+      }
       input[type="text"] {
         width: 100%;
         border-radius: 0.5rem;
@@ -315,6 +358,14 @@ $white: #fefefe;
   display: flex;
   flex-direction: column;
   align-items: center;
+  .LoadNewPostsButton {
+    @include PostButton();
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
   .ListWrapper {
     margin-bottom: 0.75rem;
     width: 40%;

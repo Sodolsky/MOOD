@@ -1,5 +1,8 @@
 const functions = require("firebase-functions");
 const firestore = require("@google-cloud/firestore");
+const admin = require("firebase-admin");
+admin.initializeApp(functions.config().firebase);
+const FieldValue = require("firebase-admin").firestore.FieldValue;
 const client = new firestore.v1.FirestoreAdminClient();
 const bucket = "gs://database-backup-mood-project";
 
@@ -21,5 +24,104 @@ exports.scheduledFirestoreExport = functions.pubsub
       .catch((err) => {
         console.error(err);
         throw new Error("Export operation failed");
+      });
+  });
+exports.updateLikeCount = functions
+  .region("europe-central2")
+  .firestore.document("Posts/{PostID}")
+  .onUpdate((change, context) => {
+    const newValue = change.after.data();
+    const oldValue = change.before.data();
+    let oldLikes;
+    oldValue.poepleThatLiked.length === undefined
+      ? (oldLikes = 0)
+      : (oldLikes = oldValue.poepleThatLiked.length);
+    let newLikes = newValue.poepleThatLiked.length;
+    if (oldLikes === newLikes) {
+      return null;
+    }
+    if (!newLikes) {
+      newLikes = 0;
+    }
+    return change.after.ref.set(
+      {
+        likeCount: newLikes,
+      },
+      { merge: true }
+    );
+  });
+exports.updatePostCount = functions
+  .region("europe-central2")
+  .firestore.document("Users/{UserID}")
+  .onUpdate((change, context) => {
+    const db = admin.firestore();
+    const newValue = change.after.data();
+    const oldValue = change.before.data();
+    const ref = newValue.Login;
+    const oldValuePosts = oldValue.UserPosts.length;
+    const newValuePosts = newValue.UserPosts.length;
+    if (oldValuePosts === newValuePosts) {
+      return;
+    }
+    if (newValuePosts > oldValuePosts) {
+      db.doc(`Users/${ref}`).update({
+        postCount: FieldValue.increment(1),
+      });
+    } else {
+      db.doc(`Users/${ref}`).update({
+        postCount: FieldValue.increment(-1),
+      });
+    }
+    return;
+  });
+exports.updateCommentCount = functions
+  .region("europe-central2")
+  .firestore.document("Users/{UserID}")
+  .onUpdate((change, context) => {
+    const db = admin.firestore();
+    const newValue = change.after.data();
+    const oldValue = change.before.data();
+    const ref = newValue.Login;
+    const oldValueComments = oldValue.commentsRef.length;
+    const newValueComments = newValue.commentsRef.length;
+    if (oldValueComments === newValueComments) {
+      return;
+    }
+    if (newValueComments > oldValueComments) {
+      db.doc(`Users/${ref}`).update({
+        commentCount: FieldValue.increment(1),
+      });
+    } else {
+      db.doc(`Users/${ref}`).update({
+        commentCount: FieldValue.increment(-1),
+      });
+    }
+    return;
+  });
+exports.addUserLoginToDocument = functions
+  .region("europe-central2")
+  .firestore.document("Users/{UserID}")
+  .onCreate(async (snap, context) => {
+    const newUser = snap.data();
+    const newUserLogin = newUser.Login;
+    var db = admin.firestore();
+    const allUsersDocRef = db.collection("Utility").doc("UserLogins");
+    allUsersDocRef
+      .get()
+      .then((doc) => {
+        const arr = doc.data().UserLogins;
+        arr.push(newUserLogin);
+        doc.ref
+          .update({
+            UserLogins: arr,
+          })
+          .catch((err) => {
+            console.log(err);
+            return;
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
       });
   });

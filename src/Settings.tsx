@@ -6,35 +6,17 @@ import {
   currentlyLoggedInUserContext,
   setCurrentlyLoggedInUserContext,
   UserData,
-  userLogInContext,
 } from ".";
 import "./Styles/Settings.scss";
 import { baseStyle } from "./likeFunctions";
 import { useState } from "react";
-import { db, storageRef } from "./firebase";
+import { auth, db, storageRef } from "./firebase";
 import { ref } from "@firebase/storage";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
-import {
-  collection,
-  // collection,
-  // deleteField,
-  // collection,
-  // deleteDoc,
-  // addDoc,
-  // collection,
-  // deleteDoc,
-  doc,
-  getDocs,
-  // getDocs,
-  // getDocs,
-  // Timestamp,
-  // getDocs,
-  // setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { LoadingRing } from "./LoadingRing";
 import TextareAutosize from "react-textarea-autosize";
-import { PostPropsInteface } from "./Post";
+
 // import moment from "moment";
 // const addUsersToTheirPosts = async () => {
 //   const allPostsRef = collection(db, "Posts");
@@ -55,7 +37,6 @@ import { PostPropsInteface } from "./Post";
 //       someUSRArr.push(doc.data());
 //     }
 //   });
-//   someArr.pop();
 //   for (const i of someUSRArr) {
 //     const newArr = [];
 //     for (const j of someArr) {
@@ -68,14 +49,95 @@ import { PostPropsInteface } from "./Post";
 //     });
 //   }
 // };
-// const quickQuery = async () => {
-//   const allPostsRef = collection(db, "Users");
-//   const myDocs = await getDocs(allPostsRef);
+// const copyPosts = async () => {
+//   const oldPostsRef = collection(db, "Posts");
+//   const newPosts = collection(db, "Posts2");
+//   const q = query(newPosts, where("text", "!=", ""));
+//   const myDocs = await getDocs(q);
+//   let count = 0;
 //   myDocs.forEach((item) => {
-//     updateDoc(item.ref, {
-//       BackgroundColor: "#2f2f2f",
-//       BackgroundImage: "",
+//     const obj = item.data() as PostPropsInteface;
+//     if (obj.id) {
+//       count += 1;
+//     }
+//   });
+//   console.log(count);
+//   // myDocs.forEach(async (item) => {
+//   //   const obj = item.data() as PostPropsInteface;
+//   //   const docRef = await addDoc(newPosts, obj);
+//   //   const rf = doc(db, "Posts2", docRef.id);
+//   //   await updateDoc(rf, {
+//   //     id: docRef.id,
+//   //   });
+//   // });
+// };
+// const
+// const quickQuery = async () => {
+//   type commentUserType = { Login: string; commentsRef: string[] };
+//   const userCommentsRefArray: commentUserType[] = [];
+//   const userRefs = collection(db, "Users");
+//   const PostsRef = collection(db, "Posts");
+//   const userDocs = await getDocs(userRefs);
+//   userDocs.forEach((item) => {
+//     const obj = item.data() as UserData;
+//     userCommentsRefArray.push({
+//       Login: obj.Login as string,
+//       commentsRef: obj.commentsRef as string[],
 //     });
+//   });
+//   const myDocs = await getDocs(PostsRef);
+//   let total = 0;
+//   myDocs.forEach(async (item) => {
+//     const CommentsCollectionId = collection(
+//       db,
+//       "Posts",
+//       `${item.id}`,
+//       "comments"
+//     );
+//     const comments = await getDocs(CommentsCollectionId);
+//     total += comments.size;
+//     comments.forEach((item) => {
+//       const obj = item.data() as CommentInterface;
+//       const path = item.ref.path;
+//       const loginofUsr = obj.userThatAddedComment.Login;
+//       userCommentsRefArray.find((o, i) => {
+//         if (o.Login === loginofUsr) {
+//           const arr = o.commentsRef;
+//           arr.push(path);
+//           userCommentsRefArray[i] = {
+//             Login: loginofUsr,
+//             commentsRef: arr,
+//           };
+//           return true;
+//         }
+//       });
+//     });
+//     if (total === 1699) {
+//       userCommentsRefArray.forEach((item) => {
+//         const ref = doc(db, "Users", item.Login);
+//         updateDoc(ref, {
+//           commentsRef: item.commentsRef,
+//         });
+//       });
+//       console.log("Done");
+//     }
+//   });
+// };
+// const quickOperation = async () => {
+//   const ref = collection(db, "Users");
+//   const myDocs = await getDocs(ref);
+//   myDocs.forEach((item) => {
+//     const obj = item.data() as UserData;
+//     if (obj.commentsRef) {
+//       const count = obj.commentsRef.length;
+//       updateDoc(item.ref, {
+//         commentCount: count,
+//       });
+//     } else {
+//       updateDoc(item.ref, {
+//         commentCount: 0,
+//       });
+//     }
 //   });
 // };
 export const Settings: React.FC = () => {
@@ -83,7 +145,6 @@ export const Settings: React.FC = () => {
   const [userDescription, setUserDescription] = useState<string>("");
   const [isUserChangingDescription, setIfUserIsChangingDescription] =
     useState<boolean>(false);
-  const userLoggedIn = useContext(userLogInContext);
   const currentlyLoggedInUser = useContext(currentlyLoggedInUserContext);
   const handleChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -114,8 +175,8 @@ export const Settings: React.FC = () => {
     async (acceptedFiles) => {
       const fileRef = ref(storageRef, `${currentlyLoggedInUser.Login}`);
       const userRef = doc(db, "Users", `${currentlyLoggedInUser.Login}`);
-      if (acceptedFiles[0].size > 8000000) {
-        return alert("Your File is bigger than 8MB Try to upload smaller one");
+      if (acceptedFiles[0].size > 10000000) {
+        return alert("Your File is bigger than 10MB Try to upload smaller one");
       }
       setifNewAvatarIsBeingLoaded(true);
       await uploadBytes(fileRef, acceptedFiles[0]).then((snapshot) => {});
@@ -137,6 +198,7 @@ export const Settings: React.FC = () => {
       });
       // addUsersToTheirPosts();
       // quickQuery();
+      // quickOperation();
       setifNewAvatarIsBeingLoaded(false);
       setifAvatarIsBeingChanged(false);
     },
@@ -156,7 +218,9 @@ export const Settings: React.FC = () => {
       <div className="logOutButtonContainer">
         <button
           className="logOutButton"
-          onClick={() => userLoggedIn.setIfUserIsLoggedIn(false)}
+          onClick={() => {
+            auth.signOut();
+          }}
         >
           Log me Out
         </button>

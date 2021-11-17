@@ -1,0 +1,40 @@
+@mixin FlexCenter {
+  display: flex;
+  justify-content: center;
+}
+.StatsHeader {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+}
+.StatsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  article {
+    h2 {
+      text-align: center;
+    }
+    border: 0.2rem solid black;
+    border-radius: 0.25rem;
+    background-color: black;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+      rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    background-color: #fefefe;
+    padding: 0.75rem;
+    .ButtonContainer {
+      display: flex;
+      justify-content: center;
+      button {
+        padding: 0.25rem;
+        background-color: inherit;
+        border: none;
+        font-size: 1.25rem;
+        color: blue;
+      }
+    }
+  }
+}
+.LoadingContainer {
+  @include FlexCenter();
+}

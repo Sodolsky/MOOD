@@ -23,3 +23,9 @@ body {
   width: 100%;
   background-repeat: repeat;
 }
+.screenCenter {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}

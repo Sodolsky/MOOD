@@ -65,6 +65,11 @@ main {
     }
   }
 }
+.RememberMeContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .ErrorContainer {
   position: absolute;
   width: 100%;

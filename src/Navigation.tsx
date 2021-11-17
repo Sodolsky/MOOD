@@ -72,7 +72,6 @@ export const Navigation: React.FC = () => {
                   }}
                 />
               </Link>
-              ;
             </button>
           </Container>
         </Navbar>

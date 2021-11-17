@@ -58,7 +58,6 @@ export const getRandomInt = (min: number, max: number): number => {
 // };
 export const checkIfTextHaveHashtags = (text: string): string[] => {
   const match = text.match(/#[A-Za-z0-9]*/g);
-  console.log(match);
   if (match) {
     return match;
   } else {

@@ -17,8 +17,8 @@ export const FileUploader: React.FC<any> = ({ onFileSelect }) => {
         onFileSelect(file);
       }
     } else {
-      if (file.size > 8000000) {
-        return alert("Your File is bigger than 8MB Try to upload smaller one");
+      if (file.size > 10000000) {
+        return alert("Your File is bigger than 10MB Try to upload smaller one");
       } else {
         onFileSelect(file);
       }

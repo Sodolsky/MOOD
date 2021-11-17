@@ -1,4 +1,11 @@
-import { doc, getDoc, updateDoc } from "@firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  updateDoc,
+} from "@firebase/firestore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import {
@@ -7,7 +14,6 @@ import {
   UserData,
 } from ".";
 import { db, storageRef } from "./firebase";
-import { LazyLoadedImage } from "./LLImage";
 import { LoadingRing } from "./LoadingRing";
 import { Post, PostPropsInteface } from "./Post";
 import "./Styles/UserProfile.scss";
@@ -17,16 +23,44 @@ import No from "./img/no.png";
 import ChangeBackgroundIcon from "./img/backgroundicon.png";
 import { useDropzone } from "react-dropzone";
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
-import { Switch } from "antd";
-export const queryLatestPost = async (key: string) => {
+import { Dropdown, Empty, Menu, Switch } from "antd";
+import { Link } from "react-router-dom";
+import { query, where, orderBy } from "firebase/firestore";
+export type userPrefferedPostType =
+  | "Latest Post"
+  | "Most Liked"
+  | "Oldest Post";
+export const queryPostByDate = async (key: string) => {
   const ref = doc(db, "Posts", `${key}`);
   const highlightedPost = await getDoc(ref);
   return highlightedPost.data() as PostPropsInteface;
 };
-const applyChanges = async (user: string, color: string) => {
+export const queryPostByLikeCount = async (userLogin: string) => {
+  const PostCollection = collection(db, "Posts");
+  const q = query(
+    PostCollection,
+    where("userThatPostedThis.Login", "==", `${userLogin}`),
+    orderBy("likeCount", "desc"),
+    limit(1)
+  );
+  const MostLikedPostData: PostPropsInteface[] = [];
+  const MostLikedPost = await getDocs(q);
+  MostLikedPost.forEach((item) => {
+    MostLikedPostData.push(item.data() as PostPropsInteface);
+  });
+  return MostLikedPostData[0];
+};
+const applyChanges = async (
+  user: string,
+  color: string,
+  userPrefferedPost: userPrefferedPostType | null
+) => {
+  if (!userPrefferedPost) {
+  }
   const userRef = doc(db, "Users", user);
   updateDoc(userRef, {
     BackgroundColor: color,
+    userPrefferedPost: userPrefferedPost,
   });
 };
 const uploadUserImageToStorageBucket = async (
@@ -40,6 +74,7 @@ const uploadUserImageToStorageBucket = async (
 const UserProfile: React.FC = () => {
   const location = useLocation<Location>();
   const [isContentLoaded, setIsContentLoaded] = useState<boolean>(false);
+  const [isUserValid, setIfUserIsValid] = useState<boolean>(false);
   const [displayBGImage, setDisplayBGImage] = useState<boolean>(true);
   const [shouldBackgroundCover, setshouldBackgroundCover] =
     useState<boolean>(false);
@@ -51,6 +86,8 @@ const UserProfile: React.FC = () => {
   const [highlightedPost, sethighlightedPost] =
     useState<PostPropsInteface | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [userPrefferedPost, setUserPrefferedPost] =
+    useState<userPrefferedPostType | null>(null);
   const profilePathLogin = useParams<{ user: string }>();
   const [profileColorValue, setprofileColorValue] = useState<string>(
     userData?.BackgroundColor || ""
@@ -66,13 +103,6 @@ const UserProfile: React.FC = () => {
     if (userData) {
       setprofileColorValue(userData.BackgroundColor as string);
       setIsContentLoaded(true);
-      if (userData.UserPosts) {
-        queryLatestPost(
-          userData.UserPosts[userData.UserPosts?.length - 1]
-        ).then((data) => {
-          sethighlightedPost(data);
-        });
-      }
     }
   }, [userData]);
   const onDrop = useCallback(
@@ -124,7 +154,14 @@ const UserProfile: React.FC = () => {
     const getUserProfileData = async (profilePath: string) => {
       const ref = doc(db, "Users", `${profilePath}`);
       const userDataFeched = await getDoc(ref);
-      setUserData(userDataFeched.data() as UserData);
+      const userobj = userDataFeched.data() as UserData;
+      if (!userobj) {
+        setIfUserIsValid(false);
+        return;
+      }
+      const userPrefferedPost = userobj.userPrefferedPost;
+      setUserData(userobj as UserData);
+      setUserPrefferedPost(userPrefferedPost as userPrefferedPostType);
     };
     getUserProfileData(profilePathLogin.user);
 
@@ -142,6 +179,55 @@ const UserProfile: React.FC = () => {
       };
     }
   }, [userData]);
+  useEffect(() => {
+    if (profileIsBeingChanged) {
+      setPostForUser();
+    } else if (userPrefferedPost !== null) {
+      setPostForUser();
+    }
+  }, [userPrefferedPost]);
+  const setPostForUser = () => {
+    if (userData?.UserPosts) {
+      switch (userPrefferedPost) {
+        case "Latest Post":
+          queryPostByDate(
+            userData.UserPosts[userData.UserPosts?.length - 1]
+          ).then((data) => {
+            sethighlightedPost(data);
+          });
+          break;
+        case "Most Liked":
+          if (userData.Login) {
+            queryPostByLikeCount(userData.Login).then((data) => {
+              sethighlightedPost(data);
+            });
+          }
+          break;
+        case "Oldest Post":
+          queryPostByDate(userData.UserPosts[0]).then((data) => {
+            sethighlightedPost(data);
+          });
+          break;
+        default:
+          console.error(
+            "An error has occured UserProfile Component swich statement"
+          );
+      }
+    }
+  };
+  const bestPostMenu = (
+    <Menu>
+      <Menu.Item key="0" onClick={() => setUserPrefferedPost("Latest Post")}>
+        <span>Latest Post</span>
+      </Menu.Item>
+      <Menu.Item key="1" onClick={() => setUserPrefferedPost("Most Liked")}>
+        <span>Most Liked</span>
+      </Menu.Item>
+      <Menu.Item key="2" onClick={() => setUserPrefferedPost("Oldest Post")}>
+        <span>Oldest Post</span>
+      </Menu.Item>
+    </Menu>
+  );
   return isContentLoaded ? (
     <>
       <div
@@ -191,11 +277,13 @@ const UserProfile: React.FC = () => {
                 onClick={async () => {
                   await applyChanges(
                     currentlyLoggedInUser.Login as string,
-                    profileColorValue
+                    profileColorValue,
+                    userPrefferedPost
                   );
                   const objectWrapper: UserData = {
                     ...userData!,
                     BackgroundColor: profileColorValue,
+                    userPrefferedPost: userPrefferedPost,
                   };
                   setUserData(objectWrapper);
                   setProfileIsBeingChanged(false);
@@ -233,8 +321,8 @@ const UserProfile: React.FC = () => {
             </div>
           )}
           <div className="UserImage">
-            <LazyLoadedImage
-              src={userData?.Avatar as string}
+            <img
+              src={`${userData?.Avatar}` as string}
               alt={"Visited profile Avatar"}
             />
           </div>
@@ -243,33 +331,63 @@ const UserProfile: React.FC = () => {
             <div>{userData?.Description}</div>
           </div>
           <div className="LatestPost">
-            <span className="biggerText">Latest Post</span>
+            {profileIsBeingChanged ? (
+              <Dropdown
+                overlay={bestPostMenu}
+                trigger={["hover"]}
+                placement="topCenter"
+              >
+                <span className="biggerText" style={{ color: "blue" }}>
+                  {userPrefferedPost}
+                </span>
+              </Dropdown>
+            ) : (
+              <span className="biggerText">{userPrefferedPost}</span>
+            )}
             {highlightedPost ? (
-              <div className="postContainerOnUserProfile">
-                <Post
-                  key={`${highlightedPost.date} ${highlightedPost.userThatPostedThis.Email} ${highlightedPost.userThatPostedThis.Description}`}
-                  date={highlightedPost?.date}
-                  postType={highlightedPost.postType}
-                  text={highlightedPost.text}
-                  userThatPostedThis={highlightedPost.userThatPostedThis}
-                  YTLink={highlightedPost.YTLink}
-                  img={highlightedPost.img}
-                  likeCount={highlightedPost.likeCount}
-                  fileType={highlightedPost.fileType}
-                  hashtags={highlightedPost.hashtags}
-                  poepleThatLiked={highlightedPost.poepleThatLiked}
-                />
-              </div>
+              <>
+                <Link to={`/explore/users/${userData?.Login}/Posts`}>
+                  <button className="VievAllPosts">View all user Posts</button>
+                </Link>
+                <div className="postContainerOnUserProfile">
+                  <Post
+                    key={`${highlightedPost.date} ${highlightedPost.userThatPostedThis.Email} ${highlightedPost.userThatPostedThis.Description}`}
+                    date={highlightedPost?.date}
+                    postType={highlightedPost.postType}
+                    text={highlightedPost.text}
+                    userThatPostedThis={highlightedPost.userThatPostedThis}
+                    YTLink={highlightedPost.YTLink}
+                    img={highlightedPost.img}
+                    likeCount={highlightedPost.likeCount}
+                    fileType={highlightedPost.fileType}
+                    hashtags={highlightedPost.hashtags}
+                    poepleThatLiked={highlightedPost.poepleThatLiked}
+                  />
+                </div>
+              </>
             ) : (
               <span className="biggerText">User didn't add a Post yet 😭</span>
             )}
           </div>
+          <div className="Stats">
+            <span>
+              <h3>UserPosts</h3>
+              <span>{userData?.UserPosts?.length}</span>
+            </span>
+          </div>
         </div>
       </div>
     </>
-  ) : (
+  ) : isUserValid ? (
     <div className="LoaderBox">
       <LoadingRing colorVariant={"white"} />
+    </div>
+  ) : (
+    <div className="LoaderBox" style={{ marginTop: "1rem", color: "white" }}>
+      <Empty
+        style={{ fontSize: 20 }}
+        description="This User doesn't exist :("
+      />
     </div>
   );
 };

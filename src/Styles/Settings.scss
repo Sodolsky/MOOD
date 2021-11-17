@@ -16,7 +16,7 @@
     @include BoxShadow();
     @include FlexCenter();
     cursor: pointer;
-    background-color: #fefefe;
+    background-color: hsl(0, 0%, 100%);
     color: #2f2f2f;
     border: 2px #2f2f2f solid;
     border-radius: 0.5rem;
@@ -24,6 +24,10 @@
     font-weight: bold;
     padding-bottom: 0.25rem;
     width: 80%;
+    transition: 0.5s all;
+    &:hover {
+      background-color: skyblue;
+    }
   }
 }
 .contain {

@@ -117,7 +117,7 @@
         font-weight: bold;
         white-space: pre-wrap;
         @media (max-width: 768px) {
-          font-size: 6vw;
+          font-size: 8vw;
         }
       }
       div {
@@ -132,14 +132,44 @@
     }
     .Stats {
       grid-area: Stats;
+      font-size: 3vw;
+      @media (max-width: 768px) {
+        font-size: 6vw;
+      }
+      span {
+        @include FlexCenter();
+        align-items: center;
+        h3 {
+          margin: 0 !important;
+          font-size: 3vw !important;
+          @media (max-width: 768px) {
+            font-size: 6vw !important;
+          }
+        }
+        span {
+          margin-left: 0.5rem;
+        }
+      }
     }
     .LatestPost {
+      .VievAllPosts {
+        @include PostButton();
+      }
       .biggerText {
         text-align: center;
         font-size: 3vw;
+        margin: 1rem 0;
         font-weight: bold;
+        @include FlexCenter();
+        align-items: center;
         @media (max-width: 768px) {
-          font-size: 6vw;
+          font-size: 8vw;
+        }
+        img {
+          aspect-ratio: 1/1;
+          width: 32px;
+          margin-left: 0.5rem;
+          cursor: pointer;
         }
       }
       grid-area: Post;
@@ -215,6 +245,26 @@
   @media (max-width: 700px) {
     flex-direction: column;
     margin: 10px 0;
+  }
+}
+.Filters {
+  @include FlexCenter();
+  margin-top: 1rem;
+  .ActiveButton {
+    background-color: #e4b4e4;
+  }
+  button {
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0.5rem;
+    border: 2px solid black;
+    border-radius: 0.5rem;
+    background-color: #fefefe;
+    transition: all 0.3s ease-out;
+    &:hover {
+      background-color: #e4b4e4;
+    }
   }
 }
 .ant-comment-content-detail {
