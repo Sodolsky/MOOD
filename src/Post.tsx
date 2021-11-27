@@ -14,6 +14,7 @@ import { db, storageRef } from "./firebase";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -27,6 +28,9 @@ import moment from "moment";
 import { LikePost } from "./LikePost";
 import { LazyLoadedImage } from "./LLImage";
 import { Link } from "react-router-dom";
+import RemovePostIcon from "./img/xicon.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -41,6 +45,7 @@ export interface PostPropsInteface {
   hashtags: string[];
   poepleThatLiked: UserData[];
   date: string;
+  URL: string;
 }
 export const downloadImageIfPostHasOne = async (key: string) => {
   const pathRef = ref(storageRef, "PostImages");
@@ -89,6 +94,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
     date,
     fileType,
     hashtags,
+    URL,
   } = props;
   //We are defining date as another variable to avoid name collison when passing props to comment element
   const parentDate = date;
@@ -191,6 +197,26 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               alt="Your Icon"
             />
           </Tippy>
+          <FontAwesomeIcon
+            icon={faLink}
+            className="LinkToPost"
+            onClick={() =>
+              navigator.clipboard.writeText(
+                `${window.location.host}/explore/posts/${URL}`
+              )
+            }
+          />
+          {currentlyLoggedInUser.Login === "EVILSODOL" &&
+            userThatPostedThis.Login === "EVILSODOL" && (
+              <img
+                src={RemovePostIcon}
+                alt="Click to remove your Post"
+                className="DeletePost"
+                onClick={() => {
+                  removePost(currentlyLoggedInUser, date);
+                }}
+              />
+            )}
           <span>
             <Link to={`/explore/users/${userThatPostedThis.Login}`}>
               {userThatPostedThis.Login}
@@ -337,4 +363,18 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
       </div>
     </div>
   );
+};
+const removePost = async (currentlyLoggedInUser: UserData, key: string) => {
+  const removedPostRef = doc(db, "Posts", key);
+  const userRef = doc(db, "Users", currentlyLoggedInUser.Login as string);
+  const userdoc = await getDoc(userRef);
+  const Data = userdoc.data() as UserData;
+  const userPostsArray = Data.UserPosts;
+  if (userPostsArray) {
+    const updatedUserPosts = userPostsArray.filter((x) => x !== key);
+    await updateDoc(userRef, {
+      UserPosts: updatedUserPosts,
+    });
+    await deleteDoc(removedPostRef);
+  }
 };
