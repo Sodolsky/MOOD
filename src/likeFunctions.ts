@@ -1,5 +1,6 @@
 import { UserData } from ".";
 import { isEqual } from "lodash";
+import { PostPropsInteface } from "./Post";
 export const getIndexOf = (array: UserData[], loggedUser: UserData): number => {
   let val: number = 0;
   for (let i = 0; i < array.length; i++) {
@@ -97,4 +98,25 @@ export const baseStyle = {
   outline: "none",
   transition: "border .24s ease-in-out",
   margin: "1rem",
+};
+export const getElementCountBetween2ElementsInArray = (
+  array: PostPropsInteface[],
+  Element: PostPropsInteface | null
+): number | "n" => {
+  if (!Element) {
+    return 0;
+  }
+  let Counter = 0;
+  for (const i of array) {
+    if (i.date !== Element.date) {
+      Counter++;
+    } else {
+      break;
+    }
+  }
+  if (Counter === array.length) {
+    return "n";
+  } else {
+    return Counter;
+  }
 };

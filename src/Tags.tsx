@@ -51,6 +51,7 @@ export const Tags: React.FC = () => {
               poepleThatLiked={item.poepleThatLiked}
               YTLink={item.YTLink}
               img={item.img}
+              URL={item.URL}
             />
           );
         })

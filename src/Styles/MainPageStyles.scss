@@ -49,6 +49,7 @@ $white: #fefefe;
     .PostUserInfo {
       @include FlexCenter();
       align-items: center;
+      position: relative;
       flex-wrap: wrap;
       padding: 0.75rem;
       border-bottom: 1px black solid;
@@ -56,6 +57,22 @@ $white: #fefefe;
       font-size: 1.5vw;
       max-width: 100%;
       overflow-wrap: break-word;
+      .DeletePost {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        cursor: pointer;
+      }
+      .LinkToPost {
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        cursor: pointer;
+        transition: color 0.2s;
+        &:hover {
+          color: rgb(21, 213, 235);
+        }
+      }
       .flexColumnWrapper {
         display: flex;
         justify-content: center;

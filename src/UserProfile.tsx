@@ -362,6 +362,7 @@ const UserProfile: React.FC = () => {
                     fileType={highlightedPost.fileType}
                     hashtags={highlightedPost.hashtags}
                     poepleThatLiked={highlightedPost.poepleThatLiked}
+                    URL={highlightedPost.URL}
                   />
                 </div>
               </>

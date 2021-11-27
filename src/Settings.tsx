@@ -13,7 +13,7 @@ import { useState } from "react";
 import { auth, db, storageRef } from "./firebase";
 import { ref } from "@firebase/storage";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { LoadingRing } from "./LoadingRing";
 import TextareAutosize from "react-textarea-autosize";
 
@@ -124,20 +124,13 @@ import TextareAutosize from "react-textarea-autosize";
 //   });
 // };
 // const quickOperation = async () => {
-//   const ref = collection(db, "Users");
+//   const ref = collection(db, "Posts");
 //   const myDocs = await getDocs(ref);
 //   myDocs.forEach((item) => {
-//     const obj = item.data() as UserData;
-//     if (obj.commentsRef) {
-//       const count = obj.commentsRef.length;
-//       updateDoc(item.ref, {
-//         commentCount: count,
-//       });
-//     } else {
-//       updateDoc(item.ref, {
-//         commentCount: 0,
-//       });
-//     }
+//     const randId = uuidv4();
+//     updateDoc(item.ref, {
+//       URL: randId,
+//     });
 //   });
 // };
 export const Settings: React.FC = () => {

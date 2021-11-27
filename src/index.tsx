@@ -30,6 +30,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { isEqual } from "lodash";
+import { SinglePost } from "./SinglePost";
 export const userLogInContext = createContext<LogInInterface>({
   isUserLoggedIn: false,
   setIfUserIsLoggedIn: null,
@@ -78,6 +79,25 @@ export interface LogInInterface {
 
 //   return diff;
 // }
+// const getUserPermissionForNotifications = () => {
+//   if (Notification.permission !== "denied") {
+//     Notification.requestPermission((permission) => {
+//       if (permission === "granted") {
+//       }
+//     });
+//   }
+// };
+// export const spawnNotifications = (
+//   theBody: any,
+//   theIcon: any,
+//   theTitle: any
+// ) => {
+//   var options = {
+//     body: theBody,
+//     icon: theIcon,
+//   };
+//   var n = new Notification(theTitle, options);
+// };
 export const App: React.FC = () => {
   const [firstUpdate, setFirstUpdate] = useState<boolean>(true);
   const [usersLoginArray, setUsersLoginArray] = useState<string[]>([]);
@@ -89,6 +109,7 @@ export const App: React.FC = () => {
       setUsersLoginArray(obj.UserLogins);
     };
     getDataFromDB();
+    // getUserPermissionForNotifications();
   }, []);
   const getDataAboutUser = async (UID: string) => {
     const uRef = collection(db, "Users");
@@ -141,7 +162,6 @@ export const App: React.FC = () => {
     Password: "Admin",
     Email: "Admin",
   });
-  console.log("inf");
   return (
     <>
       <Router>
@@ -179,6 +199,12 @@ export const App: React.FC = () => {
                         <MainContent
                           setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
                         />
+                      </Route>
+                      <Route path="/explore/posts/:PostId">
+                        <div className="MainContentGrid">
+                          <Navigation />
+                          <SinglePost />
+                        </div>
                       </Route>
                       <Route path="/explore/tag" exact>
                         <h1>Kiedy tu bedzie lista tagow</h1>{" "}
@@ -218,6 +244,9 @@ export const App: React.FC = () => {
                       )}
                       {!firstUpdate && (
                         <>
+                          <Route path="/explore/posts/:PostId">
+                            <Redirect to="/" />
+                          </Route>
                           <Route path="/tag" exact>
                             <Redirect to="/" />
                           </Route>

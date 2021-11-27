@@ -9,6 +9,7 @@ import {
   Button,
   Alert,
 } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
 import TextareAutosize from "react-textarea-autosize";
 import { FileUploader } from "./FileUploader";
 import { useEffect } from "react";
@@ -16,22 +17,10 @@ import heartLiked from "./img/heartLiked.svg";
 import { UrlUploader } from "./UrlOploader";
 import { getLinkId, validateYouTubeUrl } from "./ValidateYoutubeUrl";
 import { AddPostIcon } from "./AddPostIcon";
-import {
-  allUsersArrayContext,
-  currentlyLoggedInUserContext,
-  UserData,
-  userLogInContext,
-} from ".";
+import { currentlyLoggedInUserContext, UserData } from ".";
 import { useContext } from "react";
 import { db, storageRef } from "./firebase.js";
-import {
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  Timestamp,
-  updateDoc,
-} from "@firebase/firestore";
+import { doc, setDoc, Timestamp, updateDoc } from "@firebase/firestore";
 import { ref, uploadBytes } from "@firebase/storage";
 import { downloadImageIfPostHasOne } from "./Post";
 import { LoadingRing } from "./LoadingRing";
@@ -41,8 +30,6 @@ import { checkIfTextHaveHashtags } from "./likeFunctions";
 import { uniq } from "lodash";
 import BackArrow from "./img/backarrow.png";
 import moment from "moment";
-import { Mentions } from "antd";
-import { MentionsProps } from "rc-mentions/lib/Mentions";
 //Key needs to be changed
 const uploadUserImageToStorageBucket = async (
   key: string,
@@ -61,8 +48,6 @@ export interface CommentInterface {
   parentPostRef?: string;
 }
 export const CreatePost: React.FC = () => {
-  const { Option } = Mentions;
-  const userLogins = useContext(allUsersArrayContext).sort().slice(10, 20);
   const [addPostIconClicked, setAddPostIconClicked] = useState<boolean>(false);
   const [newPostText, setNewPostText] = useState<string>("");
   const [userImage, setUserImage] = useState<File>();
@@ -88,6 +73,7 @@ export const CreatePost: React.FC = () => {
     date: string,
     timestamp: Timestamp,
     hashtags: string[],
+    URL: string,
     img?: string,
     fileType?: string,
     YTLink?: string
@@ -106,11 +92,15 @@ export const CreatePost: React.FC = () => {
         poepleThatLiked: poepleThatLiked,
         date: date,
         timestamp: timestamp,
+        URL: URL,
       });
       currentlyLoggedInUser.UserPosts?.push(date);
-      await updateDoc(doc(db, "Users", `${currentlyLoggedInUser.Login}`), {
-        UserPosts: currentlyLoggedInUser.UserPosts,
-      });
+      //Evil Sodol is my testing account and i dont want to update its UserPosts Reference.
+      if (currentlyLoggedInUser.Login !== "EVILSODOL") {
+        await updateDoc(doc(db, "Users", `${currentlyLoggedInUser.Login}`), {
+          UserPosts: currentlyLoggedInUser.UserPosts,
+        });
+      }
     } catch (error) {
       console.log("Error with adding document", error);
     }
@@ -151,7 +141,6 @@ export const CreatePost: React.FC = () => {
     setPostLoading(true);
     const format = "DD.MM.YYYY, HH:mm:ss";
     const postDate: string = moment(new Date()).format(format);
-    const countRef = doc(db, "Posts", "count");
     let imageUrl: string = "";
     let fileType: string = "";
     if (rawImageBlob !== undefined) {
@@ -177,6 +166,7 @@ export const CreatePost: React.FC = () => {
       postDate,
       Timestamp.fromDate(new Date()),
       uniqueHashtagArray,
+      uuidv4(),
       imageUrl,
       fileType,
       YTLink

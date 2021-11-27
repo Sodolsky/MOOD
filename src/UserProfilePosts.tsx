@@ -186,6 +186,7 @@ export const UserProfilePosts: React.FC = () => {
               YTLink={item.YTLink}
               fileType={item.fileType}
               img={item.img}
+              URL={item.URL}
             />
           );
         })}
