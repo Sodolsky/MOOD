@@ -41,21 +41,23 @@ export const SinglePost: React.FC = () => {
       />
     </div>
   ) : (
-    <div className="divList">
-      <Post
-        postType={postThatisBeingViewedData.postType}
-        userThatPostedThis={postThatisBeingViewedData.userThatPostedThis}
-        text={postThatisBeingViewedData.text}
-        likeCount={postThatisBeingViewedData.likeCount}
-        hashtags={postThatisBeingViewedData.hashtags}
-        poepleThatLiked={postThatisBeingViewedData.poepleThatLiked}
-        date={postThatisBeingViewedData.date}
-        URL={postThatisBeingViewedData.URL}
-        YTLink={postThatisBeingViewedData.YTLink}
-        fileType={postThatisBeingViewedData.fileType}
-        img={postThatisBeingViewedData.img}
-        key={`${postThatisBeingViewedData.date} ${postThatisBeingViewedData.userThatPostedThis.Email} ${postThatisBeingViewedData.userThatPostedThis.Description}`}
-      />
-    </div>
+    <>
+      <div className="divList">
+        <Post
+          postType={postThatisBeingViewedData.postType}
+          userThatPostedThis={postThatisBeingViewedData.userThatPostedThis}
+          text={postThatisBeingViewedData.text}
+          likeCount={postThatisBeingViewedData.likeCount}
+          hashtags={postThatisBeingViewedData.hashtags}
+          poepleThatLiked={postThatisBeingViewedData.poepleThatLiked}
+          date={postThatisBeingViewedData.date}
+          URL={postThatisBeingViewedData.URL}
+          YTLink={postThatisBeingViewedData.YTLink}
+          fileType={postThatisBeingViewedData.fileType}
+          img={postThatisBeingViewedData.img}
+          key={`${postThatisBeingViewedData.date} ${postThatisBeingViewedData.userThatPostedThis.Email} ${postThatisBeingViewedData.userThatPostedThis.Description}`}
+        />
+      </div>
+    </>
   );
 };

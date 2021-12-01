@@ -31,6 +31,7 @@ import { Link } from "react-router-dom";
 import RemovePostIcon from "./img/xicon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { message } from "antd";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -98,6 +99,9 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
   } = props;
   //We are defining date as another variable to avoid name collison when passing props to comment element
   const parentDate = date;
+  const LinkWasCopiedSuccesfullyMessage = () => {
+    message.success("Link was Copied to your clipboard 👍", 3);
+  };
   const myDate = moment(parentDate, "DD-MM-YYYY  HH:mm:ss").toDate();
   const [allComments, setAllComments] = useState<CommentInterface[]>([]);
   const [topComment, setTopComment] = useState<null | CommentInterface>(null);
@@ -200,11 +204,12 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
           <FontAwesomeIcon
             icon={faLink}
             className="LinkToPost"
-            onClick={() =>
+            onClick={() => {
               navigator.clipboard.writeText(
-                `${window.location.host}/explore/posts/${URL}`
-              )
-            }
+                `${window.location.protocol}//${window.location.host}/explore/posts/${URL}`
+              );
+              LinkWasCopiedSuccesfullyMessage();
+            }}
           />
           {currentlyLoggedInUser.Login === "EVILSODOL" &&
             userThatPostedThis.Login === "EVILSODOL" && (

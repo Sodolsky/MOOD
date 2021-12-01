@@ -71,19 +71,19 @@ import { getElementCountBetween2ElementsInArray } from "./likeFunctions";
 //     <></>
 //   );
 // };
-// function getObjectDiff(obj1: any, obj2: any) {
-//   const diff = Object.keys(obj1).reduce((result, key) => {
-//     if (!obj2.hasOwnProperty(key)) {
-//       result.push(key);
-//     } else if (isEqual(obj1[key], obj2[key])) {
-//       const resultKeyIndex = result.indexOf(key);
-//       result.splice(resultKeyIndex, 1);
-//     }
-//     return result;
-//   }, Object.keys(obj2));
+function getObjectDiff(obj1: any, obj2: any) {
+  const diff = Object.keys(obj1).reduce((result, key) => {
+    if (!obj2.hasOwnProperty(key)) {
+      result.push(key);
+    } else if (isEqual(obj1[key], obj2[key])) {
+      const resultKeyIndex = result.indexOf(key);
+      result.splice(resultKeyIndex, 1);
+    }
+    return result;
+  }, Object.keys(obj2));
 
-//   return diff;
-// }
+  return diff;
+}
 interface MainContentPorps {
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
@@ -128,7 +128,9 @@ export const MainContent: React.FC<MainContentPorps> = () => {
             if (diff === "n") {
               document.title = `MOOD (4+) New Posts`;
             } else {
-              document.title = `MOOD (${diff}) New Posts`;
+              diff === 0
+                ? (document.title = `MOOD`)
+                : (document.title = `MOOD (${diff}) New Posts`);
             }
             //Handle logic when there are Posts in cache and normal Posts Unseen
           } else if (diff !== "n") {
@@ -171,7 +173,9 @@ export const MainContent: React.FC<MainContentPorps> = () => {
         const cachedPostsIndexes = doc.docs.filter((x) => {
           if (cachedPosts.current.length !== 0) {
             for (const i of cachedPosts.current) {
-              if (isEqual(i.data(), x.data())) {
+              const iFormatted = i.data() as PostPropsInteface;
+              const xFormatted = x.data() as PostPropsInteface;
+              if (iFormatted.URL === xFormatted.URL) {
                 return false;
               }
             }
