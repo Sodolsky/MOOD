@@ -1,7 +1,9 @@
+import Tippy from "@tippyjs/react";
 import { doc, updateDoc } from "firebase/firestore";
 import { isEqual } from "lodash";
 import React, { useEffect } from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { UserData } from ".";
 import { db } from "./firebase";
 import heart from "./img/heart.svg";
@@ -76,7 +78,33 @@ export const LikePost: React.FC<LikePostInterface> = (props) => {
         }}
         alt="Place where you love someone post"
       />
-      {match && "Hearts"} {likes}
+      {match && (
+        <Tippy
+          interactive={true}
+          delay={200}
+          placement={"left"}
+          content={
+            <div className="tippyLikes">
+              {poepleThatLiked.map((item) => {
+                return (
+                  <div className="LikedPostContainer" key={item.Email}>
+                    <img src={item.Avatar as string} alt="User Avatar" />
+                    <Link to={`/explore/users/${item.Login}`}>
+                      <span>{item.Login}</span>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          }
+          allowHTML={true}
+          animation={"scale"}
+          appendTo={"parent"}
+        >
+          <div>Hearts</div>
+        </Tippy>
+      )}{" "}
+      {likes}
     </>
   );
 };

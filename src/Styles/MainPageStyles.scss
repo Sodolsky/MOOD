@@ -406,6 +406,31 @@ $white: #fefefe;
     }
   }
 }
+.tippyLikes {
+  overflow-y: auto;
+  max-height: 150px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  .LikedPostContainer {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    span {
+      all: revert;
+      font-size: 1.25rem !important;
+      margin-right: 0.5rem;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      width: 40px !important;
+      aspect-ratio: 1/1;
+      margin-right: 0.5rem;
+    }
+  }
+}
 @media (max-width: 1080px) {
   textarea {
     text-align: center;
