@@ -12,7 +12,7 @@ const RankingComponent: React.FC<RankingComponentPropsInterface> = (props) => {
     <div className="RankingContainer">
       <img src={photo} alt="User Avatar" />
       <span className="LoginContainer">
-        <Link to={`/explore/users/${login}`}>{login}</Link>
+        <Link to={`/users/${login}`}>{login}</Link>
       </span>
       {postCount !== null && <span className="postCount">{postCount}</span>}
     </div>

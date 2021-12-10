@@ -120,3 +120,132 @@ export const getElementCountBetween2ElementsInArray = (
     return Counter;
   }
 };
+//!Potential Functions to operate with the db
+// const addUsersToTheirPosts = async () => {
+//   const allPostsRef = collection(db, "Posts");
+//   const allUsersRef = collection(db, "Users");
+//   const allPostsArray = await getDocs(allPostsRef);
+//   const allUsers = await getDocs(allUsersRef);
+//   const someArr: any = [];
+//   const someUSRArr: any = [];
+//   allPostsArray.forEach((doc) => {
+//     if (doc.exists()) {
+//       someArr.push(doc.data());
+//     } else {
+//       console.log("bug");
+//     }
+//   });
+//   allUsers.forEach((doc) => {
+//     if (doc.exists()) {
+//       someUSRArr.push(doc.data());
+//     }
+//   });
+//   for (const i of someUSRArr) {
+//     const newArr = [];
+//     for (const j of someArr) {
+//       if (i.Login === j.userThatPostedThis.Login) {
+//         newArr.push(j.date);
+//       }
+//     }
+//     updateDoc(doc(db, "Users", `${i.Login}`), {
+//       UserPosts: newArr,
+//     });
+//   }
+// };
+// const copyPosts = async () => {
+//   const oldPostsRef = collection(db, "Posts");
+//   const newPosts = collection(db, "Posts2");
+//   const q = query(newPosts, where("text", "!=", ""));
+//   const myDocs = await getDocs(q);
+//   let count = 0;
+//   myDocs.forEach((item) => {
+//     const obj = item.data() as PostPropsInteface;
+//     if (obj.id) {
+//       count += 1;
+//     }
+//   });
+//   console.log(count);
+// myDocs.forEach(async (item) => {
+//   const obj = item.data() as PostPropsInteface;
+//   const docRef = await addDoc(newPosts, obj);
+//   const rf = doc(db, "Posts2", docRef.id);
+//   await updateDoc(rf, {
+//     id: docRef.id,
+//   });
+// });
+// };
+// const
+// const quickQuery = async () => {
+//   type commentUserType = { Login: string; commentsRef: string[] };
+//   const userCommentsRefArray: commentUserType[] = [];
+//   const userRefs = collection(db, "Users");
+//   const PostsRef = collection(db, "Posts");
+//   const userDocs = await getDocs(userRefs);
+//   userDocs.forEach((item) => {
+//     const obj = item.data() as UserData;
+//     userCommentsRefArray.push({
+//       Login: obj.Login as string,
+//       commentsRef: obj.commentsRef as string[],
+//     });
+//   });
+//   const myDocs = await getDocs(PostsRef);
+//   let total = 0;
+//   myDocs.forEach(async (item) => {
+//     const CommentsCollectionId = collection(
+//       db,
+//       "Posts",
+//       `${item.id}`,
+//       "comments"
+//     );
+//     const comments = await getDocs(CommentsCollectionId);
+//     total += comments.size;
+//     comments.forEach((item) => {
+//       const obj = item.data() as CommentInterface;
+//       const path = item.ref.path;
+//       const loginofUsr = obj.userThatAddedComment.Login;
+//       userCommentsRefArray.find((o, i) => {
+//         if (o.Login === loginofUsr) {
+//           const arr = o.commentsRef;
+//           arr.push(path);
+//           userCommentsRefArray[i] = {
+//             Login: loginofUsr,
+//             commentsRef: arr,
+//           };
+//           return true;
+//         }
+//       });
+//     });
+//     if (total === 1699) {
+//       userCommentsRefArray.forEach((item) => {
+//         const ref = doc(db, "Users", item.Login);
+//         updateDoc(ref, {
+//           commentsRef: item.commentsRef,
+//         });
+//       });
+//       console.log("Done");
+//     }
+//   });
+// };
+// const quickOperation = async () => {
+//   const ref = collection(db, "Posts");
+//   const q = query(ref, where("hashtags", "!=", []));
+//   const myDocs = await getDocs(q);
+//   const Myset: Set<string> = new Set();
+//   const arrWithAllHashtags: string[] = [];
+//   myDocs.forEach((item) => {
+//     const obj = item.data() as PostPropsInteface;
+//     obj.hashtags.forEach((item) => {
+//       Myset.add(item);
+//       arrWithAllHashtags.push(item);
+//     });
+//   });
+//   const arrayWithCount: { name: string; count: number }[] = [];
+//   for (const i of Myset.values()) {
+//     const Numb = arrWithAllHashtags.filter((x) => x === i).length;
+//     arrayWithCount.push({ name: i, count: Numb });
+//   }
+//   arrayWithCount.forEach(async (item) => {
+//     await setDoc(doc(db, "Hashtags", `${item.name}`), item);
+//   });
+//   console.log("done");
+// };

@@ -90,13 +90,13 @@ export const CommentComponent: React.FC<CommentInterface> = (props) => {
         }}
         actions={actions}
         author={
-          <Link to={`/explore/users/${userThatAddedComment.Login}`}>
+          <Link to={`/users/${userThatAddedComment.Login}`}>
             {userThatAddedComment.Login}
           </Link>
         }
         key={`${(userThatAddedComment.Login, parentPostRef)}`}
         avatar={
-          <Link to={`/explore/users/${userThatAddedComment.Login}`}>
+          <Link to={`/users/${userThatAddedComment.Login}`}>
             <Avatar
               ref={AvatarRef}
               className="CommentAvatar"

@@ -11,6 +11,7 @@ header {
   width: 100%;
   border-bottom: 0.25rem #dbdbdb solid;
   .AlignLogo {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,6 +23,21 @@ header {
       transition: transform 0.5s;
       &:hover {
         transform: rotate(60deg);
+      }
+    }
+    .FAContainer {
+      cursor: pointer;
+      right: 15px;
+      position: absolute;
+      font-size: 1.5rem;
+      svg {
+        transition: all 0.3s;
+        &:hover {
+          color: skyblue;
+        }
+      }
+      @media (max-width: 768px) {
+        font-size: 1.1rem;
       }
     }
   }

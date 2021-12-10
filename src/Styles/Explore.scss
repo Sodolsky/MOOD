@@ -3,11 +3,33 @@
   justify-content: center;
 }
 .StatsHeader {
-  font-size: 2rem;
-  color: white;
-  text-align: center;
+  @include FlexCenter();
+  align-items: center;
+  span {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .BackArrowContainer {
+      position: absolute;
+      left: 30px;
+      cursor: pointer;
+      font-size: 2rem;
+      .BackArrow {
+        color: white;
+        transition: all 0.3s;
+        &:hover {
+          transform: translateX(-20px);
+        }
+      }
+    }
+  }
 }
 .StatsContainer {
+  position: relative;
+
   display: flex;
   justify-content: center;
   align-items: baseline;
@@ -33,6 +55,110 @@
         font-size: 1.25rem;
         color: blue;
       }
+    }
+  }
+}
+.ChooseContainer {
+  display: flex;
+  grid-row: span 2;
+  * {
+    cursor: pointer;
+  }
+  .ImgContainer {
+    @include FlexCenter();
+    flex-direction: column;
+    align-items: center;
+    span {
+      font-size: 1.75rem;
+      color: black;
+      margin: 0.5rem;
+    }
+  }
+  .Stats {
+    height: 100%;
+    width: 50%;
+    background-color: hsl(240, 100%, 60%);
+    @include FlexCenter();
+    transition: all 0.5s;
+    align-items: center;
+    &:hover {
+      background-color: hsl(240, 100%, 75%);
+    }
+  }
+  .Tags {
+    height: 100%;
+    width: 50%;
+    border-right: 0.5rem white solid;
+    background-color: hsl(0, 100%, 60%);
+    @include FlexCenter();
+    align-items: center;
+    transition: all 0.5s;
+    &:hover {
+      background-color: hsl(0, 100%, 75%);
+    }
+  }
+}
+.TagsHeader {
+  background-color: #536d14;
+}
+.TagsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    a {
+      color: black;
+    }
+    span:nth-child(2) {
+      cursor: pointer;
+    }
+    span {
+      font-size: 2rem;
+      @media (max-width: 768px) {
+        font-size: 1.25rem;
+      }
+    }
+    .Rank {
+      font-size: 2.5rem;
+      font-family: bold;
+      font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+      position: absolute;
+      left: 15px;
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+    .Count {
+      position: absolute;
+      right: 15px;
+    }
+    width: 100%;
+    min-height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    transition: all 0.5s;
+    &:hover {
+      filter: brightness(125%);
+    }
+    &:nth-of-type(n) {
+      background-color: hsl(258, 69%, 75%);
+    }
+    &:nth-of-type(2n) {
+      background-color: hsl(195, 77%, 61%);
+    }
+    &:nth-of-type(3n) {
+      background-color: hsl(89, 56%, 62%);
+    }
+    &:nth-of-type(4n) {
+      background-color: hsl(43, 100%, 66%);
+    }
+    &:nth-of-type(5n) {
+      background-color: hsl(354, 81%, 63%);
     }
   }
 }

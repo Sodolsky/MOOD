@@ -181,7 +181,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               <div className="tippyContent">
                 <div className="PostUserInfo ">
                   <img src={userThatPostedThis.Avatar} alt="Your Icon" />
-                  <Link to={`/explore/users/${userThatPostedThis.Login}`}>
+                  <Link to={`/users/${userThatPostedThis.Login}`}>
                     <span>{userThatPostedThis.Login}</span>
                   </Link>
                 </div>
@@ -223,7 +223,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               />
             )}
           <span>
-            <Link to={`/explore/users/${userThatPostedThis.Login}`}>
+            <Link to={`/users/${userThatPostedThis.Login}`}>
               {userThatPostedThis.Login}
             </Link>
           </span>

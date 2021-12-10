@@ -5,7 +5,7 @@ import { Post, PostPropsInteface } from "./Post";
 import "./Styles/MainPageStyles.scss";
 import { useEffect } from "react";
 import { useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import InfiniteScroll from "react-infinite-scroll-component";
 import {
   collection,
   DocumentData,
@@ -92,10 +92,10 @@ type incomingPostsType = {
   count: number;
 };
 export const MainContent: React.FC<MainContentPorps> = () => {
+  const firstBatch = React.useRef<boolean>(true);
   const divListRef = React.useRef<HTMLDivElement | null>(null);
   const [lastDoc, setLastDoc] = useState<null | DocumentData>(null);
   const [isLaoding, setIsLaoding] = useState<boolean>(true);
-  const [hasMore, setIfHasMore] = useState<boolean>(true);
   const [rawPosts, setRawPosts] = useState<PostPropsInteface[]>([]);
   const [Posts, setPosts] = useState<JSX.Element[]>();
   const [newPostsAreReady, setIfNewPostsAreReady] =
@@ -188,6 +188,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
         });
         setLastDoc(doc.docs[doc.docs.length - 1]);
         setRawPosts(val);
+        firstBatch.current = false;
       } else {
         setIfNewPostsAreReady({
           ready: true,
@@ -242,29 +243,22 @@ export const MainContent: React.FC<MainContentPorps> = () => {
     );
     setIsLaoding(false);
   }, [rawPosts]);
-  useEffect(() => {
-    if (lastDoc === undefined) {
-      setIfHasMore(false);
-    }
-  }, [lastDoc]);
   // const currentUser = React.useContext(currentlyLoggedInUserContext);
-  const loadFunc = (): void => {
-    if (hasMore) {
-      const ref = collection(db, "Posts");
-      const q = query(
-        ref,
-        orderBy("timestamp", "desc"),
-        limit(4),
-        startAfter(lastDoc)
-      );
-      onSnapshot(q, (doc) => {
-        const val = doc.docs.map((item) => {
-          return item.data() as PostPropsInteface;
-        });
-        setLastDoc(doc.docs[doc.docs.length - 1]);
-        setRawPosts(rawPosts.concat(val));
+  const loadFunc = async (): Promise<void> => {
+    const ref = collection(db, "Posts");
+    const q = query(
+      ref,
+      orderBy("timestamp", "desc"),
+      limit(4),
+      startAfter(lastDoc)
+    );
+    await onSnapshot(q, (doc) => {
+      const val = doc.docs.map((item) => {
+        return item.data() as PostPropsInteface;
       });
-    }
+      setLastDoc(doc.docs[doc.docs.length - 1]);
+      setRawPosts([...rawPosts, ...val]);
+    });
   };
   //https:firebase.google.com/docs/firestore/query-data/order-limit-data
   return isLaoding ? (
@@ -291,11 +285,21 @@ export const MainContent: React.FC<MainContentPorps> = () => {
         <Navigation />
         <CreatePost />
         <InfiniteScroll
-          loader={<LoadingRing key={0} colorVariant={"black"} />}
-          initialLoad={false}
-          loadMore={loadFunc}
-          hasMore={hasMore}
-          threshold={400}
+          style={{ overflow: "hidden" }}
+          loader={
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <LoadingRing colorVariant={"white"} />
+            </div>
+          }
+          hasMore={lastDoc !== undefined}
+          next={loadFunc}
+          dataLength={rawPosts.length}
+          scrollableTarget={window}
+          endMessage={
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              You've seen all the posts :D
+            </div>
+          }
         >
           <div className="divList" ref={divListRef}>
             {newPostsAreReady.ready && (

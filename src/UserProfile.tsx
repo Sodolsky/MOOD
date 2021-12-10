@@ -21,11 +21,14 @@ import ChangeIcon from "./img/change.svg";
 import Yes from "./img/yes.png";
 import No from "./img/no.png";
 import ChangeBackgroundIcon from "./img/backgroundicon.png";
-import { useDropzone } from "react-dropzone";
+import Dropzone, { useDropzone } from "react-dropzone";
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
-import { Dropdown, Empty, Menu, Switch } from "antd";
+import { Dropdown, Empty, Menu, message, Switch } from "antd";
 import { Link } from "react-router-dom";
+import TextareAutosize from "react-textarea-autosize";
 import { query, where, orderBy } from "firebase/firestore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 export type userPrefferedPostType =
   | "Latest Post"
   | "Most Liked"
@@ -50,18 +53,45 @@ export const queryPostByLikeCount = async (userLogin: string) => {
   });
   return MostLikedPostData[0];
 };
+const showUserMessage = (
+  type: "error" | "success",
+  content: string,
+  duration?: number
+) => {
+  switch (type) {
+    case "error":
+      message.error(content, duration);
+      break;
+    case "success":
+      message.success(content, duration);
+      break;
+  }
+};
 const applyChanges = async (
   user: string,
   color: string,
-  userPrefferedPost: userPrefferedPostType | null
+  userPrefferedPost: userPrefferedPostType | null,
+  Description: string,
+  Avatar: File | null
 ) => {
-  if (!userPrefferedPost) {
-  }
   const userRef = doc(db, "Users", user);
-  updateDoc(userRef, {
-    BackgroundColor: color,
-    userPrefferedPost: userPrefferedPost,
-  });
+  const fileRef = ref(storageRef, `${user}`);
+  if (Avatar) {
+    await uploadBytes(fileRef, Avatar).then((snapshot) => {});
+    const uploadedFile = await getDownloadURL(fileRef);
+    await updateDoc(userRef, {
+      BackgroundColor: color,
+      userPrefferedPost: userPrefferedPost,
+      Description: Description,
+      Avatar: uploadedFile,
+    });
+  } else {
+    await updateDoc(userRef, {
+      BackgroundColor: color,
+      userPrefferedPost: userPrefferedPost,
+      Description: Description,
+    });
+  }
 };
 const uploadUserImageToStorageBucket = async (
   key: string,
@@ -74,7 +104,7 @@ const uploadUserImageToStorageBucket = async (
 const UserProfile: React.FC = () => {
   const location = useLocation<Location>();
   const [isContentLoaded, setIsContentLoaded] = useState<boolean>(false);
-  const [isUserValid, setIfUserIsValid] = useState<boolean>(false);
+  const [isUserValid, setIfUserIsValid] = useState<boolean>(true);
   const [displayBGImage, setDisplayBGImage] = useState<boolean>(true);
   const [shouldBackgroundCover, setshouldBackgroundCover] =
     useState<boolean>(false);
@@ -91,6 +121,11 @@ const UserProfile: React.FC = () => {
   const profilePathLogin = useParams<{ user: string }>();
   const [profileColorValue, setprofileColorValue] = useState<string>(
     userData?.BackgroundColor || ""
+  );
+  const [userDescription, setUserDescription] = useState<string>("");
+  const [userAvatar, setUserAvatar] = useState<string>("");
+  const [potentialNewAvatar, setPotentialNewAvatar] = useState<File | null>(
+    null
   );
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -162,6 +197,8 @@ const UserProfile: React.FC = () => {
       const userPrefferedPost = userobj.userPrefferedPost;
       setUserData(userobj as UserData);
       setUserPrefferedPost(userPrefferedPost as userPrefferedPostType);
+      setUserDescription(userobj.Description as string);
+      setUserAvatar(userobj.Avatar as string);
     };
     getUserProfileData(profilePathLogin.user);
 
@@ -228,6 +265,12 @@ const UserProfile: React.FC = () => {
       </Menu.Item>
     </Menu>
   );
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const { value } = e.target;
+    setUserDescription(value);
+  };
   return isContentLoaded ? (
     <>
       <div
@@ -275,18 +318,33 @@ const UserProfile: React.FC = () => {
                 src={Yes}
                 alt="ApplyChanges"
                 onClick={async () => {
+                  if (!userDescription) {
+                    return showUserMessage(
+                      "error",
+                      "User Description cannot be empty"
+                    );
+                  }
                   await applyChanges(
                     currentlyLoggedInUser.Login as string,
                     profileColorValue,
-                    userPrefferedPost
+                    userPrefferedPost,
+                    userDescription,
+                    potentialNewAvatar
                   );
                   const objectWrapper: UserData = {
                     ...userData!,
                     BackgroundColor: profileColorValue,
                     userPrefferedPost: userPrefferedPost,
+                    Description: userDescription,
+                    Avatar: userAvatar,
                   };
                   setUserData(objectWrapper);
                   setProfileIsBeingChanged(false);
+                  showUserMessage(
+                    "success",
+                    "You're Profile was changed successfully ❤",
+                    2
+                  );
                 }}
               />
               <img
@@ -294,6 +352,9 @@ const UserProfile: React.FC = () => {
                 alt="DiscardChanges"
                 onClick={() => {
                   setProfileIsBeingChanged(false);
+                  setUserDescription(userData?.Description as string);
+                  setUserAvatar(userData?.Avatar as string);
+                  setPotentialNewAvatar(null);
                 }}
               />
             </div>
@@ -320,15 +381,66 @@ const UserProfile: React.FC = () => {
               />
             </div>
           )}
-          <div className="UserImage">
-            <img
-              src={`${userData?.Avatar}` as string}
-              alt={"Visited profile Avatar"}
-            />
-          </div>
+          {profileIsBeingChanged ? (
+            <Dropzone
+              onDrop={(acceptedFiles, rejectedFiles) => {
+                if (rejectedFiles.length > 0) {
+                  return showUserMessage(
+                    "error",
+                    "Something is wrong with your file check it's type"
+                  );
+                }
+                if (acceptedFiles[0].size > 10000000) {
+                  return showUserMessage(
+                    "error",
+                    "Your File is bigger than 10MB Try to upload smaller one"
+                  );
+                }
+                if (acceptedFiles.length > 0) {
+                  setUserAvatar(URL.createObjectURL(acceptedFiles[0]));
+                  setPotentialNewAvatar(acceptedFiles[0]);
+                }
+              }}
+              multiple={false}
+              accept={"image/png,image/jpeg,image/jpg"}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <div className={"UserImage  ChangeImage"} {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <img src={`${userAvatar}`} alt={"Visited profile Avatar"} />
+
+                  <div className="FAContainer">
+                    <FontAwesomeIcon icon={faImage} />
+                  </div>
+                </div>
+              )}
+            </Dropzone>
+          ) : (
+            <div className={"UserImage"}>
+              <img
+                src={`${userData?.Avatar}` as string}
+                alt={"Visited profile Avatar"}
+              />
+            </div>
+          )}
           <div className="UserNameAndDescription">
             <span>{userData?.Login}</span>
-            <div>{userData?.Description}</div>
+            {profileIsBeingChanged ? (
+              <TextareAutosize
+                maxRows={3}
+                autoFocus
+                style={{ display: "inline" }}
+                maxLength={100}
+                onChange={(e) => {
+                  handleDescriptionChange(e);
+                }}
+                value={userDescription}
+                name="Text"
+                placeholder="Your Profile Description"
+              />
+            ) : (
+              <div>{userData?.Description}</div>
+            )}
           </div>
           <div className="LatestPost">
             {profileIsBeingChanged ? (
@@ -346,7 +458,7 @@ const UserProfile: React.FC = () => {
             )}
             {highlightedPost ? (
               <>
-                <Link to={`/explore/users/${userData?.Login}/Posts`}>
+                <Link to={`/users/${userData?.Login}/Posts`}>
                   <button className="VievAllPosts">View all user Posts</button>
                 </Link>
                 <div className="postContainerOnUserProfile">

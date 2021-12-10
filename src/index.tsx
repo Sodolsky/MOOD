@@ -207,8 +207,7 @@ export const App: React.FC = () => {
                         </div>
                       </Route>
                       <Route path="/explore/tag" exact>
-                        <h1>Kiedy tu bedzie lista tagow</h1>{" "}
-                        {/*TODO Add something here */}
+                        <Redirect to={"/explore"} />
                       </Route>
                       <Route path="/explore/tag/:item">
                         <div className="MainContentGrid">
@@ -216,13 +215,13 @@ export const App: React.FC = () => {
                           <Tags />
                         </div>
                       </Route>
-                      <Route path="/explore/users/:user" exact>
+                      <Route path="/users/:user" exact>
                         <div className="MainContentGrid">
                           <Navigation />
                           <UserProfile />
                         </div>
                       </Route>
-                      <Route path="/explore/users/:user/Posts">
+                      <Route path="/users/:user/Posts">
                         <div className="MainContentGrid">
                           <Navigation />
                           <UserProfilePosts />
@@ -247,16 +246,16 @@ export const App: React.FC = () => {
                           <Route path="/explore/posts/:PostId">
                             <Redirect to="/" />
                           </Route>
-                          <Route path="/tag" exact>
+                          <Route path="/explore/tag" exact>
                             <Redirect to="/" />
                           </Route>
-                          <Route path="/tag/:item" exact>
+                          <Route path="/explore/tag/:item" exact>
                             <Redirect to="/" />
                           </Route>
-                          <Route path="/explore/users/:user">
+                          <Route path="/users/:user">
                             <Redirect to="/" />
                           </Route>
-                          <Route path="/explore/users/:user/Posts">
+                          <Route path="/users/:user/Posts">
                             <Redirect to="/" />
                           </Route>
                           <Route path="/Settings">

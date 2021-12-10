@@ -18,7 +18,7 @@ import { Post, PostPropsInteface } from "./Post";
 type sortingType = "Latest" | "MostLiked" | "Oldest";
 export const UserProfilePosts: React.FC = () => {
   const myLocation = useLocation<Location>();
-  const userLogin = myLocation.pathname.split("/")[3];
+  const userLogin = myLocation.pathname.split("/")[2];
   const [Posts, setPosts] = useState<PostPropsInteface[]>([]);
   const [lastDoc, setLastDoc] = useState<null | DocumentData>(null);
   const [hasMore, sethasMore] = useState<boolean>(true);

@@ -50,6 +50,34 @@ exports.updateLikeCount = functions
       { merge: true }
     );
   });
+
+exports.checkForNewHashtags = functions
+  .region("europe-central2")
+  .firestore.document("Posts/{PostID}")
+  .onCreate((snap, context) => {
+    const hashTagArray = snap.data().hashtags;
+    const db = admin.firestore();
+    if (hashTagArray.length === 0) {
+      return;
+    }
+    hashTagArray.forEach((item) => {
+      const collRef = db.collection("Hashtags");
+      collRef
+        .where("name", "==", `${item}`)
+        .get()
+        .then((snap) => {
+          if (snap.size === 1) {
+            snap.docs[0].ref.update({
+              count: FieldValue.increment(1),
+            });
+          } else {
+            const data = { name: item, count: 1 };
+            db.collection("Hashtags").doc(item).set(data);
+          }
+        });
+    });
+    return;
+  });
 exports.updatePostCount = functions
   .region("europe-central2")
   .firestore.document("Users/{UserID}")

@@ -36,39 +36,20 @@ export const Navigation: React.FC = () => {
                   style={{
                     paddingBottom: "0.25rem",
                     borderBottom:
-                      splited[1] === "explore" &&
-                      splited[3] !== currentlyLoggedInUser.Login
-                        ? "3px solid purple"
-                        : 0,
+                      splited[1] === "explore" ? "3px solid purple" : "",
                   }}
                 />
               </Link>
             </button>
             <button>
-              <Link to={`/explore/users/${currentlyLoggedInUser.Login}`}>
+              <Link to={`/users/${currentlyLoggedInUser.Login}`}>
                 <img
                   src={UserProfileIcon}
                   alt="Your Profile"
                   style={{
                     paddingBottom: "0.25rem",
                     borderBottom:
-                      splited[1] === "explore" &&
-                      splited[3] === currentlyLoggedInUser.Login
-                        ? "3px solid purple"
-                        : 0,
-                  }}
-                />
-              </Link>
-            </button>
-            <button>
-              <Link to="/settings">
-                <img
-                  src={Settings}
-                  alt="Settings"
-                  style={{
-                    paddingBottom: "0.25rem",
-                    borderBottom:
-                      splited[1] === "settings" ? "3px solid purple" : 0,
+                      splited[1] === "users" ? "3px solid purple" : "",
                   }}
                 />
               </Link>

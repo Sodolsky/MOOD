@@ -84,6 +84,7 @@
     }
     padding: 1rem;
     .UserImage {
+      position: relative;
       @include FlexCenter();
       align-items: center;
       grid-area: UserImage;
@@ -100,6 +101,24 @@
         @media (max-width: 768px) {
           max-height: 125px;
         }
+      }
+      .FAContainer {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        svg {
+          color: black;
+          font-size: 45px;
+        }
+      }
+    }
+    .ChangeImage {
+      cursor: pointer;
+      transition: all 0.5s;
+      filter: brightness(70%);
+      &:hover {
+        filter: none;
       }
     }
     .UserNameAndDescription {
@@ -122,10 +141,11 @@
       }
       div {
         text-align: center;
-        font-size: 1.5vw;
+        font-size: 1.75vw;
         min-width: 20%;
+        word-break: break-all;
         @media (max-width: 768px) {
-          font-size: 4vw;
+          font-size: 6vw;
         }
       }
       grid-area: UserNameAndDescription;
