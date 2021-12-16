@@ -120,6 +120,19 @@ export const getElementCountBetween2ElementsInArray = (
     return Counter;
   }
 };
+export const getObjectDiff = (obj1: any, obj2: any) => {
+  const diff = Object.keys(obj1).reduce((result, key) => {
+    if (!obj2.hasOwnProperty(key)) {
+      result.push(key);
+    } else if (isEqual(obj1[key], obj2[key])) {
+      const resultKeyIndex = result.indexOf(key);
+      result.splice(resultKeyIndex, 1);
+    }
+    return result;
+  }, Object.keys(obj2));
+
+  return diff;
+};
 //!Potential Functions to operate with the db
 // const addUsersToTheirPosts = async () => {
 //   const allPostsRef = collection(db, "Posts");

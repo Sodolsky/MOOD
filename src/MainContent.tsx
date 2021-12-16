@@ -71,19 +71,6 @@ import { getElementCountBetween2ElementsInArray } from "./likeFunctions";
 //     <></>
 //   );
 // };
-// function getObjectDiff(obj1: any, obj2: any) {
-//   const diff = Object.keys(obj1).reduce((result, key) => {
-//     if (!obj2.hasOwnProperty(key)) {
-//       result.push(key);
-//     } else if (isEqual(obj1[key], obj2[key])) {
-//       const resultKeyIndex = result.indexOf(key);
-//       result.splice(resultKeyIndex, 1);
-//     }
-//     return result;
-//   }, Object.keys(obj2));
-
-//   return diff;
-// }
 interface MainContentPorps {
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
@@ -151,12 +138,8 @@ export const MainContent: React.FC<MainContentPorps> = () => {
   // const firstBatch = React.useRef<boolean>(true);
   useEffect(() => {
     const ref = collection(db, "Posts");
-    const q = query(ref, orderBy("timestamp", "desc"), limit(4));
+    const q = query(ref, orderBy("timestamp", "desc"), limit(6));
     const Unsubscibe = onSnapshot(q, (doc) => {
-      // if (firstBatch.current) {
-      //   firstBatch.current = false;
-      //   return;
-      // }
       let shouldLoad: boolean = true;
       doc.docChanges().forEach((change) => {
         if (change.type === "added") {
@@ -203,6 +186,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
   // useEffect(() => {
   //   console.log(newPostsAreReady);
   // }, [newPostsAreReady]);
+  // console.log(rawPosts, lastDoc?.data().text);
   const showNewPosts = () => {
     const cachedPostDataArray = cachedPosts.current.map((item) => {
       return item.data() as PostPropsInteface;
@@ -218,9 +202,6 @@ export const MainContent: React.FC<MainContentPorps> = () => {
     setRawPosts(arr);
   };
   useEffect(() => {
-    rawPosts.sort((a, b) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
     setPosts(
       rawPosts.map((item) => {
         return (
@@ -285,6 +266,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
         <Navigation />
         <CreatePost />
         <InfiniteScroll
+          scrollThreshold={0.7}
           style={{ overflow: "hidden" }}
           loader={
             <div style={{ display: "flex", justifyContent: "center" }}>

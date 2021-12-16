@@ -13,7 +13,6 @@ import {
   Redirect,
 } from "react-router-dom";
 import { Tags } from "./Tags";
-import { Settings } from "./Settings";
 import { Navigation } from "./Navigation";
 import UserProfile, { userPrefferedPostType } from "./UserProfile";
 import Explore from "./Explore";
@@ -66,19 +65,7 @@ export interface LogInInterface {
   isUserLoggedIn: boolean | undefined;
   setIfUserIsLoggedIn: any;
 }
-// function getObjectDiff(obj1: any, obj2: any) {
-//   const diff = Object.keys(obj1).reduce((result, key) => {
-//     if (!obj2.hasOwnProperty(key)) {
-//       result.push(key);
-//     } else if (isEqual(obj1[key], obj2[key])) {
-//       const resultKeyIndex = result.indexOf(key);
-//       result.splice(resultKeyIndex, 1);
-//     }
-//     return result;
-//   }, Object.keys(obj2));
 
-//   return diff;
-// }
 // const getUserPermissionForNotifications = () => {
 //   if (Notification.permission !== "denied") {
 //     Notification.requestPermission((permission) => {
@@ -101,16 +88,16 @@ export interface LogInInterface {
 export const App: React.FC = () => {
   const [firstUpdate, setFirstUpdate] = useState<boolean>(true);
   const [usersLoginArray, setUsersLoginArray] = useState<string[]>([]);
-  React.useEffect(() => {
-    const getDataFromDB = async () => {
-      const ref = doc(db, "Utility", "UserLogins");
+  const getUsersLoginsUtility = async () => {
+    const ref = doc(db, "Utility", "UserLogins");
+    try {
       const myDoc = await getDoc(ref);
       const obj = myDoc.data() as { UserLogins: string[] };
       setUsersLoginArray(obj.UserLogins);
-    };
-    getDataFromDB();
-    // getUserPermissionForNotifications();
-  }, []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getDataAboutUser = async (UID: string) => {
     const uRef = collection(db, "Users");
     const q = query(uRef, where("UID", "==", `${UID}`));
@@ -135,7 +122,9 @@ export const App: React.FC = () => {
           commentsRef: obj.commentsRef,
           commentCount: obj.commentCount,
         });
+        getUsersLoginsUtility();
       }
+      setIfUserIsLoggedIn(true);
     });
   };
   onAuthStateChanged(auth, (user) => {
@@ -145,7 +134,6 @@ export const App: React.FC = () => {
         return;
       }
       getDataAboutUser(user.uid);
-      setIfUserIsLoggedIn(true);
     } else {
       if (firstUpdate) {
         setFirstUpdate(false);
@@ -178,16 +166,11 @@ export const App: React.FC = () => {
                 <allUsersArrayContext.Provider value={usersLoginArray}>
                   <Header />
                   {/*!Here We set up Routes when user is logged in */}
-                  {auth.currentUser ? (
+                  {auth.currentUser &&
+                  currentlyLoggedInUser.Login !== "Admin" ? (
                     <>
                       <Route path="/" exact>
                         <Redirect to="/home" />
-                      </Route>
-                      <Route path="/settings">
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <Settings />
-                        </div>
                       </Route>
                       <Route path="/explore" exact>
                         <div className="MainContentGrid">
@@ -231,7 +214,9 @@ export const App: React.FC = () => {
                   ) : (
                     //!Here We set up Routes when user ISN'T logged in
                     <>
-                      {firstUpdate ? (
+                      {firstUpdate ||
+                      (auth.currentUser &&
+                        currentlyLoggedInUser.Login === "Admin") ? (
                         <div className="screenCenter">
                           <LoadingRing colorVariant="white" />
                         </div>
@@ -256,9 +241,6 @@ export const App: React.FC = () => {
                             <Redirect to="/" />
                           </Route>
                           <Route path="/users/:user/Posts">
-                            <Redirect to="/" />
-                          </Route>
-                          <Route path="/Settings">
                             <Redirect to="/" />
                           </Route>
                         </>

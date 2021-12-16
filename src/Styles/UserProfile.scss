@@ -94,10 +94,10 @@
         box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
           rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
           rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-        max-width: 100%;
-        aspect-ratio: 1/1;
-        border-radius: 50%;
         max-height: 250px;
+        aspect-ratio: 1/1;
+        max-width: 100%;
+        border-radius: 50%;
         @media (max-width: 768px) {
           max-height: 125px;
         }
@@ -226,6 +226,7 @@
   right: 15px;
   top: 15px;
   transition: transform 0.5s;
+  z-index: 9999;
   img {
     width: 40px;
     aspect-ratio: 1/1;
@@ -236,6 +237,7 @@
   }
 }
 .ChangeColorContainer {
+  z-index: 9999;
   position: absolute;
   left: 15px;
   top: 15px;
@@ -249,6 +251,7 @@
 }
 .AcceptOrDiscardChanges {
   position: absolute;
+  z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;

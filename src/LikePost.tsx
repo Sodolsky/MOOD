@@ -89,7 +89,7 @@ export const LikePost: React.FC<LikePostInterface> = (props) => {
                 return (
                   <div className="LikedPostContainer" key={item.Email}>
                     <img src={item.Avatar as string} alt="User Avatar" />
-                    <Link to={`/explore/users/${item.Login}`}>
+                    <Link to={`/users/${item.Login}`}>
                       <span>{item.Login}</span>
                     </Link>
                   </div>
