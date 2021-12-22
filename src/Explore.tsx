@@ -16,7 +16,7 @@ import RankingComponent from "./RankingComponent";
 import StatsImg from "./img/stats.png";
 import HashtagIMG from "./img/hashtag.png";
 import "./Styles/Explore.scss";
-import { LazyLoadedImage } from "./LLImage";
+import { LazyLoadedImage } from "./LazyLoadedImage";
 import { Link } from "react-router-dom";
 import { BackArrow } from "./BackArrow";
 type topPosters = { postCount: number; userLogin: string; avatar: string };

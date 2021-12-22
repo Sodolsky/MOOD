@@ -84,22 +84,7 @@ export const Tags: React.FC = () => {
       >
         <div className="divList">
           {posts!.map((item) => {
-            return (
-              <Post
-                postType={item.postType}
-                userThatPostedThis={item.userThatPostedThis}
-                text={item.text}
-                likeCount={item.likeCount}
-                hashtags={item.hashtags}
-                poepleThatLiked={item.poepleThatLiked}
-                date={item.date}
-                URL={item.URL}
-                YTLink={item.YTLink}
-                fileType={item.fileType}
-                img={item.img}
-                key={item.date}
-              />
-            );
+            return <Post date={item.date} key={`${item.URL}`} />;
           })}
         </div>
       </InfiniteScroll>

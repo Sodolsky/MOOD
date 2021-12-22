@@ -5,10 +5,17 @@ interface LLImagePropsInterface {
   src: string;
   alt: string;
   classname?: string;
+  style?: React.CSSProperties;
 }
 export const LazyLoadedImage: React.FC<LLImagePropsInterface> = (props) => {
-  const { src, alt, classname } = props;
+  const { src, alt, classname, style } = props;
   return (
-    <LazyLoadImage src={src} alt={alt} effect={"blur"} className={classname} />
+    <LazyLoadImage
+      src={src}
+      alt={alt}
+      effect={"blur"}
+      className={classname}
+      style={style}
+    />
   );
 };

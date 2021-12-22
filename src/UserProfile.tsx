@@ -462,20 +462,7 @@ const UserProfile: React.FC = () => {
                   <button className="VievAllPosts">View all user Posts</button>
                 </Link>
                 <div className="postContainerOnUserProfile">
-                  <Post
-                    key={`${highlightedPost.date} ${highlightedPost.userThatPostedThis.Email} ${highlightedPost.userThatPostedThis.Description}`}
-                    date={highlightedPost?.date}
-                    postType={highlightedPost.postType}
-                    text={highlightedPost.text}
-                    userThatPostedThis={highlightedPost.userThatPostedThis}
-                    YTLink={highlightedPost.YTLink}
-                    img={highlightedPost.img}
-                    likeCount={highlightedPost.likeCount}
-                    fileType={highlightedPost.fileType}
-                    hashtags={highlightedPost.hashtags}
-                    poepleThatLiked={highlightedPost.poepleThatLiked}
-                    URL={highlightedPost.URL}
-                  />
+                  <Post date={highlightedPost?.date} />
                 </div>
               </>
             ) : (
