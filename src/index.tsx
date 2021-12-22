@@ -95,7 +95,7 @@ export const App: React.FC = () => {
       const obj = myDoc.data() as { UserLogins: string[] };
       setUsersLoginArray(obj.UserLogins);
     } catch (error) {
-      console.log(error);
+      console.log(error, "e");
     }
   };
   const getDataAboutUser = async (UID: string) => {
@@ -166,51 +166,56 @@ export const App: React.FC = () => {
                 <allUsersArrayContext.Provider value={usersLoginArray}>
                   <Header />
                   {/*!Here We set up Routes when user is logged in */}
-                  {auth.currentUser &&
-                  currentlyLoggedInUser.Login !== "Admin" ? (
-                    <>
-                      <Route path="/" exact>
-                        <Redirect to="/home" />
-                      </Route>
-                      <Route path="/explore" exact>
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <Explore />
-                        </div>
-                      </Route>
-                      <Route path="/home" exact>
-                        <MainContent
-                          setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
-                        />
-                      </Route>
-                      <Route path="/explore/posts/:PostId">
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <SinglePost />
-                        </div>
-                      </Route>
-                      <Route path="/explore/tag" exact>
-                        <Redirect to={"/explore"} />
-                      </Route>
-                      <Route path="/explore/tag/:item">
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <Tags />
-                        </div>
-                      </Route>
-                      <Route path="/users/:user" exact>
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <UserProfile />
-                        </div>
-                      </Route>
-                      <Route path="/users/:user/Posts">
-                        <div className="MainContentGrid">
-                          <Navigation />
-                          <UserProfilePosts />
-                        </div>
-                      </Route>
-                    </>
+                  {auth.currentUser ? (
+                    currentlyLoggedInUser.Login !== "Admin" ? (
+                      <>
+                        <Route path="/" exact>
+                          <Redirect to="/home" />
+                        </Route>
+                        <Route path="/explore" exact>
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <Explore />
+                          </div>
+                        </Route>
+                        <Route path="/home" exact>
+                          <MainContent
+                            setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
+                          />
+                        </Route>
+                        <Route path="/explore/posts/:PostId">
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <SinglePost />
+                          </div>
+                        </Route>
+                        <Route path="/explore/tag" exact>
+                          <Redirect to={"/explore"} />
+                        </Route>
+                        <Route path="/explore/tag/:item">
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <Tags />
+                          </div>
+                        </Route>
+                        <Route path="/users/:user" exact>
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <UserProfile />
+                          </div>
+                        </Route>
+                        <Route path="/users/:user/Posts">
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <UserProfilePosts />
+                          </div>
+                        </Route>
+                      </>
+                    ) : (
+                      <div className="screenCenter">
+                        <LoadingRing colorVariant="white" />
+                      </div>
+                    )
                   ) : (
                     //!Here We set up Routes when user ISN'T logged in
                     <>

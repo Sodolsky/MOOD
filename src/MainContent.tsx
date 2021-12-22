@@ -16,7 +16,7 @@ import {
   startAfter,
 } from "@firebase/firestore";
 import { db } from "./firebase";
-import { UserData } from ".";
+import { currentlyLoggedInUserContext, UserData } from ".";
 import { LoadingRing } from "./LoadingRing";
 import { BackTop } from "antd";
 import { isEqual } from "lodash";
@@ -79,6 +79,7 @@ type incomingPostsType = {
   count: number;
 };
 export const MainContent: React.FC<MainContentPorps> = () => {
+  const currentlyLoggedInUser = React.useContext(currentlyLoggedInUserContext);
   const firstBatch = React.useRef<boolean>(true);
   const divListRef = React.useRef<HTMLDivElement | null>(null);
   const [lastDoc, setLastDoc] = useState<null | DocumentData>(null);
@@ -115,8 +116,14 @@ export const MainContent: React.FC<MainContentPorps> = () => {
             if (diff === "n") {
               document.title = `MOOD (4+) New Posts`;
             } else {
+              //We need to check if post that is being added is user post if not we handle normal logic else we dont change the title
               diff === 0
                 ? (document.title = `MOOD`)
+                : diff === 1
+                ? rawPosts[0].userThatPostedThis.UID ===
+                  currentlyLoggedInUser.UID
+                  ? (document.title = `MOOD`)
+                  : (document.title = `MOOD (${diff}) New Posts`)
                 : (document.title = `MOOD (${diff}) New Posts`);
             }
             //Handle logic when there are Posts in cache and normal Posts Unseen
@@ -134,7 +141,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
         }
       }
     }
-  }, [rawPosts, visible, newPostsAreReady]);
+  }, [rawPosts, visible, newPostsAreReady, currentlyLoggedInUser.UID]);
   // const firstBatch = React.useRef<boolean>(true);
   useEffect(() => {
     const ref = collection(db, "Posts");

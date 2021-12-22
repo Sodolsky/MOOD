@@ -7,7 +7,7 @@ const client = new firestore.v1.FirestoreAdminClient();
 const bucket = "gs://database-backup-mood-project";
 
 exports.scheduledFirestoreExport = functions.pubsub
-  .schedule("every 12 hours")
+  .schedule("every 48 hours")
   .onRun((context) => {
     const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
     const databaseName = client.databasePath(projectId, "(default)");

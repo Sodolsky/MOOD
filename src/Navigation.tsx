@@ -2,7 +2,6 @@ import * as React from "react";
 import { Container, Navbar } from "react-bootstrap";
 import Home from "./img/home.svg";
 import Explore from "./img/explore.svg";
-import Settings from "./img/settings.svg";
 import UserProfileIcon from "./img/userprofile.png";
 import { Link, useLocation } from "react-router-dom";
 import { currentlyLoggedInUserContext } from ".";

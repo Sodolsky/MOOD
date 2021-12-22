@@ -428,7 +428,7 @@ const UserProfile: React.FC = () => {
             {profileIsBeingChanged ? (
               <TextareAutosize
                 maxRows={3}
-                autoFocus
+                autoFocus={false}
                 style={{ display: "inline" }}
                 maxLength={100}
                 onChange={(e) => {

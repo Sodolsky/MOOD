@@ -344,7 +344,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               <div className="CommentList">
                 {allComments
                   .sort((a: CommentInterface, b: CommentInterface) => {
-                    return a.date - b.date;
+                    return b.date - a.date;
                   })
                   .map((item) => {
                     return (

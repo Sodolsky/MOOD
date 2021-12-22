@@ -28,7 +28,7 @@ export const SinglePost: React.FC = () => {
       }
     };
     getDataAboutPostFromDB();
-  }, []);
+  }, [params.PostId]);
   return isLaoding ? (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <LoadingRing colorVariant={"white"} />

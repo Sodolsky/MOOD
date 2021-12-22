@@ -5,7 +5,11 @@ import moon from "./img/half-moon.svg";
 import { auth } from "./firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDoorOpen } from "@fortawesome/free-solid-svg-icons";
+import { setCurrentlyLoggedInUserContext } from ".";
 export const Header: React.FC = () => {
+  const setCurrentlyLoggedInUser = React.useContext(
+    setCurrentlyLoggedInUserContext
+  );
   return (
     <header>
       <Container fluid className="HeaderContainer">
@@ -17,7 +21,20 @@ export const Header: React.FC = () => {
                 <div className="FAContainer">
                   <FontAwesomeIcon
                     icon={faDoorOpen}
-                    onClick={() => auth.signOut()}
+                    onClick={() => {
+                      if (setCurrentlyLoggedInUser) {
+                        setCurrentlyLoggedInUser({
+                          Login: "Admin",
+                          Password: "Admin",
+                          Email: "Admin",
+                        });
+                      }
+                      try {
+                        auth.signOut();
+                      } catch (error) {
+                        console.log(error);
+                      }
+                    }}
                   />
                 </div>
               )}
