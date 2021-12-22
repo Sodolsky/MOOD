@@ -22,55 +22,6 @@ import { BackTop } from "antd";
 import { isEqual } from "lodash";
 import { usePageVisibility } from "./hooks/usePageVisibility";
 import { getElementCountBetween2ElementsInArray } from "./likeFunctions";
-// export const ShowUserThatWeAreChaningSingInSystem: React.FC<{
-//   wasShown: string;
-//   userObject: UserData;
-// }> = (props) => {
-//   const { wasShown, userObject } = props;
-//   // const [isModalVisible, setIsModalVisible] = useState<boolean>(
-//   //   wasShown === "false"
-//   // );
-//   // const handleOk = () => {
-//   //   setIsModalVisible(false);
-//   //   localStorage.setItem("signupinfo", "true");
-//   // };
-//   // const handleCancel = () => {
-//   //   setIsModalVisible(false);
-//   //   localStorage.setItem("signupinfo", "true");
-//   // };
-//   return wasShown === "false" ? (
-//     <Modal
-//       title="Sign in method change"
-//       onCancel={handleCancel}
-//       onOk={handleOk}
-//       visible={isModalVisible}
-//     >
-//       Dear {userObject.Login}, on 06.11.2021 we will be changing the way you
-//       Sign In for the platform. Instead of using Login and Password , you will
-//       need to provide us with Email and Password. We know that most users didn't
-//       really care about providing us with a Valid Email, so here are your Login
-//       Credentials:
-//       <br />
-//       <span
-//         style={{
-//           display: "flex",
-//           justifyContent: "center",
-//           flexDirection: "column",
-//           alignItems: "center",
-//         }}
-//       >
-//         <h3>
-//           Email: <span style={{ color: "red" }}>{userObject.Email}</span>
-//         </h3>
-//         <h3>
-//           Password: <span style={{ color: "red" }}>{userObject.Password}</span>
-//         </h3>
-//       </span>
-//     </Modal>
-//   ) : (
-//     <></>
-//   );
-// };
 interface MainContentPorps {
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
@@ -149,7 +100,9 @@ export const MainContent: React.FC<MainContentPorps> = () => {
     const Unsubscibe = onSnapshot(q, (doc) => {
       let shouldLoad: boolean = true;
       doc.docChanges().forEach((change) => {
-        if (change.type === "added") {
+        if (change.type === "modified") {
+          return;
+        } else if (change.type === "added") {
           if (window.pageYOffset > 1500) {
             shouldLoad = false;
             potentialNewPostsCount.current++;
@@ -157,34 +110,34 @@ export const MainContent: React.FC<MainContentPorps> = () => {
             arr.push(change.doc);
             cachedPosts.current = arr;
           }
+          if (shouldLoad) {
+            const cachedPostsIndexes = doc.docs.filter((x) => {
+              if (cachedPosts.current.length !== 0) {
+                for (const i of cachedPosts.current) {
+                  const iFormatted = i.data() as PostPropsInteface;
+                  const xFormatted = x.data() as PostPropsInteface;
+                  if (iFormatted.URL === xFormatted.URL) {
+                    return false;
+                  }
+                }
+                return true;
+              }
+              return true;
+            });
+            const val = cachedPostsIndexes.map((item) => {
+              return item.data() as PostPropsInteface;
+            });
+            setLastDoc(doc.docs[doc.docs.length - 1]);
+            setRawPosts(val);
+            firstBatch.current = false;
+          } else {
+            setIfNewPostsAreReady({
+              ready: true,
+              count: potentialNewPostsCount.current,
+            });
+          }
         }
       });
-      if (shouldLoad) {
-        const cachedPostsIndexes = doc.docs.filter((x) => {
-          if (cachedPosts.current.length !== 0) {
-            for (const i of cachedPosts.current) {
-              const iFormatted = i.data() as PostPropsInteface;
-              const xFormatted = x.data() as PostPropsInteface;
-              if (iFormatted.URL === xFormatted.URL) {
-                return false;
-              }
-            }
-            return true;
-          }
-          return true;
-        });
-        const val = cachedPostsIndexes.map((item) => {
-          return item.data() as PostPropsInteface;
-        });
-        setLastDoc(doc.docs[doc.docs.length - 1]);
-        setRawPosts(val);
-        firstBatch.current = false;
-      } else {
-        setIfNewPostsAreReady({
-          ready: true,
-          count: potentialNewPostsCount.current,
-        });
-      }
     });
     return () => {
       Unsubscibe();
@@ -215,16 +168,6 @@ export const MainContent: React.FC<MainContentPorps> = () => {
           <Post
             key={`${item.date} ${item.userThatPostedThis.Email} ${item.userThatPostedThis.Description}`}
             date={item.date}
-            postType={item.postType}
-            fileType={item.fileType}
-            userThatPostedThis={item.userThatPostedThis}
-            text={item.text}
-            hashtags={item.hashtags}
-            likeCount={item.likeCount}
-            poepleThatLiked={item.poepleThatLiked}
-            YTLink={item.YTLink}
-            img={item.img}
-            URL={item.URL}
           />
         );
       })
@@ -240,12 +183,18 @@ export const MainContent: React.FC<MainContentPorps> = () => {
       limit(4),
       startAfter(lastDoc)
     );
-    await onSnapshot(q, (doc) => {
-      const val = doc.docs.map((item) => {
-        return item.data() as PostPropsInteface;
+    onSnapshot(q, (doc) => {
+      doc.docChanges().forEach((change) => {
+        if (change.type === "modified") {
+          return;
+        } else if (change.type === "added") {
+          const val = doc.docs.map((item) => {
+            return item.data() as PostPropsInteface;
+          });
+          setLastDoc(doc.docs[doc.docs.length - 1]);
+          setRawPosts([...rawPosts, ...val]);
+        }
       });
-      setLastDoc(doc.docs[doc.docs.length - 1]);
-      setRawPosts([...rawPosts, ...val]);
     });
   };
   //https:firebase.google.com/docs/firestore/query-data/order-limit-data

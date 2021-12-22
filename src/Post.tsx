@@ -26,12 +26,13 @@ import { CommentInterface } from "./CreatePost";
 import { CommentComponent } from "./CommentComponent";
 import moment from "moment";
 import { LikePost } from "./LikePost";
-import { LazyLoadedImage } from "./LLImage";
+import { LazyLoadedImage } from "./LazyLoadedImage";
 import { Link } from "react-router-dom";
 import RemovePostIcon from "./img/xicon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
+import SkeletonPost from "./SkeletonPost";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -83,20 +84,8 @@ export const addCommentToDataBase = async (
     }
   });
 };
-export const Post: React.FC<PostPropsInteface> = (props) => {
+export const Post: React.FC<{ date: string }> = ({ date }) => {
   const match = useMediaQuery("only screen and (min-width:450px");
-  let {
-    postType,
-    userThatPostedThis,
-    text,
-    img,
-    YTLink,
-    poepleThatLiked,
-    date,
-    fileType,
-    hashtags,
-    URL,
-  } = props;
   //We are defining date as another variable to avoid name collison when passing props to comment element
   const parentDate = date;
   const LinkWasCopiedSuccesfullyMessage = () => {
@@ -107,12 +96,21 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
   const [topComment, setTopComment] = useState<null | CommentInterface>(null);
   const [commentVal, changeCommentVal] = useState<string>("");
   const [commentCount, setCommentCount] = useState<number>(0);
+  const [postData, setPostData] = useState<Omit<
+    PostPropsInteface,
+    "date"
+  > | null>(null);
   const [addingCommentSelected, setIfAddingCommentIsSelected] =
     useState<boolean>(false);
   const firstRender = React.useRef<boolean>(true);
   // Here we are fetching the comments data and setting up top comment
   useEffect(() => {
     const refForComments = collection(db, "Posts", `${date}`, "comments");
+    const refForPost = doc(db, "Posts", `${date}`);
+    const PostSubscription = onSnapshot(refForPost, (doc) => {
+      const data = doc.data() as Omit<PostPropsInteface, "date">;
+      setPostData(data);
+    });
     const Unsubscribe = onSnapshot(refForComments, (doc) => {
       if (doc.docs.length > 0) {
         const arrayForSave: CommentInterface[] = [];
@@ -159,7 +157,10 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
         }
       }
     });
-    return () => Unsubscribe();
+    return () => {
+      Unsubscribe();
+      PostSubscription();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const currentlyLoggedInUser = useContext(currentlyLoggedInUserContext);
@@ -167,7 +168,9 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
     const val = event.target.value;
     changeCommentVal(val);
   };
-  return (
+  return !postData ? (
+    <SkeletonPost />
+  ) : (
     <div className="ListWrapper">
       <div className="Post">
         <div className="PostUserInfo">
@@ -180,13 +183,16 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             content={
               <div className="tippyContent">
                 <div className="PostUserInfo ">
-                  <img src={userThatPostedThis.Avatar} alt="Your Icon" />
-                  <Link to={`/users/${userThatPostedThis.Login}`}>
-                    <span>{userThatPostedThis.Login}</span>
+                  <img
+                    src={postData?.userThatPostedThis.Avatar}
+                    alt="Your Icon"
+                  />
+                  <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
+                    <span>{postData?.userThatPostedThis.Login}</span>
                   </Link>
                 </div>
                 <span className="userDescription">
-                  {userThatPostedThis.Description}
+                  {postData?.userThatPostedThis.Description}
                 </span>
               </div>
             }
@@ -196,7 +202,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             appendTo={"parent"}
           >
             <img
-              src={userThatPostedThis.Avatar}
+              src={postData?.userThatPostedThis.Avatar}
               className="userAvatar"
               alt="Your Icon"
             />
@@ -212,7 +218,7 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             }}
           />
           {currentlyLoggedInUser.Login === "EVILSODOL" &&
-            userThatPostedThis.Login === "EVILSODOL" && (
+            postData?.userThatPostedThis.Login === "EVILSODOL" && (
               <img
                 src={RemovePostIcon}
                 alt="Click to remove your Post"
@@ -223,19 +229,21 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
               />
             )}
           <span>
-            <Link to={`/users/${userThatPostedThis.Login}`}>
-              {userThatPostedThis.Login}
+            <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
+              {postData?.userThatPostedThis.Login}
             </Link>
           </span>
         </div>
         <div className="PostBody">
           <div className="PostText">
-            {hashtags.length > 0
-              ? text
+            {postData && postData.hashtags.length > 0
+              ? postData?.text
                   .split(" ")
                   .map<React.ReactNode>((item) => {
                     if (
-                      hashtags.some((arritem) => arritem === item.toLowerCase())
+                      postData.hashtags.some(
+                        (arritem) => arritem === item.toLowerCase()
+                      )
                     ) {
                       let route = item.substring(1);
                       route = route.toLowerCase();
@@ -249,23 +257,23 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
                     }
                   })
                   .reduce((prev, curr) => [prev, " ", curr])
-              : text}
+              : postData?.text}
           </div>
           <div className="PostPhoto">
-            {postType === "photo" ? (
+            {postData?.postType === "photo" ? (
               <div className="userImageContainer">
-                {fileType === "image" ? (
+                {postData?.fileType === "image" ? (
                   <LazyLoadedImage
-                    src={img as string}
+                    src={postData?.img as string}
                     alt={"Your Uploaded Mood"}
                   />
                 ) : (
-                  <video controls src={img} />
+                  <video controls src={postData?.img} />
                 )}
               </div>
             ) : (
               <iframe
-                src={getLinkId(YTLink || "")}
+                src={getLinkId(postData?.YTLink || "")}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -278,7 +286,9 @@ export const Post: React.FC<PostPropsInteface> = (props) => {
             <LikePost
               currentlyLoggedInUser={currentlyLoggedInUser}
               match={match}
-              poepleThatLiked={poepleThatLiked}
+              poepleThatLiked={
+                postData?.poepleThatLiked ? postData.poepleThatLiked : []
+              }
               date={date}
             />
             <img

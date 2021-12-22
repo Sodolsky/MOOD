@@ -176,17 +176,7 @@ export const UserProfilePosts: React.FC = () => {
           return (
             <Post
               key={`${item.date} ${item.userThatPostedThis.Email} ${item.userThatPostedThis.Description}`}
-              postType={item.postType}
-              userThatPostedThis={item.userThatPostedThis}
-              text={item.text}
-              likeCount={item.likeCount}
-              hashtags={item.hashtags}
-              poepleThatLiked={item.poepleThatLiked}
               date={item.date}
-              YTLink={item.YTLink}
-              fileType={item.fileType}
-              img={item.img}
-              URL={item.URL}
             />
           );
         })}

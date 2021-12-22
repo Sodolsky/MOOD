@@ -5,6 +5,7 @@ import Explore from "./img/explore.svg";
 import UserProfileIcon from "./img/userprofile.png";
 import { Link, useLocation } from "react-router-dom";
 import { currentlyLoggedInUserContext } from ".";
+import { LazyLoadedImage } from "./LazyLoadedImage";
 export const Navigation: React.FC = () => {
   const location = useLocation();
   const currentlyLoggedInUser = React.useContext(currentlyLoggedInUserContext);
@@ -16,7 +17,7 @@ export const Navigation: React.FC = () => {
           <Container fluid className="justify-content-around">
             <button>
               <Link to="/home">
-                <img
+                <LazyLoadedImage
                   src={Home}
                   alt="Main Page"
                   style={{
@@ -29,7 +30,7 @@ export const Navigation: React.FC = () => {
             </button>
             <button>
               <Link to="/explore">
-                <img
+                <LazyLoadedImage
                   src={Explore}
                   alt="Explore"
                   style={{
@@ -42,7 +43,7 @@ export const Navigation: React.FC = () => {
             </button>
             <button>
               <Link to={`/users/${currentlyLoggedInUser.Login}`}>
-                <img
+                <LazyLoadedImage
                   src={UserProfileIcon}
                   alt="Your Profile"
                   style={{

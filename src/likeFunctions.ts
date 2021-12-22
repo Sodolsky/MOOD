@@ -100,21 +100,21 @@ export const baseStyle = {
   margin: "1rem",
 };
 export const getElementCountBetween2ElementsInArray = (
-  array: PostPropsInteface[],
+  postId: PostPropsInteface[],
   Element: PostPropsInteface | null
 ): number | "n" => {
   if (!Element) {
     return 0;
   }
   let Counter = 0;
-  for (const i of array) {
+  for (const i of postId) {
     if (i.date !== Element.date) {
       Counter++;
     } else {
       break;
     }
   }
-  if (Counter === array.length) {
+  if (Counter === postId.length) {
     return "n";
   } else {
     return Counter;
