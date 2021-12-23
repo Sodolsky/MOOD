@@ -4,6 +4,7 @@ import "./Styles/tippyStyles.scss";
 import "tippy.js/animations/scale.css";
 import { currentlyLoggedInUserContext, UserData } from ".";
 import { getLinkId } from "./ValidateYoutubeUrl";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import commentSVG from "./img/Comment.svg";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -33,6 +34,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -212,7 +214,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
             className="LinkToPost"
             onClick={() => {
               navigator.clipboard.writeText(
-                `${window.location.protocol}//${window.location.host}/explore/posts/${URL}`
+                `${window.location.protocol}//${window.location.host}/explore/posts/${postData.URL}`
               );
               LinkWasCopiedSuccesfullyMessage();
             }}
@@ -272,13 +274,15 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                 )}
               </div>
             ) : (
-              <iframe
-                src={getLinkId(postData?.YTLink || "")}
+              <LiteYouTubeEmbed
+                id={getLinkId(postData.YTLink as string).id}
+                params={getLinkId(postData.YTLink as string).timestamp || ""}
                 title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+                adNetwork={false}
+                playlist={false}
+                noCookie={true}
+                webp={true}
+              ></LiteYouTubeEmbed>
             )}
           </div>
           <span className="WhenPostWasAdded">{moment(myDate).fromNow()}</span>

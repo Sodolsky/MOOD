@@ -9,6 +9,7 @@ import {
   Button,
   Alert,
 } from "react-bootstrap";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import { v4 as uuidv4 } from "uuid";
 import TextareAutosize from "react-textarea-autosize";
 import { FileUploader } from "./FileUploader";
@@ -30,6 +31,7 @@ import { checkIfTextHaveHashtags } from "./likeFunctions";
 import { uniq } from "lodash";
 import BackArrow from "./img/backarrow.png";
 import moment from "moment";
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
 //Key needs to be changed
 const uploadUserImageToStorageBucket = async (
   key: string,
@@ -279,13 +281,15 @@ export const CreatePost: React.FC = () => {
                     )}
                   </div>
                 ) : (
-                  <iframe
-                    src={getLinkId(YTLink || "")}
+                  <LiteYouTubeEmbed
+                    id={getLinkId(YTLink as string).id}
+                    params={getLinkId(YTLink as string).timestamp || ""}
                     title="YouTube video player"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+                    adNetwork={false}
+                    playlist={false}
+                    noCookie={true}
+                    webp={true}
+                  ></LiteYouTubeEmbed>
                 )}
               </div>
               <span className="LikesAndComments">

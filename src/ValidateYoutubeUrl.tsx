@@ -8,17 +8,14 @@ export const validateYouTubeUrl = (url: string): boolean | undefined => {
     }
   }
 };
-export const getLinkId = (url: string): string => {
+type youtubeURL = { id: string; timestamp: null | string };
+export const getLinkId = (url: string): youtubeURL => {
   const match = Matchlink(url);
   //?start=84 This is the format we need to convert from ?t=84
   if (match && match[2].length === 11) {
-    if (match[3] && match[4]) {
-      return `https://www.youtube.com/embed/${match[2]}?start=${match[4]}`;
-    } else {
-      return `https://www.youtube.com/embed/${match[2]}`;
-    }
+    return { id: match[2], timestamp: !match[4] ? null : `start=${match[4]}` };
   }
-  return "";
+  return { id: "", timestamp: null };
 };
 const Matchlink = (url: string): RegExpMatchArray | null => {
   const regExp =
