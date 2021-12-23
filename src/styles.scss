@@ -2,6 +2,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Hahmlet:wght@100&display=swap");
 @import "~antd/dist/antd.css";
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
+a {
+  color: hsl(209, 100%, 45%);
+}
 body {
   background-color: #fafafa;
   font-family: "Roboto Condensed", sans-serif;
