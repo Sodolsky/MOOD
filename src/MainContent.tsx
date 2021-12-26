@@ -8,7 +8,9 @@ import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
   collection,
+  doc,
   DocumentData,
+  getDoc,
   limit,
   onSnapshot,
   orderBy,
@@ -143,11 +145,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
       Unsubscibe();
     };
   }, []);
-  // useEffect(() => {
-  //   console.log(newPostsAreReady);
-  // }, [newPostsAreReady]);
-  // console.log(rawPosts, lastDoc?.data().text);
-  const showNewPosts = () => {
+  const showNewPosts = async () => {
     const cachedPostDataArray = cachedPosts.current.map((item) => {
       return item.data() as PostPropsInteface;
     });
@@ -158,7 +156,8 @@ export const MainContent: React.FC<MainContentPorps> = () => {
       ready: false,
       count: potentialNewPostsCount.current,
     });
-    setLastDoc(arr[arr.length - 1]);
+    const Ldoc = await getDoc(doc(db, "Posts", `${arr[arr.length - 1].date}`));
+    setLastDoc(Ldoc);
     setRawPosts(arr);
   };
   useEffect(() => {

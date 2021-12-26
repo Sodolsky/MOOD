@@ -280,7 +280,6 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                 title="YouTube video player"
                 adNetwork={false}
                 playlist={false}
-                noCookie={true}
                 webp={true}
               ></LiteYouTubeEmbed>
             )}
