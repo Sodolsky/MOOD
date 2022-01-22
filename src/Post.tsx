@@ -82,14 +82,16 @@ export const addCommentToDataBase = async (
   const userData = await getDoc(userRef);
   const userDataObject = userData.data() as UserData;
   const commentsRefArray = userDataObject.commentsRef;
-  const NotificationObj: NotificationInterface = {
-    postId: postId,
-    type: "comment",
-    whoDid: userThatAddedComment.Login as string,
-  };
-  await updateDoc(userRefNotification, {
-    Notifications: arrayUnion(NotificationObj),
-  });
+  if (userThatPostedLogin !== userThatAddedComment.Login) {
+    const NotificationObj: NotificationInterface = {
+      postId: postId,
+      type: "comment",
+      whoDid: userThatAddedComment.Login as string,
+    };
+    await updateDoc(userRefNotification, {
+      Notifications: arrayUnion(NotificationObj),
+    });
+  }
   await addDoc(postRef, newCommentObj).then(async (doc) => {
     if (commentsRefArray) {
       commentsRefArray.push(doc.path);

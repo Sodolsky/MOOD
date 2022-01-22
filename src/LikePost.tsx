@@ -32,16 +32,18 @@ export const savePoepleThatLikedPost = async (
 ) => {
   const postRef = doc(db, "Posts", `${key}`);
   const userRef = doc(db, "Users", `${userThatPostedLogin}`);
-  const NotificationObj: NotificationInterface = {
-    postId: postId,
-    type: "like",
-    whoDid: login,
-  };
   nProgress.start();
-  await updateDoc(userRef, {
-    Notifications: arrayUnion(NotificationObj),
-  });
-  nProgress.inc();
+  if (login !== userThatPostedLogin) {
+    const NotificationObj: NotificationInterface = {
+      postId: postId,
+      type: "like",
+      whoDid: login,
+    };
+    await updateDoc(userRef, {
+      Notifications: arrayUnion(NotificationObj),
+    });
+    nProgress.inc();
+  }
   await updateDoc(postRef, {
     poepleThatLiked: poepleThatLikedArray,
   });
