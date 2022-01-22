@@ -1,11 +1,13 @@
 import Tippy from "@tippyjs/react";
-import { doc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { isEqual } from "lodash";
+import nProgress from "nprogress";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserData } from ".";
 import { db } from "./firebase";
+import { NotificationInterface } from "./Header";
 import heart from "./img/heart.svg";
 import heartLiked from "./img/heartLiked.svg";
 import {
@@ -18,18 +20,42 @@ interface LikePostInterface {
   currentlyLoggedInUser: UserData;
   poepleThatLiked: UserData[];
   date: string;
+  postId: string;
+  userThatPostedLogin: string;
 }
 export const savePoepleThatLikedPost = async (
   key: string,
-  poepleThatLikedArray: UserData[]
+  poepleThatLikedArray: UserData[],
+  postId: string,
+  login: string,
+  userThatPostedLogin: string
 ) => {
   const postRef = doc(db, "Posts", `${key}`);
+  const userRef = doc(db, "Users", `${userThatPostedLogin}`);
+  const NotificationObj: NotificationInterface = {
+    postId: postId,
+    type: "like",
+    whoDid: login,
+  };
+  nProgress.start();
+  await updateDoc(userRef, {
+    Notifications: arrayUnion(NotificationObj),
+  });
+  nProgress.inc();
   await updateDoc(postRef, {
     poepleThatLiked: poepleThatLikedArray,
   });
+  nProgress.done();
 };
 export const LikePost: React.FC<LikePostInterface> = (props) => {
-  const { match, currentlyLoggedInUser, poepleThatLiked, date } = props;
+  const {
+    match,
+    currentlyLoggedInUser,
+    poepleThatLiked,
+    date,
+    postId,
+    userThatPostedLogin,
+  } = props;
   const heartRef = React.useRef<any>(null);
   const isLiked = poepleThatLiked.some((x) => {
     return isEqual(x.Login, currentlyLoggedInUser.Login);
@@ -54,7 +80,13 @@ export const LikePost: React.FC<LikePostInterface> = (props) => {
     saveLikedUsers();
   };
   const saveLikedUsers = (): void => {
-    savePoepleThatLikedPost(date, poepleThatLiked);
+    savePoepleThatLikedPost(
+      date,
+      poepleThatLiked,
+      postId,
+      currentlyLoggedInUser.Login as string,
+      userThatPostedLogin
+    );
     setLikes(poepleThatLiked.length);
   };
   useEffect(() => {

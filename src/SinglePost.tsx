@@ -7,6 +7,7 @@ import { db } from "./firebase";
 import { LoadingRing } from "./LoadingRing";
 import { Post, PostPropsInteface } from "./Post";
 import { Empty } from "antd";
+import nProgress from "nprogress";
 export const SinglePost: React.FC = () => {
   const params = useParams<{ PostId: string }>();
   const [isLaoding, setIsLaoding] = useState<boolean>(true);
@@ -14,6 +15,7 @@ export const SinglePost: React.FC = () => {
     useState<PostPropsInteface | null>(null);
   useEffect(() => {
     const getDataAboutPostFromDB = async () => {
+      nProgress.start();
       const ref = params.PostId;
       const q = query(collection(db, "Posts"), where("URL", "==", ref));
       const PostDoc = await getDocs(q);
@@ -22,9 +24,11 @@ export const SinglePost: React.FC = () => {
           PostDoc.docs[0].data() as PostPropsInteface
         );
         setIsLaoding(false);
+        nProgress.done();
       } else {
         setPostThatIsBeingViewedData(null);
         setIsLaoding(false);
+        nProgress.done();
       }
     };
     getDataAboutPostFromDB();
@@ -43,7 +47,10 @@ export const SinglePost: React.FC = () => {
   ) : (
     <>
       <div className="divList">
-        <Post date={postThatisBeingViewedData.date} />
+        <Post
+          date={postThatisBeingViewedData.date}
+          key={postThatisBeingViewedData.URL}
+        />
       </div>
     </>
   );

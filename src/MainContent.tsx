@@ -24,6 +24,7 @@ import { BackTop } from "antd";
 import { isEqual } from "lodash";
 import { usePageVisibility } from "./hooks/usePageVisibility";
 import { getElementCountBetween2ElementsInArray } from "./likeFunctions";
+import nProgress from "nprogress";
 interface MainContentPorps {
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
@@ -146,6 +147,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
     };
   }, []);
   const showNewPosts = async () => {
+    nProgress.start();
     const cachedPostDataArray = cachedPosts.current.map((item) => {
       return item.data() as PostPropsInteface;
     });
@@ -159,6 +161,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
     const Ldoc = await getDoc(doc(db, "Posts", `${arr[arr.length - 1].date}`));
     setLastDoc(Ldoc);
     setRawPosts(arr);
+    nProgress.done();
   };
   useEffect(() => {
     setPosts(

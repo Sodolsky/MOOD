@@ -14,6 +14,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { db, storageRef } from "./firebase";
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -35,6 +36,8 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import { NotificationInterface } from "./Header";
+import nProgress from "nprogress";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -64,10 +67,13 @@ export const addCommentToDataBase = async (
   key: string,
   text: string,
   date: Date,
-  userThatAddedComment: UserData
+  userThatAddedComment: UserData,
+  userThatPostedLogin: string,
+  postId: string
 ) => {
   const postRef = collection(db, "Posts", `${key}`, "comments");
   const userRef = doc(db, "Users", `${userThatAddedComment.Login}`);
+  const userRefNotification = doc(db, "Users", `${userThatPostedLogin}`);
   const newCommentObj: CommentInterface = {
     userThatAddedComment: userThatAddedComment,
     content: text,
@@ -77,6 +83,14 @@ export const addCommentToDataBase = async (
   const userData = await getDoc(userRef);
   const userDataObject = userData.data() as UserData;
   const commentsRefArray = userDataObject.commentsRef;
+  const NotificationObj: NotificationInterface = {
+    postId: postId,
+    type: "comment",
+    whoDid: userThatAddedComment.Login as string,
+  };
+  await updateDoc(userRefNotification, {
+    Notifications: arrayUnion(NotificationObj),
+  });
   await addDoc(postRef, newCommentObj).then(async (doc) => {
     if (commentsRefArray) {
       commentsRefArray.push(doc.path);
@@ -293,6 +307,8 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                 postData?.poepleThatLiked ? postData.poepleThatLiked : []
               }
               date={date}
+              postId={postData.URL}
+              userThatPostedLogin={postData.userThatPostedThis.Login as string}
             />
             <img
               className="Comment on Someone's post"
@@ -323,7 +339,9 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                     date,
                     commentVal,
                     new Date(),
-                    currentlyLoggedInUser
+                    currentlyLoggedInUser,
+                    postData.userThatPostedThis.Login as string,
+                    postData.URL
                   );
                   changeCommentVal("");
                 }}

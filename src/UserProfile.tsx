@@ -29,6 +29,7 @@ import TextareAutosize from "react-textarea-autosize";
 import { query, where, orderBy } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+import nProgress from "nprogress";
 export type userPrefferedPostType =
   | "Latest Post"
   | "Most Liked"
@@ -77,20 +78,25 @@ const applyChanges = async (
   const userRef = doc(db, "Users", user);
   const fileRef = ref(storageRef, `${user}`);
   if (Avatar) {
+    nProgress.start();
     await uploadBytes(fileRef, Avatar).then((snapshot) => {});
     const uploadedFile = await getDownloadURL(fileRef);
+    nProgress.inc();
     await updateDoc(userRef, {
       BackgroundColor: color,
       userPrefferedPost: userPrefferedPost,
       Description: Description,
       Avatar: uploadedFile,
     });
+    nProgress.done();
   } else {
+    nProgress.start();
     await updateDoc(userRef, {
       BackgroundColor: color,
       userPrefferedPost: userPrefferedPost,
       Description: Description,
     });
+    nProgress.done();
   }
 };
 const uploadUserImageToStorageBucket = async (
@@ -150,18 +156,23 @@ const UserProfile: React.FC = () => {
         `UserProfileImages/${currentlyLoggedInUser.Login}`
       );
       setIsLoading(true);
+      nProgress.start();
       const userRef = doc(db, "Users", `${currentlyLoggedInUser.Login}`);
       await uploadUserImageToStorageBucket(
         currentlyLoggedInUser.Login as string,
         acceptedFiles[0]
       );
+      nProgress.inc();
       const myRef = await getDownloadURL(fileRef);
+      nProgress.inc();
       await updateDoc(userRef, {
         BackgroundImage: myRef,
       });
+      nProgress.inc();
       setCurrentlyLoggedInUser!((prevState: UserData) => {
         return { ...prevState, BackgroundImage: myRef };
       });
+      nProgress.done();
       const objectWrapper: UserData = {
         ...userData!,
         BackgroundImage: myRef,
@@ -188,6 +199,7 @@ const UserProfile: React.FC = () => {
     //Function to get UserProfile data invoked on mount
     const getUserProfileData = async (profilePath: string) => {
       const ref = doc(db, "Users", `${profilePath}`);
+      nProgress.start();
       const userDataFeched = await getDoc(ref);
       const userobj = userDataFeched.data() as UserData;
       if (!userobj) {
@@ -199,6 +211,7 @@ const UserProfile: React.FC = () => {
       setUserPrefferedPost(userPrefferedPost as userPrefferedPostType);
       setUserDescription(userobj.Description as string);
       setUserAvatar(userobj.Avatar as string);
+      nProgress.done();
     };
     getUserProfileData(profilePathLogin.user);
 

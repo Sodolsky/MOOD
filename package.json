@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "node-sass": "^6.0.1",
+    "nprogress": "^0.2.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.0-beta.4",
     "react-dom": "^17.0.2",
@@ -66,6 +67,7 @@
     ]
   },
   "devDependencies": {
+    "@types/nprogress": "^0.2.0",
     "@types/react-helmet": "^6.1.4",
     "@types/react-infinite-scroller": "^1.2.2",
     "@types/react-lazy-load-image-component": "^1.5.2",

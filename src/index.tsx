@@ -2,7 +2,7 @@ import React from "react";
 import { createContext } from "react";
 import { useState } from "react";
 import ReactDOM from "react-dom";
-import { Header } from "./Header";
+import { Header, NotificationInterface } from "./Header";
 import { LogIn } from "./LogIn";
 import { MainContent } from "./MainContent";
 import "./styles.scss";
@@ -24,12 +24,14 @@ import {
   collection,
   query,
   where,
-  getDocs,
   doc,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { isEqual } from "lodash";
 import { SinglePost } from "./SinglePost";
+import "nprogress/nprogress.css";
+import nProgress from "nprogress";
 export const userLogInContext = createContext<LogInInterface>({
   isUserLoggedIn: false,
   setIfUserIsLoggedIn: null,
@@ -60,6 +62,7 @@ export interface UserData {
   postCount?: number;
   commentsRef?: string[];
   commentCount?: number;
+  Notifications?: NotificationInterface[];
 }
 export interface LogInInterface {
   isUserLoggedIn: boolean | undefined;
@@ -89,11 +92,13 @@ export const App: React.FC = () => {
   const [firstUpdate, setFirstUpdate] = useState<boolean>(true);
   const [usersLoginArray, setUsersLoginArray] = useState<string[]>([]);
   const getUsersLoginsUtility = async () => {
+    nProgress.start();
     const ref = doc(db, "Utility", "UserLogins");
     try {
       const myDoc = await getDoc(ref);
       const obj = myDoc.data() as { UserLogins: string[] };
       setUsersLoginArray(obj.UserLogins);
+      nProgress.done();
     } catch (error) {
       console.log(error, "e");
     }
@@ -101,29 +106,31 @@ export const App: React.FC = () => {
   const getDataAboutUser = async (UID: string) => {
     const uRef = collection(db, "Users");
     const q = query(uRef, where("UID", "==", `${UID}`));
-    const userDoc = await getDocs(q);
-    userDoc.forEach((item) => {
-      const obj = item.data() as UserData;
-      if (isEqual(obj, currentlyLoggedInUser)) {
-        return;
-      } else {
-        setCurrentlyLoggedInUser({
-          Login: obj.Login,
-          Password: obj.Password,
-          Email: obj.Email,
-          UserPosts: obj.UserPosts,
-          Avatar: obj.Avatar,
-          Description: obj.Description,
-          BackgroundColor: obj.BackgroundColor,
-          BackgroundImage: obj.BackgroundImage,
-          userPrefferedPost: obj.userPrefferedPost,
-          UID: obj.UID,
-          postCount: obj.postCount,
-          commentsRef: obj.commentsRef,
-          commentCount: obj.commentCount,
-        });
-        getUsersLoginsUtility();
-      }
+    onSnapshot(q, (snap) => {
+      snap.docs.forEach((item) => {
+        const obj = item.data() as UserData;
+        if (isEqual(obj, currentlyLoggedInUser)) {
+          return;
+        } else {
+          setCurrentlyLoggedInUser({
+            Login: obj.Login,
+            Password: obj.Password,
+            Email: obj.Email,
+            UserPosts: obj.UserPosts,
+            Avatar: obj.Avatar,
+            Description: obj.Description,
+            BackgroundColor: obj.BackgroundColor,
+            BackgroundImage: obj.BackgroundImage,
+            userPrefferedPost: obj.userPrefferedPost,
+            UID: obj.UID,
+            postCount: obj.postCount,
+            commentsRef: obj.commentsRef,
+            commentCount: obj.commentCount,
+            Notifications: obj.Notifications,
+          });
+          getUsersLoginsUtility();
+        }
+      });
       setIfUserIsLoggedIn(true);
     });
   };

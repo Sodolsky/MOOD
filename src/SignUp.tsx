@@ -16,6 +16,8 @@ import { PostPropsInteface } from "./Post";
 import { userPrefferedPostType } from "./UserProfile";
 import { createUserWithEmailAndPassword, UserCredential } from "@firebase/auth";
 import { FirebaseError } from "@firebase/util";
+import { NotificationInterface } from "./Header";
+import nProgress from "nprogress";
 interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
   setIfUserIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,9 +36,11 @@ const addNewAccountIntoDataBase = async (
   UID: string,
   postCount: number,
   commentsRef: string[],
-  commentCount: number
+  commentCount: number,
+  Notifications: NotificationInterface[]
 ) => {
   try {
+    nProgress.start();
     await setDoc(doc(db, "Users", `${Login}`), {
       Login: Login,
       Password: Password,
@@ -51,7 +55,9 @@ const addNewAccountIntoDataBase = async (
       postCount: postCount,
       commentsRef: commentsRef,
       commentCount: commentCount,
+      Notifications: Notifications,
     });
+    nProgress.done();
   } catch (error) {
     console.log(error);
   }
@@ -71,21 +77,26 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
     userEmail: string | undefined
   ) => {
     const referenceInDataBase = doc(db, "Users", `${key}`);
+    nProgress.start();
     const documentSnapshot = await getDoc(referenceInDataBase);
     const emailRef = collection(db, "Users");
     const queryforEmail = query(emailRef, where("Email", "!=", ""));
+    nProgress.inc();
     const querySnapshot = await getDocs(queryforEmail);
     const emailsArray: string[] = [];
     querySnapshot.forEach((item) => emailsArray.push(item.data().Email));
     for (const i of emailsArray) {
       if (i === userEmail) {
+        nProgress.done();
         return props.showError("danger", "Your Email Was Already Taken", true);
       }
     }
     if (documentSnapshot.exists()) {
       props.showError("danger", "Your Login Was Already Taken", true);
+      nProgress.done();
       return false;
     } else {
+      nProgress.done();
       return true;
     }
   };
@@ -165,7 +176,8 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 user.uid,
                 0,
                 [],
-                0
+                0,
+                []
               );
               setIfUserIsLoggedIn(true);
               setCurrentlyLoggedInUser!({
@@ -180,6 +192,7 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 userPrefferedPost: "Latest Post",
                 UID: user.uid,
                 postCount: 0,
+                Notifications: [],
               });
             })
             .catch((error: FirebaseError) => {
