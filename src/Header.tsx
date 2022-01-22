@@ -20,6 +20,7 @@ import Tippy from "@tippyjs/react";
 import { Link } from "react-router-dom";
 import { Button } from "antd";
 import { arrayRemove, doc, updateDoc } from "firebase/firestore";
+import { useMediaQuery } from "@react-hook/media-query";
 type notificationTypes = "comment" | "like";
 export interface NotificationInterface {
   type: notificationTypes;
@@ -27,6 +28,7 @@ export interface NotificationInterface {
   whoDid: string;
 }
 export const Header: React.FC = () => {
+  const match = useMediaQuery("only screen and (min-width:450px");
   const currentlyLoggedInUser = React.useContext(currentlyLoggedInUserContext);
   const [notifications, setNotifications] = React.useState<
     NotificationInterface[]
@@ -91,7 +93,7 @@ export const Header: React.FC = () => {
                     interactive={true}
                     delay={200}
                     placement={"right"}
-                    maxWidth={"100%"}
+                    maxWidth={`${match ? "400px" : "200px"}`}
                     content={
                       <div className="tippyNotifications">
                         <div className="ButtonContainer">

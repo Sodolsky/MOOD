@@ -37,7 +37,6 @@ import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { NotificationInterface } from "./Header";
-import nProgress from "nprogress";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -193,7 +192,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
           <Tippy
             interactive={true}
             interactiveBorder={20}
-            maxWidth={"250"}
+            maxWidth={"250px"}
             delay={200}
             placement={"top-end"}
             content={
