@@ -124,9 +124,27 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
   useEffect(() => {
     const refForComments = collection(db, "Posts", `${date}`, "comments");
     const refForPost = doc(db, "Posts", `${date}`);
+    let DataContainer: PostPropsInteface = {
+      date: "",
+      postType: "",
+      userThatPostedThis: {
+        Login: "",
+        Password: "",
+        Email: "",
+      },
+      text: "",
+      likeCount: 0,
+      hashtags: [],
+      poepleThatLiked: [],
+      URL: "",
+      YTLink: "",
+      fileType: "",
+      img: "",
+    };
     const PostSubscription = onSnapshot(refForPost, (doc) => {
-      const data = doc.data() as Omit<PostPropsInteface, "date">;
-      setPostData(data);
+      const data = doc.data() as PostPropsInteface;
+      DataContainer = data;
+      // setPostData(data);
     });
     const Unsubscribe = onSnapshot(refForComments, (doc) => {
       if (doc.docs.length > 0) {
@@ -173,6 +191,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
           }
         }
       }
+      setPostData(DataContainer);
     });
     return () => {
       Unsubscribe();
@@ -191,39 +210,11 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
     <div className="ListWrapper">
       <div className="Post">
         <div className="PostUserInfo">
-          <Tippy
-            interactive={true}
-            interactiveBorder={20}
-            maxWidth={"250px"}
-            delay={200}
-            placement={"top-end"}
-            content={
-              <div className="tippyContent">
-                <div className="PostUserInfo ">
-                  <img
-                    src={postData?.userThatPostedThis.Avatar}
-                    alt="Your Icon"
-                  />
-                  <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
-                    <span>{postData?.userThatPostedThis.Login}</span>
-                  </Link>
-                </div>
-                <span className="userDescription">
-                  {postData?.userThatPostedThis.Description}
-                </span>
-              </div>
-            }
-            allowHTML={true}
-            className="tippyBox"
-            animation={"scale"}
-            appendTo={"parent"}
-          >
-            <img
-              src={postData?.userThatPostedThis.Avatar}
-              className="userAvatar"
-              alt="Your Icon"
-            />
-          </Tippy>
+          <img
+            src={postData?.userThatPostedThis.Avatar}
+            className="userAvatar"
+            alt="Your Icon"
+          />
           <FontAwesomeIcon
             icon={faLink}
             className="LinkToPost"
