@@ -1,4 +1,4 @@
-import React from "react";
+import React, { StrictMode, useRef } from "react";
 import { createContext } from "react";
 import { useState } from "react";
 import ReactDOM from "react-dom";
@@ -31,7 +31,6 @@ import {
 import { isEqual } from "lodash";
 import { SinglePost } from "./SinglePost";
 import "nprogress/nprogress.css";
-import nProgress from "nprogress";
 export const userLogInContext = createContext<LogInInterface>({
   isUserLoggedIn: false,
   setIfUserIsLoggedIn: null,
@@ -90,15 +89,13 @@ export interface LogInInterface {
 // };
 export const App: React.FC = () => {
   const [firstUpdate, setFirstUpdate] = useState<boolean>(true);
-  const [usersLoginArray, setUsersLoginArray] = useState<string[]>([]);
+  const usersLoginArray = useRef<string[]>([]);
   const getUsersLoginsUtility = async () => {
-    nProgress.start();
     const ref = doc(db, "Utility", "UserLogins");
     try {
       const myDoc = await getDoc(ref);
-      const obj = myDoc.data() as { UserLogins: string[] };
-      setUsersLoginArray(obj.UserLogins);
-      nProgress.done();
+      const obj = myDoc.data() as string[];
+      usersLoginArray.current = obj;
     } catch (error) {
       console.log(error, "e");
     }
@@ -128,7 +125,9 @@ export const App: React.FC = () => {
             commentCount: obj.commentCount,
             Notifications: obj.Notifications,
           });
-          getUsersLoginsUtility();
+          if (usersLoginArray.current.length === 0) {
+            getUsersLoginsUtility();
+          }
         }
       });
       setIfUserIsLoggedIn(true);
@@ -170,7 +169,7 @@ export const App: React.FC = () => {
               <userLogInContext.Provider
                 value={{ isUserLoggedIn, setIfUserIsLoggedIn }}
               >
-                <allUsersArrayContext.Provider value={usersLoginArray}>
+                <allUsersArrayContext.Provider value={usersLoginArray.current}>
                   <Header />
                   {/*!Here We set up Routes when user is logged in */}
                   {auth.currentUser ? (
@@ -268,4 +267,4 @@ export const App: React.FC = () => {
     </>
   );
 };
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App key={"App"} />, document.getElementById("root"));

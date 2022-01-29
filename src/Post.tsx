@@ -22,7 +22,6 @@ import {
   onSnapshot,
   updateDoc,
 } from "@firebase/firestore";
-import Tippy from "@tippyjs/react";
 import { useMediaQuery } from "@react-hook/media-query";
 import { CommentInterface } from "./CreatePost";
 import { CommentComponent } from "./CommentComponent";
