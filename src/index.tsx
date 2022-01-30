@@ -1,4 +1,4 @@
-import React, { StrictMode, useRef } from "react";
+import React, { useRef } from "react";
 import { createContext } from "react";
 import { useState } from "react";
 import ReactDOM from "react-dom";
@@ -175,6 +175,9 @@ export const App: React.FC = () => {
                   {auth.currentUser ? (
                     currentlyLoggedInUser.Login !== "Admin" ? (
                       <>
+                        <Route path="*" exact>
+                          <Redirect to="/" />
+                        </Route>
                         <Route path="/" exact>
                           <Redirect to="/home" />
                         </Route>
@@ -239,6 +242,9 @@ export const App: React.FC = () => {
                       )}
                       {!firstUpdate && (
                         <>
+                          <Route path="*" exact>
+                            <Redirect to="/" />
+                          </Route>
                           <Route path="/explore/posts/:PostId">
                             <Redirect to="/" />
                           </Route>
