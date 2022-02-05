@@ -3,7 +3,7 @@ import { Comment, Avatar } from "antd";
 import { CommentInterface } from "./CreatePost";
 import moment from "moment";
 import { isEqual } from "lodash";
-import { currentlyLoggedInUserContext, UserData } from ".";
+import { currentlyLoggedInUserContext, UserData } from "./App";
 import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 import { removeUserFromLikedArray } from "./likeFunctions";
 import { doc, updateDoc } from "@firebase/firestore";

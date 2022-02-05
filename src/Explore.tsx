@@ -9,7 +9,7 @@ import {
 } from "@firebase/firestore";
 import { useMediaQuery } from "@react-hook/media-query";
 import React, { useState } from "react";
-import { UserData } from ".";
+import { UserData } from "./App";
 import { db } from "./firebase";
 import { LoadingRing } from "./LoadingRing";
 import RankingComponent from "./RankingComponent";

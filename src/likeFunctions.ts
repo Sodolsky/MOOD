@@ -1,4 +1,4 @@
-import { UserData } from ".";
+import { UserData } from "./App";
 import { isEqual } from "lodash";
 import { PostPropsInteface } from "./Post";
 export const getIndexOf = (array: UserData[], loggedUser: UserData): number => {

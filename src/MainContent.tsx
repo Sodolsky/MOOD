@@ -18,7 +18,7 @@ import {
   startAfter,
 } from "@firebase/firestore";
 import { db } from "./firebase";
-import { currentlyLoggedInUserContext, UserData } from ".";
+import { currentlyLoggedInUserContext, UserData } from "./App";
 import { LoadingRing } from "./LoadingRing";
 import { BackTop } from "antd";
 import { isEqual } from "lodash";

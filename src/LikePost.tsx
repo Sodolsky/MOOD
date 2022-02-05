@@ -5,7 +5,7 @@ import nProgress from "nprogress";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserData } from ".";
+import { UserData } from "./App";
 import { db } from "./firebase";
 import { NotificationInterface } from "./Header";
 import heart from "./img/heart.svg";

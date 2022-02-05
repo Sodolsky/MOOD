@@ -4,7 +4,7 @@ import Home from "./img/home.svg";
 import Explore from "./img/explore.png";
 import UserProfileIcon from "./img/userprofile.png";
 import { Link, useLocation } from "react-router-dom";
-import { currentlyLoggedInUserContext } from ".";
+import { currentlyLoggedInUserContext } from "./App";
 import { LazyLoadedImage } from "./LazyLoadedImage";
 export const Navigation: React.FC = () => {
   const location = useLocation();

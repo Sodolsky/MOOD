@@ -15,7 +15,7 @@ import {
 import {
   currentlyLoggedInUserContext,
   setCurrentlyLoggedInUserContext,
-} from ".";
+} from "./App";
 import Tippy from "@tippyjs/react";
 import { Link } from "react-router-dom";
 import { Button } from "antd";

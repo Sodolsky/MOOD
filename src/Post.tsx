@@ -2,7 +2,7 @@
 import * as React from "react";
 import "./Styles/tippyStyles.scss";
 import "tippy.js/animations/scale.css";
-import { currentlyLoggedInUserContext, UserData } from ".";
+import { currentlyLoggedInUserContext, UserData } from "./App";
 import { getLinkId } from "./ValidateYoutubeUrl";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import commentSVG from "./img/Comment.svg";

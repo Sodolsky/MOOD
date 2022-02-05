@@ -12,7 +12,7 @@ import {
   currentlyLoggedInUserContext,
   setCurrentlyLoggedInUserContext,
   UserData,
-} from ".";
+} from "./App";
 import { db, storageRef } from "./firebase";
 import { LoadingRing } from "./LoadingRing";
 import { Post, PostPropsInteface } from "./Post";

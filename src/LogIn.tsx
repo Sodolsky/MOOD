@@ -3,10 +3,10 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import "./Styles/LogIn.scss";
 import { useContext } from "react";
-import { userLogInContext } from ".";
+import { userLogInContext } from "./App";
 import { SignUp } from "./SignUp";
 import { UserAlert } from "./Alert";
-import { UserData } from ".";
+import { UserData } from "./App";
 import { auth } from "./firebase";
 import {
   browserLocalPersistence,

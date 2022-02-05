@@ -1,5 +1,5 @@
 import * as React from "react";
-import { setCurrentlyLoggedInUserContext, UserData } from ".";
+import { setCurrentlyLoggedInUserContext, UserData } from "./App";
 import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import { auth, db } from "./firebase";

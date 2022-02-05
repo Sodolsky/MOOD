@@ -18,7 +18,7 @@ import heartLiked from "./img/heartLiked.svg";
 import { UrlUploader } from "./UrlOploader";
 import { getLinkId, validateYouTubeUrl } from "./ValidateYoutubeUrl";
 import { AddPostIcon } from "./AddPostIcon";
-import { currentlyLoggedInUserContext, UserData } from ".";
+import { currentlyLoggedInUserContext, UserData } from "./App";
 import { useContext } from "react";
 import { db, storageRef } from "./firebase.js";
 import { doc, setDoc, Timestamp, updateDoc } from "@firebase/firestore";
