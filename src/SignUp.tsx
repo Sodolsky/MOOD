@@ -1,5 +1,5 @@
 import * as React from "react";
-import { setCurrentlyLoggedInUserContext, UserData } from "./App";
+import { setCurrentlyLoggedInUserContext } from "./App";
 import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import { auth, db } from "./firebase";
@@ -16,7 +16,6 @@ import { PostPropsInteface } from "./Post";
 import { userPrefferedPostType } from "./UserProfile";
 import { createUserWithEmailAndPassword, UserCredential } from "@firebase/auth";
 import { FirebaseError } from "@firebase/util";
-import { NotificationInterface } from "./Header";
 import nProgress from "nprogress";
 interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,7 +24,6 @@ interface SignUpProps {
 }
 const addNewAccountIntoDataBase = async (
   Login: string | undefined,
-  Password: string | undefined,
   Email: string | undefined,
   UserPosts: PostPropsInteface[],
   Avatar: File | string,
@@ -36,14 +34,16 @@ const addNewAccountIntoDataBase = async (
   UID: string,
   postCount: number,
   commentsRef: string[],
-  commentCount: number,
-  Notifications: NotificationInterface[]
+  commentCount: number
 ) => {
   try {
     nProgress.start();
+    await setDoc(doc(db, "Notifications", `${Login}`), {
+      Notifications: [],
+      UID: UID,
+    });
     await setDoc(doc(db, "Users", `${Login}`), {
       Login: Login,
-      Password: Password,
       Email: Email,
       UserPosts: UserPosts,
       Avatar: Avatar,
@@ -55,7 +55,6 @@ const addNewAccountIntoDataBase = async (
       postCount: postCount,
       commentsRef: commentsRef,
       commentCount: commentCount,
-      Notifications: Notifications,
     });
     nProgress.done();
   } catch (error) {
@@ -100,10 +99,14 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
       return true;
     }
   };
-  const [registerData, setRegisterData] = useState<UserData>({
+  const [registerData, setRegisterData] = useState<{
+    Email: string;
+    Login: string;
+    Password: string;
+  }>({
+    Email: "",
     Login: "",
     Password: "",
-    Email: "",
   });
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = event.target.value;
@@ -113,7 +116,7 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
       [name]: newValue,
     }));
   };
-  const handleSubmit = (event: React.MouseEvent): void => {
+  const handleSubmit = (event: React.MouseEvent) => {
     event.preventDefault();
     if (
       registerData.Password === "" ||
@@ -129,21 +132,20 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
         true
       );
     }
-    if (registerData.Password!.length < 6) {
+    if (registerData.Password.length < 6) {
       return props.showError(
         "danger",
         "Your Password Should contain at least 6 characters",
         true
       );
     }
-    if (registerData.Login !== undefined) {
-      if (registerData.Login.length > 16) {
-        return props.showError(
-          "danger",
-          "Your Login cannnot be longer than 16 characters",
-          true
-        );
-      }
+
+    if (registerData.Login.length > 16) {
+      return props.showError(
+        "danger",
+        "Your Login cannnot be longer than 16 characters",
+        true
+      );
     }
     validateUserInDataBase(registerData.Login, registerData.Email).then(
       (message) => {
@@ -165,7 +167,6 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
               //!Change the function too
               addNewAccountIntoDataBase(
                 registerData.Login,
-                registerData.Password,
                 registerData.Email,
                 [],
                 `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
@@ -176,13 +177,11 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 user.uid,
                 0,
                 [],
-                0,
-                []
+                0
               );
               setIfUserIsLoggedIn(true);
               setCurrentlyLoggedInUser!({
                 Login: registerData.Login,
-                Password: registerData.Password,
                 Email: registerData.Email,
                 UserPosts: [],
                 Avatar: `https://avatars.dicebear.com/api/bottts/${registerData.Login}.svg`,
@@ -192,7 +191,6 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 userPrefferedPost: "Latest Post",
                 UID: user.uid,
                 postCount: 0,
-                Notifications: [],
               });
             })
             .catch((error: FirebaseError) => {
@@ -248,7 +246,7 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 placeholder="Password"
                 autoComplete="on"
                 onChange={handleChange}
-                value={registerData?.Password}
+                value={registerData.Password}
               />
             </Col>
           </Row>

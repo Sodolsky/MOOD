@@ -14,12 +14,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {
   currentlyLoggedInUserContext,
+  NotificationDataFromFirebase,
   setCurrentlyLoggedInUserContext,
 } from "./App";
 import Tippy from "@tippyjs/react";
 import { Link } from "react-router-dom";
 import { Button } from "antd";
-import { arrayRemove, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useMediaQuery } from "@react-hook/media-query";
 type notificationTypes = "comment" | "like";
 export interface NotificationInterface {
@@ -34,14 +43,25 @@ export const Header: React.FC = () => {
     NotificationInterface[]
   >([]);
   React.useEffect(() => {
-    if (currentlyLoggedInUser.Email !== "Admin") {
-      setNotifications(
-        currentlyLoggedInUser.Notifications as NotificationInterface[]
+    const subscribeToNotifications = (UID: string) => {
+      const notificationRef = collection(db, "Notifications");
+      const qNotifications = query(
+        notificationRef,
+        where("UID", "==", `${UID}`)
       );
+      onSnapshot(qNotifications, (doc) => {
+        doc.docs.forEach((item) => {
+          const obj = item.data() as NotificationDataFromFirebase;
+          setNotifications(obj.Notifications);
+        });
+      });
+    };
+    if (currentlyLoggedInUser.UID) {
+      subscribeToNotifications(currentlyLoggedInUser.UID);
     }
-  }, [currentlyLoggedInUser.Notifications, currentlyLoggedInUser.Email]);
+  }, [currentlyLoggedInUser]);
   const clearNotifications = async () => {
-    const ref = doc(db, "Users", `${currentlyLoggedInUser.Login}`);
+    const ref = doc(db, "Notifications", `${currentlyLoggedInUser.Login}`);
     setNotifications([]);
     await updateDoc(ref, {
       Notifications: [],
@@ -52,7 +72,7 @@ export const Header: React.FC = () => {
     notification: NotificationInterface
   ) => {
     setNotifications(notifications.filter((x) => x !== notification));
-    const ref = doc(db, "Users", `${currentlyLoggedInUser.Login}`);
+    const ref = doc(db, "Notifications", `${currentlyLoggedInUser.Login}`);
     await updateDoc(ref, {
       Notifications: arrayRemove(notification),
     });
@@ -76,9 +96,8 @@ export const Header: React.FC = () => {
                       onClick={() => {
                         if (setCurrentlyLoggedInUser) {
                           setCurrentlyLoggedInUser({
-                            Login: "Admin",
-                            Password: "Admin",
-                            Email: "Admin",
+                            Login: "",
+                            Email: "",
                           });
                         }
                         try {

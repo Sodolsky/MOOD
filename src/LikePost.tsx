@@ -31,7 +31,7 @@ export const savePoepleThatLikedPost = async (
   userThatPostedLogin: string
 ) => {
   const postRef = doc(db, "Posts", `${key}`);
-  const userRef = doc(db, "Users", `${userThatPostedLogin}`);
+  const userRef = doc(db, "Notifications", `${userThatPostedLogin}`);
   nProgress.start();
   if (login !== userThatPostedLogin) {
     const NotificationObj: NotificationInterface = {

@@ -5,10 +5,10 @@ import {
   collection,
   query,
   where,
-  onSnapshot,
+  getDocs,
 } from "firebase/firestore";
 import { isEqual } from "lodash";
-import { useState, useRef, createContext } from "react";
+import { useState, useRef, createContext, useEffect } from "react";
 import {
   Route,
   Redirect,
@@ -51,10 +51,13 @@ export const userLogInContext = createContext<LogInInterface>({
 });
 export const currentlyLoggedInUserContext = createContext<UserData>({
   Login: "",
-  Password: "",
   Email: "",
   UserPosts: [],
 });
+export interface NotificationDataFromFirebase {
+  Notifications: NotificationInterface[];
+  UID: string;
+}
 export const allUsersArrayContext = createContext<string[]>([]);
 type setCurrentlyLoggedInUserType = React.Dispatch<
   React.SetStateAction<UserData>
@@ -63,7 +66,6 @@ export const setCurrentlyLoggedInUserContext =
   createContext<setCurrentlyLoggedInUserType>(null);
 export interface UserData {
   Login: string | undefined;
-  Password: string | undefined;
   Email: string | undefined;
   Avatar?: string | undefined;
   BackgroundColor?: string | undefined;
@@ -75,7 +77,6 @@ export interface UserData {
   postCount?: number;
   commentsRef?: string[];
   commentCount?: number;
-  Notifications?: NotificationInterface[];
 }
 export interface LogInInterface {
   isUserLoggedIn: boolean | undefined;
@@ -86,11 +87,11 @@ export const App: React.FC = () => {
     false
   );
   const [currentlyLoggedInUser, setCurrentlyLoggedInUser] = useState<UserData>({
-    Login: "Admin",
-    Password: "Admin",
-    Email: "Admin",
+    Login: "",
+    Email: "",
   });
-  const [firstUpdate, setFirstUpdate] = useState<boolean>(true);
+  const [isAuthBeingProccesed, setIsAuthBeingProccesed] =
+    useState<boolean>(true);
   const usersLoginArray = useRef<string[]>([]);
   const getUsersLoginsUtility = async () => {
     const ref = doc(db, "Utility", "UserLogins");
@@ -105,77 +106,45 @@ export const App: React.FC = () => {
   const getDataAboutUser = async (UID: string) => {
     const uRef = collection(db, "Users");
     const q = query(uRef, where("UID", "==", `${UID}`));
-    onSnapshot(q, (snap) => {
-      snap.docs.forEach((item) => {
-        const obj = item.data() as UserData;
-        if (isEqual(obj, currentlyLoggedInUser)) {
-          return;
-        } else {
-          snap.docChanges().forEach((change) => {
-            const obj = change.doc.data() as UserData;
-            if (currentlyLoggedInUser.Login === "Admin") {
-              console.log(currentlyLoggedInUser);
-              setCurrentlyLoggedInUser({
-                Login: obj.Login,
-                Password: obj.Password,
-                Email: obj.Email,
-                UserPosts: obj.UserPosts,
-                Avatar: obj.Avatar,
-                Description: obj.Description,
-                BackgroundColor: obj.BackgroundColor,
-                BackgroundImage: obj.BackgroundImage,
-                userPrefferedPost: obj.userPrefferedPost,
-                UID: obj.UID,
-                postCount: obj.postCount,
-                commentsRef: obj.commentsRef,
-                commentCount: obj.commentCount,
-                Notifications: obj.Notifications,
-              });
-              return;
-            }
-            if (change.type === "modified") {
-              if (
-                !isEqual(
-                  obj.Notifications,
-                  currentlyLoggedInUser.Notifications
-                ) ||
-                !isEqual(obj.Avatar, currentlyLoggedInUser.Avatar)
-              ) {
-                console.log(
-                  !isEqual(
-                    obj.Notifications,
-                    currentlyLoggedInUser.Notifications
-                  ),
-                  !isEqual(obj.Avatar, currentlyLoggedInUser.Avatar)
-                );
-              }
-            }
-          });
 
-          if (usersLoginArray.current.length === 0) {
-            getUsersLoginsUtility();
-          }
-        }
-      });
+    const userDoc = await getDocs(q);
+    userDoc.forEach((item) => {
+      const obj = item.data() as UserData;
+      if (isEqual(obj, currentlyLoggedInUser)) {
+        return;
+      } else {
+        setCurrentlyLoggedInUser({
+          Login: obj.Login,
+          Email: obj.Email,
+          UserPosts: obj.UserPosts,
+          Avatar: obj.Avatar,
+          Description: obj.Description,
+          BackgroundColor: obj.BackgroundColor,
+          BackgroundImage: obj.BackgroundImage,
+          userPrefferedPost: obj.userPrefferedPost,
+          UID: obj.UID,
+          postCount: obj.postCount,
+          commentsRef: obj.commentsRef,
+          commentCount: obj.commentCount,
+        });
+        getUsersLoginsUtility();
+      }
       setIfUserIsLoggedIn(true);
     });
   };
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (firstUpdate) {
-        setFirstUpdate(false);
-        return;
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        getDataAboutUser(user.uid);
+        setIsAuthBeingProccesed(false);
+      } else {
+        setIfUserIsLoggedIn(false);
+        setIsAuthBeingProccesed(false);
       }
-      getDataAboutUser(user.uid);
-    } else {
-      if (firstUpdate) {
-        setFirstUpdate(false);
-        return;
-      }
-      setIfUserIsLoggedIn(false);
-    }
-  });
-
+    });
+    return () => unsub();
+    // eslint-disable-next-line
+  }, []);
   return (
     <>
       <Router>
@@ -193,7 +162,7 @@ export const App: React.FC = () => {
                   <Header />
                   {/*!Here We set up Routes when user is logged in */}
                   {auth.currentUser ? (
-                    currentlyLoggedInUser.Login !== "Admin" ? (
+                    currentlyLoggedInUser.Login !== "" ? (
                       <>
                         <Route path="*" exact>
                           <Redirect to="/" />
@@ -248,9 +217,9 @@ export const App: React.FC = () => {
                   ) : (
                     //!Here We set up Routes when user ISN'T logged in
                     <>
-                      {firstUpdate ||
+                      {isAuthBeingProccesed ||
                       (auth.currentUser &&
-                        currentlyLoggedInUser.Login === "Admin") ? (
+                        currentlyLoggedInUser.Login === "") ? (
                         <div className="screenCenter">
                           <LoadingRing colorVariant="white" />
                         </div>
@@ -260,7 +229,7 @@ export const App: React.FC = () => {
                           setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
                         />
                       )}
-                      {!firstUpdate && (
+                      {!isAuthBeingProccesed && (
                         <>
                           <Route path="*" exact>
                             <Redirect to="/" />

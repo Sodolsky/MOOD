@@ -19,14 +19,19 @@ export interface LogInProps {
   currentlyLoggedInUser: UserData;
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
 }
-export const LogIn: React.FC<LogInProps> = (props) => {
+export interface LoginData {
+  Email: "";
+  Password: "";
+  Login: "";
+}
+export const LogIn: React.FC<LogInProps> = () => {
   const userLogObject = useContext(userLogInContext);
   const { setIfUserIsLoggedIn } = userLogObject;
   const [show, setShow] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [alertVariant, setAlertVariant] = useState<string>("");
   const [isUserSigningUp, setIfUserIsSigningUp] = useState<boolean>(false);
-  const [userData, setUserData] = useState<UserData>({
+  const [userData, setUserData] = useState<LoginData>({
     Email: "",
     Password: "",
     Login: "",

@@ -71,7 +71,11 @@ export const addCommentToDataBase = async (
 ) => {
   const postRef = collection(db, "Posts", `${key}`, "comments");
   const userRef = doc(db, "Users", `${userThatAddedComment.Login}`);
-  const userRefNotification = doc(db, "Users", `${userThatPostedLogin}`);
+  const userRefNotification = doc(
+    db,
+    "Notifications",
+    `${userThatPostedLogin}`
+  );
   const newCommentObj: CommentInterface = {
     userThatAddedComment: userThatAddedComment,
     content: text,
@@ -128,7 +132,6 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
       postType: "",
       userThatPostedThis: {
         Login: "",
-        Password: "",
         Email: "",
       },
       text: "",

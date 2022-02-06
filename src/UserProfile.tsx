@@ -235,6 +235,7 @@ const UserProfile: React.FC = () => {
     } else if (userPrefferedPost !== null) {
       setPostForUser();
     }
+    // eslint-disable-next-line
   }, [userPrefferedPost]);
   const setPostForUser = () => {
     if (userData?.UserPosts) {
