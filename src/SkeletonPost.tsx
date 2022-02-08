@@ -1,6 +1,6 @@
 import { Skeleton } from "antd";
-import SkeletonImage from "antd/lib/skeleton/Image";
 import React from "react";
+import { LoadingRing } from "./LoadingRing";
 import "./Styles/MainPageStyles.scss";
 const SkeletonPost: React.FC = () => {
   return (
@@ -10,9 +10,7 @@ const SkeletonPost: React.FC = () => {
           <Skeleton.Avatar active={true} shape="circle" />
         </div>
         <div className="PostBody">
-          <SkeletonImage
-            style={{ width: "450px", height: "400px", margin: "25px" }}
-          />
+          <LoadingRing colorVariant="black" />
         </div>
         <div className="PostFooter"></div>
       </div>

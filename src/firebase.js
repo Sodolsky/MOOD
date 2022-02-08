@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage, ref } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getPerformance } from "firebase/performance";
 const firebaseConfig = {
   apiKey: "AIzaSyA36D0sCZzI8EuOuWnwPUFwb2DjqmiHFpg",
   authDomain: "mood-23f44.firebaseapp.com",
@@ -17,3 +18,4 @@ const storage = getStorage();
 export const auth = getAuth();
 export const storageRef = ref(storage);
 export const db = getFirestore(app);
+export const perf = getPerformance(app);

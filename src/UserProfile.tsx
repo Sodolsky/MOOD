@@ -30,6 +30,7 @@ import { query, where, orderBy } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import nProgress from "nprogress";
+import moment from "moment";
 export type userPrefferedPostType =
   | "Latest Post"
   | "Most Liked"
@@ -241,9 +242,13 @@ const UserProfile: React.FC = () => {
     if (userData?.UserPosts) {
       switch (userPrefferedPost) {
         case "Latest Post":
-          queryPostByDate(
-            userData.UserPosts[userData.UserPosts?.length - 1]
-          ).then((data) => {
+          const datesForLatestPost = userData.UserPosts.map(
+            (x) => moment(x, "DD-MM-YYYY, HH:mm:ss").unix() * 1000
+          ).sort((a, b) => a - b);
+          const latestPost = moment(
+            datesForLatestPost[datesForLatestPost.length - 1]
+          ).format("DD.MM.YYYY, HH:mm:ss");
+          queryPostByDate(latestPost).then((data) => {
             sethighlightedPost(data);
           });
           break;
@@ -255,7 +260,11 @@ const UserProfile: React.FC = () => {
           }
           break;
         case "Oldest Post":
-          queryPostByDate(userData.UserPosts[0]).then((data) => {
+          const dates = userData.UserPosts.map(
+            (x) => moment(x, "DD-MM-YYYY, HH:mm:ss").unix() * 1000
+          ).sort((a, b) => a - b);
+          const OldestPost = moment(dates[0]).format("DD.MM.YYYY, HH:mm:ss");
+          queryPostByDate(OldestPost).then((data) => {
             sethighlightedPost(data);
           });
           break;
