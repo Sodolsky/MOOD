@@ -32,7 +32,6 @@ export const savePoepleThatLikedPost = async (
 ) => {
   const postRef = doc(db, "Posts", `${key}`);
   const userRef = doc(db, "Notifications", `${userThatPostedLogin}`);
-  nProgress.start();
   if (login !== userThatPostedLogin) {
     const NotificationObj: NotificationInterface = {
       postId: postId,
@@ -42,12 +41,10 @@ export const savePoepleThatLikedPost = async (
     await updateDoc(userRef, {
       Notifications: arrayUnion(NotificationObj),
     });
-    nProgress.inc();
   }
   await updateDoc(postRef, {
     poepleThatLiked: poepleThatLikedArray,
   });
-  nProgress.done();
 };
 export const LikePost: React.FC<LikePostInterface> = (props) => {
   const {
