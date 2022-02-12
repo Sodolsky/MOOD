@@ -86,8 +86,8 @@ export const Header: React.FC = () => {
         <Row className="Logo">
           <Col>
             <div className="AlignLogo">
-              MOOD <sub style={{ fontSize: "1rem" }}>is not dead</sub>{" "}
-              <img src={moon} alt="Logo  of a moon" />
+              MOOD
+              <img src={moon} alt="Logo of a moon" />
               {auth.currentUser && (
                 <>
                   <div className="FAContainer">

@@ -403,8 +403,8 @@ $white: #fefefe;
     @include PostSchema();
     .Post {
       background-color: #fefefe;
-      border: 2px black solid;
-      border-radius: 0.5rem;
+      border: 3px black solid;
+      border-radius: 1rem;
     }
   }
 }
