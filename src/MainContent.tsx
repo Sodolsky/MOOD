@@ -99,7 +99,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
   // const firstBatch = React.useRef<boolean>(true);
   useEffect(() => {
     const ref = collection(db, "Posts");
-    const q = query(ref, orderBy("timestamp", "desc"), limit(6));
+    const q = query(ref, orderBy("timestamp", "desc"), limit(4));
     const Unsubscibe = onSnapshot(q, (doc) => {
       let shouldLoad: boolean = true;
       doc.docChanges().forEach((change) => {

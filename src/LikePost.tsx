@@ -1,7 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { isEqual } from "lodash";
-import nProgress from "nprogress";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
