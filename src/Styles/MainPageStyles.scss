@@ -1,4 +1,5 @@
 $white: #fefefe;
+$black: #2f2f2f;
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;400&display=swap");
 //TODO On small screen Post Text is getting out of frame
@@ -328,53 +329,81 @@ $white: #fefefe;
 .createPost {
   font-family: "Source Code Pro", monospace;
   position: relative;
-  width: 80vw;
+  width: 40vw;
   margin-top: 1rem;
   margin-bottom: 2rem;
   background-color: $white;
   box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.5);
-  grid-area: 2 / 1 / 3 / 2;
   border-radius: 0.5rem;
+  justify-self: center;
+  @media (max-width: 900px) {
+    width: 80vw;
+  }
   .NewPostBody {
     padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     textarea {
       resize: none;
       width: 100%;
-      overflow: hidden;
       border-radius: 0.5rem;
+      padding: 0.25rem;
+      &::-webkit-scrollbar {
+        width: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: $black;
+        box-shadow: 0 20px 25px -5px rgb(0, 0, 0 / 0.1),
+          0 8px 10px -6px rgb(0, 0, 0 / 0.1);
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 0.75rem;
+        height: 25%;
+        background-color: skyblue;
+      }
     }
   }
 
   .UrlUploader {
     @include Link();
   }
-  .PictureAndSubmit {
-    @include FlexCenter();
-    img {
-      margin: 0.5rem;
-      cursor: pointer;
-      height: 3ch;
+  .NewPostFeatures {
+    .CanBeAddedContainer {
+      font-size: 1rem;
     }
-    .Picture {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    .YoutubeUrl {
+      flex-grow: 2;
+      margin-left: 2rem;
       @include FlexCenter();
-      font-size: 1.5rem;
-      font-weight: bold;
-      .BackArrow {
-        margin-right: 1rem;
-        @media (max-width: 700px) {
-          display: none;
-        }
-      }
       input[type="text"] {
-        width: 100%;
+        width: 60%;
         border-radius: 0.5rem;
         font-size: 1rem;
       }
-      #file-input {
-        display: none;
+      .BackArrow {
+        cursor: pointer;
+        margin-right: 1rem;
+      }
+    }
+    .PictureAndSubmit {
+      margin-left: auto;
+      @include FlexCenter();
+      img {
+        margin: 0.25rem;
+        cursor: pointer;
+        height: 4ch;
+      }
+      .Picture {
+        @include FlexCenter();
+        font-size: 0.75rem;
+        font-weight: bold;
+        #file-input {
+          display: none;
+        }
       }
     }
   }

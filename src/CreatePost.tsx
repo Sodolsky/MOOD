@@ -1,15 +1,8 @@
 import * as React from "react";
 import { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  ModalBody,
-  Modal,
-  Button,
-  Alert,
-} from "react-bootstrap";
+import { ModalBody, Modal, Button, Alert } from "react-bootstrap";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import BackArrow from "./img/backarrow.png";
 import { v4 as uuidv4 } from "uuid";
 import TextareAutosize from "react-textarea-autosize";
 import { FileUploader } from "./FileUploader";
@@ -29,7 +22,6 @@ import commentSVG from "./img/Comment.svg";
 import { useMediaQuery } from "@react-hook/media-query";
 import { checkIfTextHaveHashtags } from "./likeFunctions";
 import { uniq } from "lodash";
-import BackArrow from "./img/backarrow.png";
 import moment from "moment";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 //Key needs to be changed
@@ -123,6 +115,53 @@ export const CreatePost: React.FC = () => {
   useEffect(() => {
     isLinkChoosen ? setPostType("video") : setPostType("photo");
   }, [isLinkChoosen]);
+  useEffect(() => {
+    document.onpaste = function (event) {
+      if (event.clipboardData) {
+        var items = event.clipboardData.items;
+        for (var index in items) {
+          var item = items[index];
+          if (item.kind === "file") {
+            var blob = item.getAsFile();
+            var reader = new FileReader();
+            reader.onload = function (event) {
+              if (event.target) {
+                // console.log(event.target.result?.toString()); // data url!
+              }
+            };
+            if (blob) {
+              if (
+                blob.type === "video/mp4" ||
+                blob.type === "video/ogg" ||
+                blob.type === "video/webm"
+              ) {
+                if (blob.size > 40000000) {
+                  //Normal value 800000000
+                  return alert(
+                    "Your File is bigger than 40MB Try to paste smaller one"
+                  );
+                } else {
+                }
+              } else {
+                if (blob.size > 15000000) {
+                  return alert(
+                    "Your File is bigger than 15MB Try to paste smaller one"
+                  );
+                }
+                setRawImageBlob(blob);
+
+                checkFileType(blob);
+                setUserImage(blob);
+                const data = URL.createObjectURL(blob);
+                setImgPrevievSrc(data);
+                reader.readAsDataURL(blob);
+              }
+            }
+          }
+        }
+      }
+    };
+  }, []);
 
   //When User decides to dismiss his current Post we need to reset everything
   const dismissPost = (): void => {
@@ -178,81 +217,92 @@ export const CreatePost: React.FC = () => {
   return (
     <>
       {addPostIconClicked ? (
-        <Container className="createPost">
-          <Row>
-            <Col xs={6} className="NewPostBody">
-              <TextareAutosize
-                maxRows={2}
-                autoFocus={true}
-                style={{ display: "inline" }}
-                maxLength={200}
-                onChange={handleChange}
-                value={newPostText}
-                name="Text"
-                placeholder="Describe your Current Mood"
-              />
-            </Col>
-            {newPostText.length > 0 && (
-              <Col xs={6} className="PictureAndSubmit">
-                <div className="Picture">
-                  {!isLinkChoosen ? (
-                    <>
-                      <FileUploader onFileSelect={setUserImage} />
-                      or
-                      <UrlUploader
-                        isLinkChoosen={isLinkChoosen}
-                        setIfLinkIsChoosen={setIfLinkIsChoosen}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <img
-                        onClick={() => {
-                          setIfLinkIsChoosen(false);
-                        }}
-                        className="BackArrow"
-                        src={BackArrow}
-                        alt="Go back and select Post Type Again"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Paste YT Link"
-                        onChange={(event) =>
-                          setYTLink(
-                            () => (event.target.name = event.target.value)
-                          )
-                        }
-                        value={YTLink}
-                      />
-                    </>
-                  )}
-                </div>
-              </Col>
-            )}
-          </Row>
-          {(YTLink !== "" || userImage !== undefined) && (
-            <div className="CssButtonContainer">
-              <hr />
-              <div className="wrapperForPrevievButton">
-                <button
+        <div className="createPost">
+          <div className="NewPostBody">
+            <TextareAutosize
+              autoFocus={true}
+              maxLength={200}
+              maxRows={3}
+              onChange={handleChange}
+              value={newPostText}
+              name="Text"
+              placeholder="Describe your Current Mood"
+            />
+          </div>
+          <div className="NewPostFeatures">
+            {isLinkChoosen && (
+              <div className="YoutubeUrl">
+                <img
                   onClick={() => {
-                    //TODO Tutaj dodac sprawdzanie czy jest link wybrany i wtedy podjac odpowiednia akcje
-                    if (isLinkChoosen) {
-                      if (validateYouTubeUrl(YTLink || "") === false) {
-                        return setShowAlert(true);
-                      }
-                      return setShowModal(true);
-                    }
-                    return setShowModal(true);
+                    setYTLink("");
+                    setIfLinkIsChoosen(false);
                   }}
-                  className="PrevievInModal"
-                >
-                  See your Own Post
-                </button>
+                  className="BackArrow"
+                  src={BackArrow}
+                  alt="Go back and select Post Type Again"
+                />
+                <input
+                  type="text"
+                  placeholder="Paste YT Link"
+                  onChange={(event) =>
+                    setYTLink(() => (event.target.name = event.target.value))
+                  }
+                  value={YTLink}
+                />
+              </div>
+            )}
+            {!isLinkChoosen && (
+              <div className="CanBeAddedContainer">
+                Is Image Uploaded:
+                {rawImageBlob !== undefined &&
+                userImage &&
+                imgPrevievSrc !== "" &&
+                !isLinkChoosen
+                  ? "✅"
+                  : "❌"}
+              </div>
+            )}
+            <div className="PictureAndSubmit">
+              <div className="Picture">
+                {!isLinkChoosen && <FileUploader onFileSelect={setUserImage} />}
+                <UrlUploader
+                  isLinkChoosen={isLinkChoosen}
+                  setIfLinkIsChoosen={setIfLinkIsChoosen}
+                  onClick={() => {
+                    setRawImageBlob(undefined);
+                    setImgPrevievSrc("");
+                    setUserImage(undefined);
+                  }}
+                />
               </div>
             </div>
-          )}
-        </Container>
+          </div>
+          {(YTLink !== "" || userImage !== undefined) &&
+            newPostText.replaceAll(/\s/g, "").length > 0 && (
+              <div className="CssButtonContainer">
+                <hr />
+                <div className="wrapperForPrevievButton">
+                  <button
+                    onClick={() => {
+                      //TODO Tutaj dodac sprawdzanie czy jest link wybrany i wtedy podjac odpowiednia akcje
+                      if (isLinkChoosen) {
+                        if (validateYouTubeUrl(YTLink || "") === false) {
+                          return setShowAlert(true);
+                        } else {
+                          return setShowModal(true);
+                        }
+                      } else if (rawImageBlob && imgPrevievSrc !== "") {
+                        return setShowModal(true);
+                      }
+                    }}
+                    className="PrevievInModal"
+                  >
+                    See your Own Post
+                  </button>
+                </div>
+              </div>
+            )}
+        </div>
       ) : (
         <AddPostIcon setAddPostIconClicked={setAddPostIconClicked} />
       )}
