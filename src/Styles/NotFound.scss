@@ -1,0 +1,14 @@
+@import "MainPageStyles.scss";
+.EmptyContainer {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 3rem;
+  color: white;
+  button {
+    font-size: 1.5rem;
+    @include PostButton();
+  }
+}

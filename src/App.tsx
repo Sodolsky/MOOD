@@ -22,6 +22,7 @@ import { LoadingRing } from "./LoadingRing";
 import { LogIn } from "./LogIn";
 import { MainContent } from "./MainContent";
 import { Navigation } from "./Navigation";
+import { NotFound } from "./NotFound";
 import { SinglePost } from "./SinglePost";
 import { Tags } from "./Tags";
 import UserProfile, { userPrefferedPostType } from "./UserProfile";
@@ -148,25 +149,21 @@ export const App: React.FC = () => {
   return (
     <>
       <Router>
-        <Switch>
-          <setCurrentlyLoggedInUserContext.Provider
-            value={setCurrentlyLoggedInUser}
-          >
-            <currentlyLoggedInUserContext.Provider
-              value={currentlyLoggedInUser}
+        <setCurrentlyLoggedInUserContext.Provider
+          value={setCurrentlyLoggedInUser}
+        >
+          <currentlyLoggedInUserContext.Provider value={currentlyLoggedInUser}>
+            <userLogInContext.Provider
+              value={{ isUserLoggedIn, setIfUserIsLoggedIn }}
             >
-              <userLogInContext.Provider
-                value={{ isUserLoggedIn, setIfUserIsLoggedIn }}
-              >
-                <allUsersArrayContext.Provider value={usersLoginArray.current}>
-                  <Header />
-                  {/*!Here We set up Routes when user is logged in */}
-                  {auth.currentUser ? (
-                    currentlyLoggedInUser.Login !== "" ? (
-                      <>
-                        <Route path="*" exact>
-                          <Redirect to="/" />
-                        </Route>
+              <allUsersArrayContext.Provider value={usersLoginArray.current}>
+                <Header />
+                {/*!Here We set up Routes when user is logged in */}
+                {auth.currentUser ? (
+                  currentlyLoggedInUser.Login !== "" ? (
+                    <>
+                      {console.log(isAuthBeingProccesed, auth.currentUser)}
+                      <Switch>
                         <Route path="/" exact>
                           <Redirect to="/home" />
                         </Route>
@@ -208,29 +205,36 @@ export const App: React.FC = () => {
                             <UserProfilePosts />
                           </div>
                         </Route>
-                      </>
-                    ) : (
+                        <Route path="*" exact>
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <NotFound />
+                          </div>
+                        </Route>
+                      </Switch>
+                    </>
+                  ) : (
+                    <div className="screenCenter">
+                      <LoadingRing colorVariant="white" />
+                    </div>
+                  )
+                ) : (
+                  //!Here We set up Routes when user ISN'T logged in
+                  <>
+                    {isAuthBeingProccesed ||
+                    (auth.currentUser && currentlyLoggedInUser.Login === "") ? (
                       <div className="screenCenter">
                         <LoadingRing colorVariant="white" />
                       </div>
-                    )
-                  ) : (
-                    //!Here We set up Routes when user ISN'T logged in
-                    <>
-                      {isAuthBeingProccesed ||
-                      (auth.currentUser &&
-                        currentlyLoggedInUser.Login === "") ? (
-                        <div className="screenCenter">
-                          <LoadingRing colorVariant="white" />
-                        </div>
-                      ) : (
-                        <LogIn
-                          currentlyLoggedInUser={currentlyLoggedInUser}
-                          setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
-                        />
-                      )}
-                      {!isAuthBeingProccesed && (
-                        <>
+                    ) : (
+                      <LogIn
+                        currentlyLoggedInUser={currentlyLoggedInUser}
+                        setCurrentlyLoggedInUser={setCurrentlyLoggedInUser}
+                      />
+                    )}
+                    {!isAuthBeingProccesed && !auth.currentUser && (
+                      <>
+                        <Switch>
                           <Route path="*" exact>
                             <Redirect to="/" />
                           </Route>
@@ -249,15 +253,15 @@ export const App: React.FC = () => {
                           <Route path="/users/:user/Posts">
                             <Redirect to="/" />
                           </Route>
-                        </>
-                      )}
-                    </>
-                  )}
-                </allUsersArrayContext.Provider>
-              </userLogInContext.Provider>
-            </currentlyLoggedInUserContext.Provider>
-          </setCurrentlyLoggedInUserContext.Provider>
-        </Switch>
+                        </Switch>
+                      </>
+                    )}
+                  </>
+                )}
+              </allUsersArrayContext.Provider>
+            </userLogInContext.Provider>
+          </currentlyLoggedInUserContext.Provider>
+        </setCurrentlyLoggedInUserContext.Provider>
       </Router>
     </>
   );
