@@ -14,17 +14,18 @@ import {
   removeLikeClass,
   removeUserFromLikedArray,
 } from "./likeFunctions";
+import { UserForFirebase } from "./Post";
 interface LikePostInterface {
   match: boolean;
   currentlyLoggedInUser: UserData;
-  poepleThatLiked: UserData[];
+  poepleThatLiked: UserForFirebase[];
   date: string;
   postId: string;
   userThatPostedLogin: string;
 }
 export const savePoepleThatLikedPost = async (
   key: string,
-  poepleThatLikedArray: UserData[],
+  poepleThatLikedArray: UserForFirebase[],
   postId: string,
   login: string,
   userThatPostedLogin: string
@@ -64,15 +65,19 @@ export const LikePost: React.FC<LikePostInterface> = (props) => {
     event: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     event.preventDefault();
+    const obj: UserForFirebase = {
+      Login: currentlyLoggedInUser.Login as string,
+      Avatar: currentlyLoggedInUser.Avatar as string,
+    };
     if (
       poepleThatLiked.some((x) => {
         return isEqual(x.Login, currentlyLoggedInUser.Login);
       })
     ) {
-      removeUserFromLikedArray(poepleThatLiked, currentlyLoggedInUser);
+      removeUserFromLikedArray(poepleThatLiked, obj);
       removeLikeClass(heartRef);
     } else {
-      poepleThatLiked.push(currentlyLoggedInUser);
+      poepleThatLiked.push(obj);
       playLikeAnimation(heartRef);
     }
     saveLikedUsers();
@@ -117,7 +122,7 @@ export const LikePost: React.FC<LikePostInterface> = (props) => {
             <div className="tippyLikes">
               {poepleThatLiked.map((item) => {
                 return (
-                  <div className="LikedPostContainer" key={item.Email}>
+                  <div className="LikedPostContainer" key={item.Login}>
                     <img src={item.Avatar as string} alt="User Avatar" />
                     <Link to={`/users/${item.Login}`}>
                       <span>{item.Login}</span>

@@ -1,7 +1,9 @@
-import { UserData } from "./App";
 import { isEqual } from "lodash";
-import { PostPropsInteface } from "./Post";
-export const getIndexOf = (array: UserData[], loggedUser: UserData): number => {
+import { PostPropsInteface, UserForFirebase } from "./Post";
+export const getIndexOf = (
+  array: UserForFirebase[],
+  loggedUser: UserForFirebase
+): number => {
   let val: number = 0;
   for (let i = 0; i < array.length; i++) {
     if (isEqual(array[i].Login, loggedUser.Login)) {
@@ -11,8 +13,8 @@ export const getIndexOf = (array: UserData[], loggedUser: UserData): number => {
   return val;
 };
 export const removeUserFromLikedArray = (
-  array: UserData[],
-  currentUser: UserData
+  array: UserForFirebase[],
+  currentUser: UserForFirebase
 ): void => {
   if (array.length === 1) {
     array.pop();

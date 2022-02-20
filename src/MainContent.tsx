@@ -74,8 +74,8 @@ export const MainContent: React.FC<MainContentPorps> = () => {
               diff === 0
                 ? (document.title = `MOOD`)
                 : diff === 1
-                ? rawPosts[0].userThatPostedThis.UID ===
-                  currentlyLoggedInUser.UID
+                ? rawPosts[0].userThatPostedThis.Login ===
+                  currentlyLoggedInUser.Login
                   ? (document.title = `MOOD`)
                   : (document.title = `MOOD (${diff}) New Posts`)
                 : (document.title = `MOOD (${diff}) New Posts`);
@@ -166,12 +166,7 @@ export const MainContent: React.FC<MainContentPorps> = () => {
   useEffect(() => {
     setPosts(
       rawPosts.map((item) => {
-        return (
-          <Post
-            key={`${item.date} ${item.userThatPostedThis.Email} ${item.userThatPostedThis.Description}`}
-            date={item.date}
-          />
-        );
+        return <Post key={item.URL} date={item.date} />;
       })
     );
     setIsLaoding(false);

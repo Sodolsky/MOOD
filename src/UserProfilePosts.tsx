@@ -173,12 +173,7 @@ export const UserProfilePosts: React.FC = () => {
       </div>
       <div className="divList">
         {Posts.map((item) => {
-          return (
-            <Post
-              key={`${item.date} ${item.userThatPostedThis.Email} ${item.userThatPostedThis.Description}`}
-              date={item.date}
-            />
-          );
+          return <Post key={item.URL} date={item.date} />;
         })}
       </div>
     </InfiniteScroll>

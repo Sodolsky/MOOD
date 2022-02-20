@@ -39,16 +39,20 @@ import { NotificationInterface } from "./Header";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
+export interface UserForFirebase {
+  Login: string;
+  Avatar: string;
+}
 export interface PostPropsInteface {
   postType: string;
-  userThatPostedThis: UserData;
+  userThatPostedThis: UserForFirebase;
   text: string;
   fileType?: string;
   img?: string;
   YTLink?: string;
   likeCount: number;
   hashtags: string[];
-  poepleThatLiked: UserData[];
+  poepleThatLiked: UserForFirebase[];
   date: string;
   URL: string;
 }
@@ -77,7 +81,10 @@ export const addCommentToDataBase = async (
     `${userThatPostedLogin}`
   );
   const newCommentObj: CommentInterface = {
-    userThatAddedComment: userThatAddedComment,
+    userThatAddedComment: {
+      Login: userThatAddedComment.Login as string,
+      Avatar: userThatAddedComment.Avatar as string,
+    },
     content: text,
     date: date,
     usersThatLikedThisComment: [],
@@ -132,7 +139,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
       postType: "",
       userThatPostedThis: {
         Login: "",
-        Email: "",
+        Avatar: "",
       },
       text: "",
       likeCount: 0,
@@ -374,7 +381,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                   .map((item) => {
                     return (
                       <CommentComponent
-                        key={`${item.date} ${item.userThatAddedComment.Email} ${item.userThatAddedComment.Description}`}
+                        key={`${date}${currentlyLoggedInUser.UID}`}
                         content={item.content}
                         date={item.date}
                         userThatAddedComment={item.userThatAddedComment}

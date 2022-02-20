@@ -3,15 +3,16 @@ import { Comment, Avatar } from "antd";
 import { CommentInterface } from "./CreatePost";
 import moment from "moment";
 import { isEqual } from "lodash";
-import { currentlyLoggedInUserContext, UserData } from "./App";
+import { currentlyLoggedInUserContext } from "./App";
 import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 import { removeUserFromLikedArray } from "./likeFunctions";
 import { doc, updateDoc } from "@firebase/firestore";
 import { db } from "./firebase";
 import { Link } from "react-router-dom";
+import { UserForFirebase } from "./Post";
 const savePoepleThatLikedComment = async (
   keyforPost: string,
-  poepleThatLikedArray: UserData[],
+  poepleThatLikedArray: UserForFirebase[],
   id: string
 ) => {
   const postRef = doc(db, "Posts", `${keyforPost}`, "comments", `${id}`);
@@ -48,18 +49,19 @@ export const CommentComponent: React.FC<CommentInterface> = (props) => {
     event: React.MouseEvent<Element, MouseEvent>
   ): void => {
     event.preventDefault();
+    const obj: UserForFirebase = {
+      Login: currentlyLoggedInUser.Login as string,
+      Avatar: currentlyLoggedInUser.Avatar as string,
+    };
     if (
       usersThatLikedThisComment.some((x) => {
         return isEqual(x.Login, currentlyLoggedInUser.Login);
       })
     ) {
-      removeUserFromLikedArray(
-        usersThatLikedThisComment,
-        currentlyLoggedInUser
-      );
+      removeUserFromLikedArray(usersThatLikedThisComment, obj);
       setLikeCount(usersThatLikedThisComment.length);
     } else {
-      usersThatLikedThisComment.push(currentlyLoggedInUser);
+      usersThatLikedThisComment.push(obj);
       setLikeCount(usersThatLikedThisComment.length);
     }
     saveLikedUsers();

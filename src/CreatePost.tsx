@@ -16,7 +16,7 @@ import { useContext } from "react";
 import { db, storageRef } from "./firebase.js";
 import { doc, setDoc, Timestamp, updateDoc } from "@firebase/firestore";
 import { ref, uploadBytes } from "@firebase/storage";
-import { downloadImageIfPostHasOne } from "./Post";
+import { downloadImageIfPostHasOne, UserForFirebase } from "./Post";
 import { LoadingRing } from "./LoadingRing";
 import commentSVG from "./img/Comment.svg";
 import { useMediaQuery } from "@react-hook/media-query";
@@ -34,10 +34,13 @@ const uploadUserImageToStorageBucket = async (
   await uploadBytes(fileRef, img);
 };
 export interface CommentInterface {
-  userThatAddedComment: UserData;
+  userThatAddedComment: {
+    Avatar: string;
+    Login: string;
+  };
   content: string;
   date: any;
-  usersThatLikedThisComment: UserData[];
+  usersThatLikedThisComment: UserForFirebase[];
   id?: string;
   parentPostRef?: string;
 }
@@ -63,7 +66,7 @@ export const CreatePost: React.FC = () => {
     userThatPostedThis: UserData,
     text: string,
     likeCount: number,
-    poepleThatLiked: UserData[],
+    poepleThatLiked: UserForFirebase[],
     date: string,
     timestamp: Timestamp,
     hashtags: string[],
@@ -76,7 +79,10 @@ export const CreatePost: React.FC = () => {
     try {
       await setDoc(doc(db, "Posts", `${date}`), {
         postType: postType,
-        userThatPostedThis: userThatPostedThis,
+        userThatPostedThis: {
+          Login: userThatPostedThis.Login,
+          Avatar: userThatPostedThis.Avatar,
+        },
         text: text,
         img: img,
         fileType: fileType,
@@ -198,12 +204,16 @@ export const CreatePost: React.FC = () => {
     checkFileType(rawImageBlob)
       ? (fileType = "image")
       : (fileType = "uservideo");
+    const userObjForFirebase: UserForFirebase = {
+      Login: currentlyLoggedInUser.Login as string,
+      Avatar: currentlyLoggedInUser.Avatar as string,
+    };
     addNewPostIntoDataBase(
       postType,
       currentlyLoggedInUser,
       newPostText,
       1,
-      [currentlyLoggedInUser],
+      [userObjForFirebase],
       postDate,
       Timestamp.fromDate(new Date()),
       uniqueHashtagArray,
