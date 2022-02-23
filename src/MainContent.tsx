@@ -222,7 +222,13 @@ export const MainContent: React.FC<MainContentPorps> = () => {
           scrollThreshold={0.7}
           style={{ overflow: "hidden" }}
           loader={
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100vw",
+              }}
+            >
               <LoadingRing colorVariant={"white"} />
             </div>
           }
