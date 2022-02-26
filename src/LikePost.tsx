@@ -1,6 +1,7 @@
 import Tippy from "@tippyjs/react";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { isEqual } from "lodash";
+import moment from "moment";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -37,6 +38,7 @@ export const savePoepleThatLikedPost = async (
       postId: postId,
       type: "like",
       whoDid: login,
+      date: moment(new Date()).unix(),
     };
     await updateDoc(userRef, {
       Notifications: arrayUnion(NotificationObj),

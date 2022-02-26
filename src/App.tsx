@@ -162,7 +162,6 @@ export const App: React.FC = () => {
                 {auth.currentUser ? (
                   currentlyLoggedInUser.Login !== "" ? (
                     <>
-                      {console.log(isAuthBeingProccesed, auth.currentUser)}
                       <Switch>
                         <Route path="/" exact>
                           <Redirect to="/home" />

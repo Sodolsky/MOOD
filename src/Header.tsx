@@ -30,11 +30,13 @@ import {
   where,
 } from "firebase/firestore";
 import { useMediaQuery } from "@react-hook/media-query";
+import moment from "moment";
 type notificationTypes = "comment" | "like";
 export interface NotificationInterface {
   type: notificationTypes;
   postId: string;
   whoDid: string;
+  date: number;
 }
 export const Header: React.FC = () => {
   const match = useMediaQuery("only screen and (min-width:450px");
@@ -112,7 +114,7 @@ export const Header: React.FC = () => {
                     interactive={true}
                     delay={200}
                     placement={"right"}
-                    maxWidth={`${match ? "400px" : "200px"}`}
+                    maxWidth={`${match ? "400px" : "300px"}`}
                     content={
                       <div className="tippyNotifications">
                         <div className="ButtonContainer">
@@ -127,51 +129,55 @@ export const Header: React.FC = () => {
                             </div>
                           )}
                         </div>
-                        {notifications.map((x, i) => {
-                          if (x.type === "comment") {
-                            return (
-                              <div
-                                className="NotificationContainer"
-                                key={`${x.postId}${i}${x.whoDid}${x.type}`}
-                              >
-                                <Link to={`/explore/posts/${x.postId}`}>
-                                  <FontAwesomeIcon icon={faComment} />
-                                  <span>
-                                    <b>{x.whoDid}</b> Commented On Your Post
-                                  </span>
-                                </Link>
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  className="trash"
-                                  onClick={() =>
-                                    handleSingleNotificationRemoval(x)
-                                  }
-                                />
-                              </div>
-                            );
-                          } else {
-                            return (
-                              <div
-                                className="NotificationContainer"
-                                key={`${x.type}${x.whoDid}${i}${x.postId}`}
-                              >
-                                <Link to={`/explore/posts/${x.postId}`}>
-                                  <FontAwesomeIcon icon={faHeart} />
-                                  <span>
-                                    <b>{x.whoDid}</b> Liked Your Post
-                                  </span>
-                                </Link>
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  className="trash"
-                                  onClick={() =>
-                                    handleSingleNotificationRemoval(x)
-                                  }
-                                />
-                              </div>
-                            );
-                          }
-                        })}
+                        {notifications
+                          .sort((a, b) => b.date - a.date)
+                          .map((x, i) => {
+                            if (x.type === "comment") {
+                              return (
+                                <div
+                                  className="NotificationContainer"
+                                  key={`${x.postId}${i}${x.whoDid}${x.type}`}
+                                >
+                                  <Link to={`/explore/posts/${x.postId}`}>
+                                    <FontAwesomeIcon icon={faComment} />
+                                    <span>
+                                      <b>{x.whoDid}</b>
+                                    </span>
+                                  </Link>
+                                  <span>{moment(x.date * 1000).fromNow()}</span>
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    className="trash"
+                                    onClick={() =>
+                                      handleSingleNotificationRemoval(x)
+                                    }
+                                  />
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div
+                                  className="NotificationContainer"
+                                  key={`${x.type}${x.whoDid}${i}${x.postId}`}
+                                >
+                                  <Link to={`/explore/posts/${x.postId}`}>
+                                    <FontAwesomeIcon icon={faHeart} />
+                                    <span>
+                                      <b>{x.whoDid}</b>
+                                    </span>
+                                  </Link>
+                                  <span>{moment(x.date * 1000).fromNow()}</span>
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    className="trash"
+                                    onClick={() =>
+                                      handleSingleNotificationRemoval(x)
+                                    }
+                                  />
+                                </div>
+                              );
+                            }
+                          })}
                       </div>
                     }
                     allowHTML={true}

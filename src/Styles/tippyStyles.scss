@@ -90,12 +90,13 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  grid-template-columns: 4fr 1fr;
+  grid-template-columns: 4fr 3fr 1fr;
   grid-template-rows: repeat(1, minmax(0, 1fr));
   padding: 0.25rem;
   border-bottom: 1px solid black;
   a {
     color: black;
+    place-self: start;
     svg {
       margin-right: 0.5rem;
     }

@@ -97,6 +97,7 @@ export const addCommentToDataBase = async (
       postId: postId,
       type: "comment",
       whoDid: userThatAddedComment.Login as string,
+      date: moment(new Date()).unix(),
     };
     await updateDoc(userRefNotification, {
       Notifications: arrayUnion(NotificationObj),
@@ -381,7 +382,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                   .map((item) => {
                     return (
                       <CommentComponent
-                        key={`${date}${currentlyLoggedInUser.UID}`}
+                        key={`${item.date}${currentlyLoggedInUser.UID}${item.content}`}
                         content={item.content}
                         date={item.date}
                         userThatAddedComment={item.userThatAddedComment}
