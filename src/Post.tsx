@@ -340,7 +340,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                   addCommentToDataBase(
                     date,
                     commentVal,
-                    new Date(),
+                    moment(new Date()).utc().toDate(),
                     currentlyLoggedInUser,
                     postData.userThatPostedThis.Login as string,
                     postData.URL
