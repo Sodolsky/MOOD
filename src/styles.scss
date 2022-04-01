@@ -11,19 +11,15 @@ body {
   // font-family: "Oswald", sans-serif;
   margin: 0;
   padding: 0;
-  // background: #8e2de2; /* fallback for old browsers */
-  // background: -webkit-linear-gradient(
-  //   to right,
-  //   #8e2de2,
-  //   #4a00e0
-  // ); /* Chrome 10-25, Safari 5.1-6 */
-  // background: linear-gradient(
-  //   to right,
-  //   #8e2de2,
-  //   #4a00e0
-  // ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  height: 100vh;
-  background-color: #2f2f2f;
+  background-color: #36096d;
+  background: -webkit-linear-gradient(
+    to bottom,
+    #7f53ac 0%,
+    #647dee 25%,
+    #7f53ac 75%
+  );
+  background: linear-gradient(to bottom, #7f53ac 0%, #647dee 25%, #7f53ac 75%);
+  background-color: #7f53ac;
   width: 100%;
   background-repeat: repeat;
 }

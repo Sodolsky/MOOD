@@ -39,7 +39,7 @@ export const Tags: React.FC = () => {
         });
       }
       const { docs } = querySnap;
-      setLastDoc(docs[docs.length - 1]);
+      setLastDoc(docs.length > 1 ? docs[docs.length - 1] : undefined);
       setPosts(dataArray);
       setIsLoading(false);
     });
@@ -61,12 +61,11 @@ export const Tags: React.FC = () => {
       setPosts([...posts, ...newPosts]);
     });
   };
-
   return !isLoading ? (
     <>
       <BackTop duration={300} />
       <InfiniteScroll
-        style={{ overflow: "hidden" }}
+        style={{ overflow: "hidden", paddingBottom: "2rem" }}
         loader={
           <div style={{ display: "flex", justifyContent: "center" }}>
             <LoadingRing colorVariant={"white"} />
