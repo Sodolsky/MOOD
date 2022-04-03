@@ -34,7 +34,8 @@ const addNewAccountIntoDataBase = async (
   UID: string,
   postCount: number,
   commentsRef: string[],
-  commentCount: number
+  commentCount: number,
+  pinnedPost: string
 ) => {
   try {
     nProgress.start();
@@ -55,6 +56,7 @@ const addNewAccountIntoDataBase = async (
       postCount: postCount,
       commentsRef: commentsRef,
       commentCount: commentCount,
+      pinnedPost: pinnedPost,
     });
     nProgress.done();
   } catch (error) {
@@ -177,7 +179,8 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 user.uid,
                 0,
                 [],
-                0
+                0,
+                ""
               );
               setIfUserIsLoggedIn(true);
               setCurrentlyLoggedInUser!({
@@ -191,6 +194,7 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
                 userPrefferedPost: "Latest Post",
                 UID: user.uid,
                 postCount: 0,
+                pinnedPost: "",
               });
             })
             .catch((error: FirebaseError) => {

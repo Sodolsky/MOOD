@@ -31,10 +31,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import nProgress from "nprogress";
 import moment from "moment";
+import { Toast } from "react-bootstrap";
 export type userPrefferedPostType =
   | "Latest Post"
   | "Most Liked"
-  | "Oldest Post";
+  | "Oldest Post"
+  | "Pinned";
 export const queryPostByDate = async (key: string) => {
   const ref = doc(db, "Posts", `${key}`);
   const highlightedPost = await getDoc(ref);
@@ -230,14 +232,6 @@ const UserProfile: React.FC = () => {
       };
     }
   }, [userData]);
-  useEffect(() => {
-    if (profileIsBeingChanged) {
-      setPostForUser();
-    } else if (userPrefferedPost !== null) {
-      setPostForUser();
-    }
-    // eslint-disable-next-line
-  }, [userPrefferedPost]);
   const setPostForUser = () => {
     if (userData?.UserPosts) {
       switch (userPrefferedPost) {
@@ -268,6 +262,14 @@ const UserProfile: React.FC = () => {
             sethighlightedPost(data);
           });
           break;
+        case "Pinned":
+          const pinnedPost = userData.pinnedPost;
+          if (pinnedPost && pinnedPost !== "") {
+            queryPostByDate(pinnedPost).then((data) => {
+              sethighlightedPost(data);
+            });
+          }
+          break;
         default:
           console.error(
             "An error has occured UserProfile Component swich statement"
@@ -275,6 +277,13 @@ const UserProfile: React.FC = () => {
       }
     }
   };
+  useEffect(() => {
+    if (profileIsBeingChanged) {
+      setPostForUser();
+    } else if (userPrefferedPost !== null) {
+      setPostForUser();
+    }
+  }, [userPrefferedPost]);
   const bestPostMenu = (
     <Menu>
       <Menu.Item key="0" onClick={() => setUserPrefferedPost("Latest Post")}>
@@ -285,6 +294,9 @@ const UserProfile: React.FC = () => {
       </Menu.Item>
       <Menu.Item key="2" onClick={() => setUserPrefferedPost("Oldest Post")}>
         <span>Oldest Post</span>
+      </Menu.Item>
+      <Menu.Item key="3" onClick={() => setUserPrefferedPost("Pinned")}>
+        <span>Pinned</span>
       </Menu.Item>
     </Menu>
   );
@@ -485,7 +497,10 @@ const UserProfile: React.FC = () => {
                   <button className="VievAllPosts">View all user Posts</button>
                 </Link>
                 <div className="postContainerOnUserProfile">
-                  <Post date={highlightedPost?.date} />
+                  <Post
+                    date={highlightedPost?.date}
+                    key={highlightedPost.date}
+                  />
                 </div>
               </>
             ) : (

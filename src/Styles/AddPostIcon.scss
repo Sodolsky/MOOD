@@ -5,7 +5,8 @@
   align-items: center;
   width: 100%;
   img {
-    width: clamp(45px, 70px, 8%);
+    width: 64px;
+    height: 64px;
     cursor: pointer;
     transition: transform 2500ms;
     &:hover {

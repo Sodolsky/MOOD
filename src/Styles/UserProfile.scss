@@ -123,6 +123,8 @@
     }
     .UserNameAndDescription {
       word-wrap: break-word;
+      word-break: break-all;
+      overflow-wrap: anywhere;
       max-width: 100%;
       padding-bottom: 1rem;
       @include FlexCenter();
@@ -172,6 +174,7 @@
       }
     }
     .LatestPost {
+      max-width: 100%;
       .VievAllPosts {
         @include PostButton();
       }

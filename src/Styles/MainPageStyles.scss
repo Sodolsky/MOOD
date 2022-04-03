@@ -8,6 +8,11 @@ $black: #2f2f2f;
   justify-content: center;
   align-items: center;
 }
+@mixin BreakAllWords {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 @mixin PostButton {
   margin: 0.5rem;
   border: 0.1rem black solid;
@@ -75,6 +80,17 @@ $black: #2f2f2f;
         left: 15px;
         top: 15px;
         cursor: pointer;
+      }
+      .ActionsBody {
+        @include FlexCenter();
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .PinPostIcon {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        cursor: pointer;
         transition: color 0.2s;
         &:hover {
           color: rgb(21, 213, 235);
@@ -112,8 +128,10 @@ $black: #2f2f2f;
       .PostText {
         text-align: center;
         padding: 1rem;
-        overflow-wrap: break-word;
         max-width: 100%;
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow-wrap: anywhere;
       }
       span {
         font-size: 125%;
@@ -196,6 +214,7 @@ $black: #2f2f2f;
         display: flex;
         justify-content: center;
         word-break: break-all;
+        @include BreakAllWords();
         .ant-comment {
           margin: 0.5rem 1rem 0.5rem 1rem;
         }

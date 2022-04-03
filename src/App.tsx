@@ -78,6 +78,7 @@ export interface UserData {
   postCount?: number;
   commentsRef?: string[];
   commentCount?: number;
+  pinnedPost?: string;
 }
 export interface LogInInterface {
   isUserLoggedIn: boolean | undefined;
@@ -127,6 +128,7 @@ export const App: React.FC = () => {
           postCount: obj.postCount,
           commentsRef: obj.commentsRef,
           commentCount: obj.commentCount,
+          pinnedPost: obj.pinnedPost,
         });
         getUsersLoginsUtility();
       }

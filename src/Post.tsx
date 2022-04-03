@@ -31,11 +31,14 @@ import { LazyLoadedImage } from "./LazyLoadedImage";
 import { Link } from "react-router-dom";
 import RemovePostIcon from "./img/xicon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { faLink, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { NotificationInterface } from "./Header";
+import { Accordion, useAccordionButton } from "react-bootstrap";
+import { CustomToggle } from "./CustomToggle";
+import MoreIcon from "./img/more.png";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -116,8 +119,10 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
   const match = useMediaQuery("only screen and (min-width:450px");
   //We are defining date as another variable to avoid name collison when passing props to comment element
   const parentDate = date;
-  const LinkWasCopiedSuccesfullyMessage = () => {
-    message.success("Link was Copied to your clipboard 👍", 3);
+  const ShowSuccessMesssage = (type: "Link" | "Pin") => {
+    type === "Link" &&
+      message.success("Link was Copied to your clipboard 👍", 3);
+    type === "Pin" && message.success("Post was selected as Pinned 👍", 3);
   };
   const myDate = moment(parentDate, "DD-MM-YYYY  HH:mm:ss").toDate();
   const [allComments, setAllComments] = useState<CommentInterface[]>([]);
@@ -209,6 +214,17 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const pinPost = async (postDate: string, userLogin: string) => {
+    const userRef = doc(db, "Users", userLogin);
+    try {
+      await updateDoc(userRef, {
+        pinnedPost: postDate,
+      });
+      ShowSuccessMesssage("Pin");
+    } catch (error) {
+      alert("An error occured while trying to pin Post");
+    }
+  };
   const currentlyLoggedInUser = useContext(currentlyLoggedInUserContext);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const val = event.target.value;
@@ -225,16 +241,34 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
             className="userAvatar"
             alt="Your Icon"
           />
-          <FontAwesomeIcon
-            icon={faLink}
-            className="LinkToPost"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                `${window.location.protocol}//${window.location.host}/explore/posts/${postData.URL}`
-              );
-              LinkWasCopiedSuccesfullyMessage();
-            }}
-          />
+          <Accordion className="LinkToPost">
+            <Accordion.Item eventKey="0">
+              <CustomToggle eventKey="0">
+                <img src={MoreIcon}></img>
+              </CustomToggle>
+              <Accordion.Body className="ActionsBody">
+                <FontAwesomeIcon
+                  icon={faLink}
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.protocol}//${window.location.host}/explore/posts/${postData.URL}`
+                    );
+                    ShowSuccessMesssage("Link");
+                  }}
+                />
+                {currentlyLoggedInUser.Login ===
+                  postData.userThatPostedThis.Login && (
+                  <FontAwesomeIcon
+                    icon={faThumbtack}
+                    onClick={() =>
+                      pinPost(date, postData.userThatPostedThis.Login)
+                    }
+                  />
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
+
           {currentlyLoggedInUser.Login === "EVILSODOL" &&
             postData?.userThatPostedThis.Login === "EVILSODOL" && (
               <img
@@ -315,7 +349,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
             <img
               className="Comment on Someone's post"
               src={commentSVG}
-              onClick={(event) => {
+              onClick={() => {
                 setIfAddingCommentIsSelected(!addingCommentSelected);
               }}
               alt="Place where you love someone post"

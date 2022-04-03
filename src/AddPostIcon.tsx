@@ -1,5 +1,5 @@
 import React from "react";
-import AddPostSvg from "./img/addPost.svg";
+import AddPostSvg from "./img/plus.png";
 import "./Styles/AddPostIcon.scss";
 export interface AddPostIconInterface {
   setAddPostIconClicked: React.Dispatch<React.SetStateAction<boolean>>;
