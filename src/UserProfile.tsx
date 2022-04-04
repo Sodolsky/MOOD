@@ -32,6 +32,7 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import nProgress from "nprogress";
 import moment from "moment";
 import { Toast } from "react-bootstrap";
+import { LazyLoadedImage } from "./LazyLoadedImage";
 export type userPrefferedPostType =
   | "Latest Post"
   | "Most Liked"
@@ -416,48 +417,49 @@ const UserProfile: React.FC = () => {
               />
             </div>
           )}
-          {profileIsBeingChanged ? (
-            <Dropzone
-              onDrop={(acceptedFiles, rejectedFiles) => {
-                if (rejectedFiles.length > 0) {
-                  return showUserMessage(
-                    "error",
-                    "Something is wrong with your file check it's type"
-                  );
-                }
-                if (acceptedFiles[0].size > 10000000) {
-                  return showUserMessage(
-                    "error",
-                    "Your File is bigger than 10MB Try to upload smaller one"
-                  );
-                }
-                if (acceptedFiles.length > 0) {
-                  setUserAvatar(URL.createObjectURL(acceptedFiles[0]));
-                  setPotentialNewAvatar(acceptedFiles[0]);
-                }
-              }}
-              multiple={false}
-              accept={"image/png,image/jpeg,image/jpg"}
-            >
-              {({ getRootProps, getInputProps }) => (
-                <div className={"UserImage  ChangeImage"} {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  <img src={`${userAvatar}`} alt={"Visited profile Avatar"} />
 
+          <Dropzone
+            disabled={!profileIsBeingChanged}
+            onDrop={(acceptedFiles, rejectedFiles) => {
+              if (rejectedFiles.length > 0) {
+                return showUserMessage(
+                  "error",
+                  "Something is wrong with your file check it's type"
+                );
+              }
+              if (acceptedFiles[0].size > 10000000) {
+                return showUserMessage(
+                  "error",
+                  "Your File is bigger than 10MB Try to upload smaller one"
+                );
+              }
+              if (acceptedFiles.length > 0) {
+                setUserAvatar(URL.createObjectURL(acceptedFiles[0]));
+                setPotentialNewAvatar(acceptedFiles[0]);
+              }
+            }}
+            multiple={false}
+            accept={"image/png,image/jpeg,image/jpg"}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <div
+                className={`UserImage  ${
+                  profileIsBeingChanged && "ChangeImage"
+                }`}
+                {...getRootProps()}
+              >
+                <input {...getInputProps()} />
+                <img src={`${userAvatar}`} alt={"Visited profile Avatar"} />
+
+                {profileIsBeingChanged && (
                   <div className="FAContainer">
                     <FontAwesomeIcon icon={faImage} />
                   </div>
-                </div>
-              )}
-            </Dropzone>
-          ) : (
-            <div className={"UserImage"}>
-              <img
-                src={`${userData?.Avatar}` as string}
-                alt={"Visited profile Avatar"}
-              />
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </Dropzone>
+
           <div className="UserNameAndDescription">
             <span>{userData?.Login}</span>
             {profileIsBeingChanged ? (

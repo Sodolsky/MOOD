@@ -29,14 +29,13 @@ import moment from "moment";
 import { LikePost } from "./LikePost";
 import { LazyLoadedImage } from "./LazyLoadedImage";
 import { Link } from "react-router-dom";
-import RemovePostIcon from "./img/xicon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { NotificationInterface } from "./Header";
-import { Accordion, useAccordionButton } from "react-bootstrap";
+import { Accordion } from "react-bootstrap";
 import { CustomToggle } from "./CustomToggle";
 import MoreIcon from "./img/more.png";
 const bottomStyle: React.CSSProperties = {
@@ -235,12 +234,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
   ) : (
     <div className="ListWrapper">
       <div className="Post">
-        <div className="PostUserInfo">
-          <img
-            src={postData?.userThatPostedThis.Avatar}
-            className="userAvatar"
-            alt="Your Icon"
-          />
+        <div className="PostHeader">
           <Accordion className="LinkToPost">
             <Accordion.Item eventKey="0">
               <CustomToggle eventKey="0">
@@ -256,20 +250,17 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                     ShowSuccessMesssage("Link");
                   }}
                 />
-                {currentlyLoggedInUser.Login ===
-                  postData.userThatPostedThis.Login && (
-                  <FontAwesomeIcon
-                    icon={faThumbtack}
-                    onClick={() =>
-                      pinPost(date, postData.userThatPostedThis.Login)
-                    }
-                  />
-                )}
+                <FontAwesomeIcon
+                  icon={faThumbtack}
+                  onClick={() =>
+                    pinPost(date, currentlyLoggedInUser.Login as string)
+                  }
+                />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
 
-          {currentlyLoggedInUser.Login === "EVILSODOL" &&
+          {/* {currentlyLoggedInUser.Login === "EVILSODOL" &&
             postData?.userThatPostedThis.Login === "EVILSODOL" && (
               <img
                 src={RemovePostIcon}
@@ -279,12 +270,19 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                   removePost(currentlyLoggedInUser, date);
                 }}
               />
-            )}
-          <span>
-            <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
-              {postData?.userThatPostedThis.Login}
-            </Link>
-          </span>
+            )} */}
+          <div className="NameAndDescription">
+            <img
+              src={postData?.userThatPostedThis.Avatar}
+              className="userAvatar"
+              alt="Your Icon"
+            />
+            <span>
+              <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
+                {postData?.userThatPostedThis.Login}
+              </Link>
+            </span>
+          </div>
         </div>
         <div className="PostBody">
           <div className="PostText">

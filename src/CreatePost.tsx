@@ -319,13 +319,15 @@ export const CreatePost: React.FC = () => {
       <Modal show={showModal} centered={true}>
         <ModalBody>
           <div className="Post">
-            <div className="PostUserInfo">
-              <img
-                src={currentlyLoggedInUser.Avatar}
-                className="userAvatar"
-                alt="Your Icon"
-              />
-              <span>{currentlyLoggedInUser.Login}</span>
+            <div className="PostHeader">
+              <div className="NameAndDescription">
+                <img
+                  src={currentlyLoggedInUser.Avatar}
+                  className="userAvatar"
+                  alt="Your Icon"
+                />
+                <span>{currentlyLoggedInUser.Login}</span>
+              </div>
             </div>
             <div className="PostBody">
               <div className="PostText">{newPostText}</div>
