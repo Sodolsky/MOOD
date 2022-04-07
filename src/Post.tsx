@@ -275,7 +275,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
             <img
               src={postData?.userThatPostedThis.Avatar}
               className="userAvatar"
-              alt="Your Icon"
+              alt="Orginal Poster Avatar"
             />
             <span>
               <Link to={`/users/${postData?.userThatPostedThis.Login}`}>
@@ -315,7 +315,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                 {postData?.fileType === "image" ? (
                   <LazyLoadedImage
                     src={postData?.img as string}
-                    alt={"Your Uploaded Mood"}
+                    alt={"Post Photo"}
                   />
                 ) : (
                   <video controls src={postData?.img} />
@@ -350,7 +350,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
               onClick={() => {
                 setIfAddingCommentIsSelected(!addingCommentSelected);
               }}
-              alt="Place where you love someone post"
+              alt="Heart"
             />
             {match && "Comments"} {commentCount}
           </span>
