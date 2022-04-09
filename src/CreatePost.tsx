@@ -60,6 +60,7 @@ export const CreatePost: React.FC = () => {
   const [imglock, setImgLock] = useState<boolean>(false);
   const [postLoading, setPostLoading] = useState<boolean>(false);
   const [rawImageBlob, setRawImageBlob] = useState<File | Blob>();
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const match = useMediaQuery("only screen and (min-width:450px");
   const addNewPostIntoDataBase = async (
     postType: string,
@@ -127,6 +128,16 @@ export const CreatePost: React.FC = () => {
         var items = event.clipboardData.items;
         for (var index in items) {
           var item = items[index];
+          if (item.kind === "string") {
+            item.getAsString((mess) => {
+              if (validateYouTubeUrl(mess)) {
+                if (document.activeElement !== textareaRef.current) {
+                  setIfLinkIsChoosen(true);
+                  setYTLink(mess);
+                }
+              }
+            });
+          }
           if (item.kind === "file") {
             var blob = item.getAsFile();
             var reader = new FileReader();
@@ -232,6 +243,7 @@ export const CreatePost: React.FC = () => {
             <TextareAutosize
               autoFocus={true}
               maxLength={200}
+              ref={textareaRef}
               maxRows={3}
               onChange={handleChange}
               value={newPostText}
