@@ -120,8 +120,8 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
   const parentDate = date;
   const ShowSuccessMesssage = (type: "Link" | "Pin") => {
     type === "Link" &&
-      message.success("Link was Copied to your clipboard 👍", 3);
-    type === "Pin" && message.success("Post was selected as Pinned 👍", 3);
+      message.success("Link was Copied to your clipboard 👍", 2);
+    type === "Pin" && message.success("Post was selected as Pinned 👍", 2);
   };
   const myDate = moment(parentDate, "DD-MM-YYYY  HH:mm:ss").toDate();
   const [allComments, setAllComments] = useState<CommentInterface[]>([]);
