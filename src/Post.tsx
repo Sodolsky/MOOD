@@ -325,7 +325,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
               <LiteYouTubeEmbed
                 id={getLinkId(postData.YTLink as string).id}
                 params={getLinkId(postData.YTLink as string).timestamp || ""}
-                title="YouTube video player"
+                title="YouTube player"
                 adNetwork={false}
                 playlist={false}
                 webp={true}
