@@ -72,6 +72,7 @@ export const CreatePost: React.FC = () => {
     timestamp: Timestamp,
     hashtags: string[],
     URL: string,
+    hallOfFame: boolean,
     img?: string,
     fileType?: string,
     YTLink?: string
@@ -94,6 +95,7 @@ export const CreatePost: React.FC = () => {
         date: date,
         timestamp: timestamp,
         URL: URL,
+        hallOfFame: hallOfFame,
       });
       currentlyLoggedInUser.UserPosts?.push(date);
       //Evil Sodol is my testing account and i dont want to update its UserPosts Reference.
@@ -229,6 +231,7 @@ export const CreatePost: React.FC = () => {
       Timestamp.fromDate(new Date()),
       uniqueHashtagArray,
       uuidv4(),
+      false,
       imageUrl,
       fileType,
       YTLink

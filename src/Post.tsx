@@ -16,7 +16,6 @@ import {
   addDoc,
   arrayUnion,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -29,8 +28,6 @@ import moment from "moment";
 import { LikePost } from "./LikePost";
 import { LazyLoadedImage } from "./LazyLoadedImage";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { message } from "antd";
 import SkeletonPost from "./SkeletonPost";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
@@ -38,6 +35,10 @@ import { NotificationInterface } from "./Header";
 import { Accordion } from "react-bootstrap";
 import { CustomToggle } from "./CustomToggle";
 import MoreIcon from "./img/more.png";
+import EmptyStarIcon from "./img/emptyStar.png";
+import StarIcon from "./img/star.png";
+import PinIcon from "./img/pin.png";
+import LinkIcon from "./img/link.png";
 const bottomStyle: React.CSSProperties = {
   borderTop: "black 1px solid",
 };
@@ -57,6 +58,7 @@ export interface PostPropsInteface {
   poepleThatLiked: UserForFirebase[];
   date: string;
   URL: string;
+  hallOfFame: boolean;
 }
 export const downloadImageIfPostHasOne = async (key: string) => {
   const pathRef = ref(storageRef, "PostImages");
@@ -114,15 +116,27 @@ export const addCommentToDataBase = async (
     }
   });
 };
+const showSuccessMesssage = (
+  type: "Link" | "Pin" | "HOF",
+  HOFtype?: "Added" | "Removed"
+) => {
+  type === "Link" && message.success("Link was Copied to your clipboard 👍", 2);
+  type === "Pin" && message.success("Post was selected as Pinned 👍", 2);
+  type === "HOF" &&
+    message.success(
+      `Post was ${
+        HOFtype === "Added"
+          ? "added to Hall Of Fame"
+          : "removed from Hall Of Fame"
+      } 👍`,
+      2
+    );
+};
 export const Post: React.FC<{ date: string }> = ({ date }) => {
   const match = useMediaQuery("only screen and (min-width:450px");
   //We are defining date as another variable to avoid name collison when passing props to comment element
   const parentDate = date;
-  const ShowSuccessMesssage = (type: "Link" | "Pin") => {
-    type === "Link" &&
-      message.success("Link was Copied to your clipboard 👍", 2);
-    type === "Pin" && message.success("Post was selected as Pinned 👍", 2);
-  };
+
   const myDate = moment(parentDate, "DD-MM-YYYY  HH:mm:ss").toDate();
   const [allComments, setAllComments] = useState<CommentInterface[]>([]);
   const [topComment, setTopComment] = useState<null | CommentInterface>(null);
@@ -154,11 +168,12 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
       YTLink: "",
       fileType: "",
       img: "",
+      hallOfFame: false,
     };
     const PostSubscription = onSnapshot(refForPost, (doc) => {
       const data = doc.data() as PostPropsInteface;
       DataContainer = data;
-      // setPostData(data);
+      setPostData(data);
     });
     const Unsubscribe = onSnapshot(refForComments, (doc) => {
       if (doc.docs.length > 0) {
@@ -219,7 +234,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
       await updateDoc(userRef, {
         pinnedPost: postDate,
       });
-      ShowSuccessMesssage("Pin");
+      showSuccessMesssage("Pin");
     } catch (error) {
       alert("An error occured while trying to pin Post");
     }
@@ -238,23 +253,32 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
           <Accordion className="LinkToPost">
             <Accordion.Item eventKey="0">
               <CustomToggle eventKey="0">
-                <img src={MoreIcon}></img>
+                <img src={MoreIcon} alt="Show More Options"></img>
               </CustomToggle>
               <Accordion.Body className="ActionsBody">
-                <FontAwesomeIcon
-                  icon={faLink}
+                <LazyLoadedImage
+                  src={LinkIcon}
+                  alt={"Link Post"}
                   onClick={() => {
                     navigator.clipboard.writeText(
                       `${window.location.protocol}//${window.location.host}/explore/posts/${postData.URL}`
                     );
-                    ShowSuccessMesssage("Link");
+                    showSuccessMesssage("Link");
                   }}
                 />
-                <FontAwesomeIcon
-                  icon={faThumbtack}
+                <LazyLoadedImage
+                  src={PinIcon}
+                  alt={"Pin Post"}
                   onClick={() =>
                     pinPost(date, currentlyLoggedInUser.Login as string)
                   }
+                />
+                <LazyLoadedImage
+                  alt="Add to Hall Of Fame"
+                  src={postData.hallOfFame ? StarIcon : EmptyStarIcon}
+                  onClick={() => {
+                    handleHallOfFameChange(postData, date);
+                  }}
                 />
               </Accordion.Body>
             </Accordion.Item>
@@ -434,17 +458,17 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
     </div>
   );
 };
-const removePost = async (currentlyLoggedInUser: UserData, key: string) => {
-  const removedPostRef = doc(db, "Posts", key);
-  const userRef = doc(db, "Users", currentlyLoggedInUser.Login as string);
-  const userdoc = await getDoc(userRef);
-  const Data = userdoc.data() as UserData;
-  const userPostsArray = Data.UserPosts;
-  if (userPostsArray) {
-    const updatedUserPosts = userPostsArray.filter((x) => x !== key);
-    await updateDoc(userRef, {
-      UserPosts: updatedUserPosts,
+export const handleHallOfFameChange = async (
+  post: Omit<PostPropsInteface, "date">,
+  postDate: string
+) => {
+  const postDocRef = doc(db, "Posts", postDate);
+  try {
+    await updateDoc(postDocRef, {
+      hallOfFame: !post.hallOfFame,
     });
-    await deleteDoc(removedPostRef);
+    showSuccessMesssage("HOF", post.hallOfFame ? "Removed" : "Added");
+  } catch (error) {
+    alert(error);
   }
 };

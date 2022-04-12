@@ -17,6 +17,7 @@ import {
 } from "react-router-dom";
 import Explore from "./Explore";
 import { db, auth } from "./firebase";
+import { HallOfFame } from "./HallOfFame";
 import { Header, NotificationInterface } from "./Header";
 import { LoadingRing } from "./LoadingRing";
 import { LogIn } from "./LogIn";
@@ -188,6 +189,12 @@ export const App: React.FC = () => {
                         <Route path="/explore/tag" exact>
                           <Redirect to={"/explore"} />
                         </Route>
+                        <Route path="/explore/HallOfFame" exact>
+                          <div className="MainContentGrid">
+                            <Navigation />
+                            <HallOfFame />
+                          </div>
+                        </Route>
                         <Route path="/explore/tag/:item">
                           <div className="MainContentGrid">
                             <Navigation />
@@ -243,6 +250,9 @@ export const App: React.FC = () => {
                             <Redirect to="/" />
                           </Route>
                           <Route path="/explore/tag" exact>
+                            <Redirect to="/" />
+                          </Route>
+                          <Route path="/explore/HallOfFame" exact>
                             <Redirect to="/" />
                           </Route>
                           <Route path="/explore/tag/:item" exact>

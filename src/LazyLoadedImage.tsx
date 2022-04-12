@@ -7,9 +7,10 @@ interface LLImagePropsInterface {
   classname?: string;
   style?: React.CSSProperties;
   afterLoad?: () => void;
+  onClick?: () => void;
 }
 export const LazyLoadedImage: React.FC<LLImagePropsInterface> = (props) => {
-  const { src, alt, classname, style, afterLoad } = props;
+  const { src, alt, classname, style, afterLoad, onClick } = props;
   return (
     <LazyLoadImage
       src={src}
@@ -18,6 +19,7 @@ export const LazyLoadedImage: React.FC<LLImagePropsInterface> = (props) => {
       className={classname}
       style={style}
       afterLoad={afterLoad}
+      onClick={onClick}
     />
   );
 };

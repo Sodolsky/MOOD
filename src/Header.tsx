@@ -10,6 +10,7 @@ import {
   faComment,
   faDoorOpen,
   faHeart,
+  faStar,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -92,6 +93,11 @@ export const Header: React.FC = () => {
               <img src={moon} alt="Logo of a moon" />
               {auth.currentUser && (
                 <>
+                  <div className="HOFContainer">
+                    <Link to="/explore/HallOfFame">
+                      <FontAwesomeIcon icon={faStar} />
+                    </Link>
+                  </div>
                   <div className="FAContainer">
                     <FontAwesomeIcon
                       icon={faDoorOpen}
