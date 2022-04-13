@@ -248,7 +248,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
     <SkeletonPost />
   ) : (
     <div className="ListWrapper">
-      <div className="Post">
+      <div className={`Post ${postData.hallOfFame && "GoldenBorder"}`}>
         <div className="PostHeader">
           <Accordion className="LinkToPost">
             <Accordion.Item eventKey="0">

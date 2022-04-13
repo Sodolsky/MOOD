@@ -465,7 +465,11 @@ $black: #2f2f2f;
     margin-bottom: 0.75rem;
     width: 40%;
     @include PostSchema();
+    .GoldenBorder {
+      border-color: gold !important;
+    }
     .Post {
+      transition: border 0.5s;
       background-color: #fefefe;
       border: 3px black solid;
       border-radius: 1rem;
