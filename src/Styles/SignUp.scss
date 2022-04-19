@@ -1,0 +1,203 @@
+main {
+    background-color: gainsboro;
+    top: 50%;
+    left: 80%;
+    position: absolute;
+    width: 30vw;
+    height: auto;
+    transform: translate(-50%, -50%);
+    padding: 4em 0.3rem 4em 0.3rem;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    opacity: 87%;
+    z-index: 1;
+
+    @media (max-width: 1000px) {
+        width: 80vw;
+        left: 50%;
+    }
+
+    .HeaderContainer {
+        height: 100%;
+        width: 100%;
+    }
+
+    .LogInText {
+        text-align: center;
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        p {
+
+            font-size: 1rem;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1rem;
+        padding-bottom: 1em;
+
+
+        input {
+            text-align: left;
+            // width: 100%;
+            background-color: gainsboro;
+            border: none;
+            border-bottom: 1px solid grey;
+            color: rgb(52, 52, 52);
+            font-size: 2rem;
+
+            @media (max-width: 1200px) {
+                font-size: 1.5rem;
+            }
+
+            @media (max-width: 320px) {
+                font-size: 1rem;
+            }
+        }
+
+        input[type="email"] {
+            margin-top: 0.75rem;
+        }
+
+        input[type="password"] {
+            margin-top: 0.75rem;
+        }
+
+        .buttonFlexWrap {
+            margin-top: 4rem;
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+
+            button {
+                font-size: 1.5rem;
+                padding: 0 1em 0 1em;
+                margin-top: 0.75rem;
+                background: none;
+                border: none;
+                border-radius: 40px;
+                color: #7f53ac;
+                background-color: white;
+                cursor: pointer;
+                max-width: 50%;
+
+                &:hover,
+                &:focus {
+                    background-color: rgb(255, 255, 255);
+                    text-decoration: underline;
+                }
+            }
+
+            input[type="submit"] {
+                max-width: 50%;
+                text-align: center;
+                padding: 0 1em 0 1em;
+                margin-top: 0.75rem;
+                border: none;
+                font-weight: bold;
+                background-color: #7f53ac;
+                color: white;
+                border-radius: 40px;
+
+                &:hover,
+                &:focus {
+                    background-color: #5f1ca2;
+                }
+            }
+        }
+    }
+
+    p {
+        margin-top: 0.75rem;
+        width: 100%;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+}
+
+.RememberMeContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ErrorContainer {
+    position: absolute;
+    width: 100%;
+    top: 9vh;
+}
+
+.fadeIn {
+    opacity: 1;
+    transition: opacity 0.75s;
+}
+
+.fadeOut {
+    opacity: 0;
+    transition: opacity 0.75s;
+}
+
+.background_box_cover {
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    position: relative;
+
+    img {
+        overflow: hidden;
+        max-height: 100%;
+        max-width: 100%;
+
+        @media (min-width: 1000px) and (max-width: 1650px) {
+            height: 100vh;
+        }
+
+        @media (max-width: 300px) {
+            height: 30vh;
+        }
+    }
+
+    .loginBGcover {
+        clip-path: polygon(35% 0, 100% 0, 100% 100%, 0% 100%);
+        background-image: linear-gradient(to bottom right, #647dee, #a6b3ea);
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 50vw;
+
+        @media (max-width:1000px) {
+            width: 100vw;
+            height: 80%;
+            bottom: 0%;
+            top: 20%;
+            clip-path: polygon(0 5%, 100% 0, 100% 100%, 0% 100%);
+        }
+    }
+
+    .logo {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        max-height: 5%;
+        margin: 10px;
+
+        @media (max-width:1000px) {
+            // max-width: 10%;
+            max-height: 10%;
+        }
+    }
+}
+
+.LogInForm {
+    height: 100%;
+}

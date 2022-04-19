@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import "./Styles/LogIn.scss";
 import { useContext } from "react";
@@ -15,6 +14,7 @@ import {
   UserCredential,
 } from "@firebase/auth";
 import { FirebaseError } from "firebase/app";
+import Logo from './img/icon-512.png';
 export interface LogInProps {
   currentlyLoggedInUser: UserData;
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
@@ -96,60 +96,51 @@ export const LogIn: React.FC<LogInProps> = () => {
           variant={alertVariant}
         />
 
+        <div className='background_box_cover'>
+          <img src="https://picsum.photos/1920/1080" alt='apiPicture' />
+          <img src={Logo} alt="logo" className='logo' />
+          <div className='loginBGcover'></div>
+        </div>
         <main>
-          <Container className="LogInForm">
-            <Row>
-              <Col className="LogInText">LOG IN</Col>
-            </Row>
+          <div className="LogInForm">
+            <div className="LogInText">
+              <h1>
+                welcome on Mood
+              </h1>
+              <p>feel free to share your current mood with us</p>
+            </div>
             <form>
-              <Row>
-                <Col>
-                  <input
-                    type="text"
-                    name="Email"
-                    id="Email"
-                    placeholder="Email"
-                    autoComplete="on"
-                    onChange={handleChange}
-                    value={userData?.Email}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <input
-                    type="password"
-                    name="Password"
-                    id="Password"
-                    placeholder="Password"
-                    onChange={handleChange}
-                    autoComplete="on"
-                    value={userData?.Password}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <input
-                    type="submit"
-                    id="Submit"
-                    value="LOG IN"
-                    onClick={handleSubmit}
-                  />
-                </Col>
-              </Row>
+              <input
+                type="text"
+                name="Email"
+                id="Email"
+                placeholder="email"
+                autoComplete="on"
+                onChange={handleChange}
+                value={userData?.Email}
+              />
+              <input
+                type="password"
+                name="Password"
+                id="Password"
+                placeholder="password"
+                onChange={handleChange}
+                autoComplete="on"
+                value={userData?.Password}
+              />
+              <div className='buttonFlexWrap'>
+                <button onClick={() => setIfUserIsSigningUp(true)}>
+                  sign up now
+                </button>
+                <input
+                  type="submit"
+                  id="Submit"
+                  value="log in"
+                  onClick={handleSubmit}
+                />
+              </div>
             </form>
-            <Row>
-              <Col>
-                <p>
-                  Not a Member?
-                  <button onClick={() => setIfUserIsSigningUp(true)}>
-                    Sign Up Now
-                  </button>
-                </p>
-              </Col>
-            </Row>
-          </Container>
+          </div>
         </main>
       </>
     );

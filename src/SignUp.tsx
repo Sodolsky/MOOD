@@ -1,6 +1,5 @@
 import * as React from "react";
-import { setCurrentlyLoggedInUserContext } from "./App";
-import { Container, Row, Col } from "react-bootstrap";
+import { setCurrentlyLoggedInUserContext } from "./App"
 import { useState } from "react";
 import { auth, db } from "./firebase";
 import {
@@ -17,6 +16,8 @@ import { userPrefferedPostType } from "./UserProfile";
 import { createUserWithEmailAndPassword, UserCredential } from "@firebase/auth";
 import { FirebaseError } from "@firebase/util";
 import nProgress from "nprogress";
+import "./Styles/SignUp.scss";
+import Logo from "./img/icon-512.png"
 interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
   setIfUserIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -209,73 +210,62 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
     );
   };
   return (
-    <main>
-      <Row>
-        <Col className="LogInText">SIGN UP</Col>
-      </Row>
-      <Container className="LogInForm">
-        <form>
-          <Row>
-            <Col>
-              <input
-                type="text"
-                name="Login"
-                id="Login"
-                placeholder="Username"
-                autoComplete="on"
-                onChange={handleChange}
-                value={registerData?.Login}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <input
-                type="email"
-                name="Email"
-                id="Email"
-                placeholder="Email"
-                autoComplete="on"
-                onChange={handleChange}
-                value={registerData?.Email}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <input
-                type="Password"
-                name="Password"
-                id="Password"
-                placeholder="Password"
-                autoComplete="on"
-                onChange={handleChange}
-                value={registerData.Password}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
+    <>
+      <div className='background_box_cover'>
+        <img src="https://picsum.photos/1920/1080" alt='apiPicture' />
+        <img src={Logo} alt="logo" className='logo' />
+        <div className='loginBGcover'></div>
+      </div>
+      <main>
+        <div className="LogInText">
+          <h1>
+            create your account
+          </h1>
+          <p>it's free!</p>
+        </div>
+        <div className="LogInForm">
+          <form>
+            <input
+              type="text"
+              name="Login"
+              id="Login"
+              placeholder="username"
+              autoComplete="on"
+              onChange={handleChange}
+              value={registerData?.Login}
+            />
+            <input
+              type="email"
+              name="Email"
+              id="Email"
+              placeholder="email"
+              autoComplete="on"
+              onChange={handleChange}
+              value={registerData?.Email}
+            />
+            <input
+              type="Password"
+              name="Password"
+              id="Password"
+              placeholder="password"
+              autoComplete="on"
+              onChange={handleChange}
+              value={registerData.Password}
+            />
+            <div className="buttonFlexWrap">
+              <button onClick={() => props.setIfUserIsSigningUp(false)}>
+                log in now
+              </button>
               <input
                 type="submit"
                 id="SubmitSignUp"
-                value="SIGN UP"
+                value="sign up"
                 onClick={handleSubmit}
               />
-            </Col>
-          </Row>
-        </form>
-        <Row>
-          <Col>
-            <p>
-              Hava a account?
-              <button onClick={() => props.setIfUserIsSigningUp(false)}>
-                Log In Now
-              </button>
-            </p>
-          </Col>
-        </Row>
-      </Container>
-    </main>
+            </div>
+          </form>
+        </div>
+      </main>
+    </>
   );
 };
