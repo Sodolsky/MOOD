@@ -4,11 +4,12 @@ main {
   left: 80%;
   position: absolute;
   width: 30vw;
+  border-radius: 1rem;
   height: auto;
   transform: translate(-50%, -50%);
   padding: 4em 0.3rem 4em 0.3rem;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-  opacity: 87%;
+  opacity: 0.87;
   z-index: 1;
 
   @media (max-width: 1000px) {
@@ -30,7 +31,6 @@ main {
     }
 
     p {
-
       font-size: 1rem;
     }
   }
@@ -42,7 +42,6 @@ main {
     justify-content: center;
     margin-top: 1rem;
     padding-bottom: 1em;
-
 
     input {
       text-align: left;
@@ -78,34 +77,32 @@ main {
 
       button {
         font-size: 1.5rem;
-        padding: 0 1em 0 1em;
+        padding: 0.5rem 1rem;
         margin-top: 0.75rem;
         background: none;
         border: none;
-        border-radius: 40px;
-        color: #7f53ac;
-        background-color: white;
-        cursor: pointer;
-        max-width: 50%;
+        border-radius: 1.5rem;
 
+        color: #7f53ac;
+        background-color: hsl(0, 0%, 100%);
+        cursor: pointer;
         &:hover,
         &:focus {
-          background-color: rgb(255, 255, 255);
+          background-color: hsl(0, 0%, 100%);
           text-decoration: underline;
         }
       }
 
-      input[type="submit"] {
+      .submitButton {
         max-width: 50%;
         text-align: center;
-        padding: 0 1em 0 1em;
+        padding: 0.5rem 1rem;
         margin-top: 0.75rem;
         border: none;
         font-weight: bold;
         background-color: #7f53ac;
         color: white;
-        border-radius: 40px;
-
+        border-radius: 1.5rem;
         &:hover,
         &:focus {
           background-color: #5f1ca2;
@@ -175,7 +172,7 @@ main {
     top: 0;
     width: 50vw;
 
-    @media (max-width:1000px) {
+    @media (max-width: 1000px) {
       width: 100vw;
       height: 80%;
       bottom: 0%;
@@ -192,7 +189,7 @@ main {
     max-height: 5%;
     margin: 10px;
 
-    @media (max-width:1000px) {
+    @media (max-width: 1000px) {
       // max-width: 10%;
       max-height: 10%;
     }

@@ -6,6 +6,7 @@ main {
   width: 30vw;
   height: auto;
   transform: translate(-50%, -50%);
+  border-radius: 1rem;
   padding: 4em 0.3rem 4em 0.3rem;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   opacity: 0.87;
@@ -73,18 +74,17 @@ main {
       display: flex;
       justify-content: space-around;
       width: 80%;
-
+      gap: 0.5rem;
       button {
         font-size: 1.5rem;
-        padding: 0 1em 0 1em;
+        padding: 0.5rem 1rem;
         margin-top: 0.75rem;
         background: none;
         border: none;
-        border-radius: 40px;
+        border-radius: 1.5rem;
         color: #7f53ac;
         background-color: white;
         cursor: pointer;
-        max-width: 50%;
 
         &:hover,
         &:focus {
@@ -93,16 +93,16 @@ main {
         }
       }
 
-      input[type="submit"] {
+      .submitButton {
         max-width: 50%;
         text-align: center;
-        padding: 0 1em 0 1em;
+        padding: 0.5rem 1rem;
         margin-top: 0.75rem;
         border: none;
         font-weight: bold;
         background-color: #7f53ac;
         color: white;
-        border-radius: 40px;
+        border-radius: 1.5rem;
 
         &:hover,
         &:focus {

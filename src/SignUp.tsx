@@ -1,5 +1,5 @@
 import * as React from "react";
-import { setCurrentlyLoggedInUserContext } from "./App"
+import { setCurrentlyLoggedInUserContext } from "./App";
 import { useState } from "react";
 import { auth, db } from "./firebase";
 import {
@@ -17,7 +17,7 @@ import { createUserWithEmailAndPassword, UserCredential } from "@firebase/auth";
 import { FirebaseError } from "@firebase/util";
 import nProgress from "nprogress";
 import "./Styles/SignUp.scss";
-import Logo from "./img/icon-512.png"
+import Logo from "./img/icon-512.png";
 interface SignUpProps {
   setIfUserIsSigningUp: React.Dispatch<React.SetStateAction<boolean>>;
   setIfUserIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -211,17 +211,15 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
   };
   return (
     <>
-      <div className='background_box_cover'>
-        <img src="https://picsum.photos/1920/1080" alt='apiPicture' />
-        <img src={Logo} alt="logo" className='logo' />
-        <div className='loginBGcover'></div>
+      <div className="background_box_cover">
+        <img src="https://picsum.photos/1920/1080" alt="apiPicture" />
+        <img src={Logo} alt="logo" className="logo" />
+        <div className="loginBGcover"></div>
       </div>
       <main>
         <div className="LogInText">
-          <h1>
-            create your account
-          </h1>
-          <p>it's free!</p>
+          <h1>Create Your Account</h1>
+          <p>It's free!</p>
         </div>
         <div className="LogInForm">
           <form>
@@ -254,14 +252,11 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
             />
             <div className="buttonFlexWrap">
               <button onClick={() => props.setIfUserIsSigningUp(false)}>
-                log in now
+                Go to Login
               </button>
-              <input
-                type="submit"
-                id="SubmitSignUp"
-                value="sign up"
-                onClick={handleSubmit}
-              />
+              <button className="submitButton" onClick={handleSubmit}>
+                Create account
+              </button>
             </div>
           </form>
         </div>

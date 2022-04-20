@@ -14,7 +14,7 @@ import {
   UserCredential,
 } from "@firebase/auth";
 import { FirebaseError } from "firebase/app";
-import Logo from './img/icon-512.png';
+import Logo from "./img/icon-512.png";
 export interface LogInProps {
   currentlyLoggedInUser: UserData;
   setCurrentlyLoggedInUser: React.Dispatch<React.SetStateAction<UserData>>;
@@ -96,18 +96,16 @@ export const LogIn: React.FC<LogInProps> = () => {
           variant={alertVariant}
         />
 
-        <div className='background_box_cover'>
-          <img src="https://picsum.photos/1920/1080" alt='apiPicture' />
-          <img src={Logo} alt="logo" className='logo' />
-          <div className='loginBGcover'></div>
+        <div className="background_box_cover">
+          <img src="https://picsum.photos/1920/1080" alt="apiPicture" />
+          <img src={Logo} alt="logo" className="logo" />
+          <div className="loginBGcover"></div>
         </div>
         <main>
           <div className="LogInForm">
             <div className="LogInText">
-              <h1>
-                welcome on Mood
-              </h1>
-              <p>feel free to share your current mood with us</p>
+              <h1>Welcome to the MOOD</h1>
+              <p>Feel free to share your current mood with us</p>
             </div>
             <form>
               <input
@@ -128,16 +126,17 @@ export const LogIn: React.FC<LogInProps> = () => {
                 autoComplete="on"
                 value={userData?.Password}
               />
-              <div className='buttonFlexWrap'>
+              <div className="buttonFlexWrap">
                 <button onClick={() => setIfUserIsSigningUp(true)}>
-                  sign up now
+                  Sign Up
                 </button>
-                <input
-                  type="submit"
+                <button
+                  className="submitButton"
                   id="Submit"
-                  value="log in"
                   onClick={handleSubmit}
-                />
+                >
+                  Log in
+                </button>
               </div>
             </form>
           </div>
