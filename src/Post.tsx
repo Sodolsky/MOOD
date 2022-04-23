@@ -75,7 +75,8 @@ export const addCommentToDataBase = async (
   date: Date,
   userThatAddedComment: UserData,
   userThatPostedLogin: string,
-  postId: string
+  postId: string,
+  img: string
 ) => {
   const postRef = collection(db, "Posts", `${key}`, "comments");
   const userRef = doc(db, "Users", `${userThatAddedComment.Login}`);
@@ -92,6 +93,7 @@ export const addCommentToDataBase = async (
     content: text,
     date: date,
     usersThatLikedThisComment: [],
+    img: img,
   };
   const userData = await getDoc(userRef);
   const userDataObject = userData.data() as UserData;
@@ -399,7 +401,8 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                     moment(new Date()).utc().toDate(),
                     currentlyLoggedInUser,
                     postData.userThatPostedThis.Login as string,
-                    postData.URL
+                    postData.URL,
+                    ""
                   );
                   changeCommentVal("");
                 }}
@@ -424,6 +427,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                       }
                       parentPostRef={date}
                       id={topComment.id}
+                      img={topComment.img}
                     />
                   </>
                 )}
@@ -447,6 +451,7 @@ export const Post: React.FC<{ date: string }> = ({ date }) => {
                         }
                         id={item.id}
                         parentPostRef={date}
+                        img={item.img}
                       />
                     );
                   })}
